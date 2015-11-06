@@ -9,7 +9,7 @@ component {
 		variables.region = arguments.region;
 		variables.argumentTypes = getArgTypes();
 		variables.argumentKeys = variables.argumentTypes.keyArray();
-    variables.platform = server.keyExists( 'lucee' ) ? 'Lucee' : 'ColdFusion';
+		variables.platform = server.keyExists( 'lucee' ) ? 'Lucee' : 'ColdFusion';
 		return this;
 	}
 
@@ -144,7 +144,6 @@ component {
 	) {
 		var payload = buildPayload( arguments );
 		var apiResponse = apiCall( 'GetItem', payload );
-		var dataTypeEncoding = !arguments.keyExists( 'dataTypeEncoding' ) || arguments.dataTypeEncoding;
 		if ( apiResponse.data.keyExists( 'item' ) ) {
 			apiResponse.data.item = decodeValues( apiResponse.data.item );
 		}
@@ -179,6 +178,36 @@ component {
 		var payload = buildPayload( arguments );
 
 		var apiResponse = apiCall( 'UpdateItem', payload );
+		if ( apiResponse.data.keyExists( 'Attributes' ) ) {
+			apiResponse.data.Attributes = decodeValues( apiResponse.data.Attributes );
+		}
+		return apiResponse;
+	}
+
+	/**
+	* The DeleteItem operation deletes a single item in a table by primary key.
+	* http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html
+	* @TableName The name of the table from which to delete the item.
+	* @Key A map of attribute names to AttributeValue objects, representing the primary key of the item to delete.
+	* @ConditionExpression A condition that must be satisfied in order for a conditional DeleteItem to succeed.
+	* @ExpressionAttributeNames One or more substitution tokens for attribute names in an expression.
+	* @ExpressionAttributeValues One or more values that can be substituted in an expression.
+	* @ReturnConsumedCapacity Determines the level of detail about provisioned throughput consumption that is returned in the response: (INDEXES | TOTAL | NONE)
+	* @ReturnItemCollectionMetrics Determines whether item collection metrics are returned: (SIZE | NONE)
+	* @ReturnValues Use ReturnValues if you want to get the item attributes as they appeared before they were deleted: (NONE | ALL_OLD)
+	*/
+	public any function deleteItem(
+		required string TableName,
+		required struct Key,
+		string ConditionExpression = '',
+		struct ExpressionAttributeNames = { },
+		struct ExpressionAttributeValues = { },
+		string ReturnConsumedCapacity = '',
+		string ReturnItemCollectionMetrics = '',
+		string ReturnValues = ''
+	) {
+		var payload = buildPayload( arguments );
+		var apiResponse = apiCall( 'DeleteItem', payload );
 		if ( apiResponse.data.keyExists( 'Attributes' ) ) {
 			apiResponse.data.Attributes = decodeValues( apiResponse.data.Attributes );
 		}
