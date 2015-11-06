@@ -90,8 +90,7 @@ component {
 		var typeIndex = validSettings.findNoCase( Setting );
 		if ( !typeIndex ) { throw( 'Invalid setting specified. Valid options are: #validSettings.toList( ', ' )#' ); }
 		var queryParams = { '#validSettings[ typeIndex ]#': '' };
-		var headers = { 'X-Amz-Content-Sha256': variables.emptyStringHash };
-		var apiResponse = apiCall( 'GET', '/' & bucket, queryParams, headers );
+		var apiResponse = apiCall( 'GET', '/' & bucket, queryParams );
 		if ( apiResponse.statusCode == 200 ) {
 			if ( Setting != 'policy' ) {
 				apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
@@ -357,7 +356,7 @@ component {
 		string WebsiteRedirectLocation = '',
 		string VersionId = ''
 	) {
-		var headers = { 'X-Amz-Content-Sha256': variables.emptyStringHash };
+		var headers = { };
 		headers [ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
 		if ( len( arguments.VersionId ) ) headers [ 'X-Amz-Copy-Source' ] &= '?versionId=' & arguments.VersionId;
 
@@ -385,8 +384,7 @@ component {
 		required string Bucket,
 		required string ObjectKey
 	) {
-		var headers = { 'X-Amz-Content-Sha256': variables.emptyStringHash };
-		return apiCall( 'DELETE', '/' & bucket & '/' & objectKey, { }, headers );
+		return apiCall( 'DELETE', '/' & bucket & '/' & objectKey );
 	}
 
 	/**
