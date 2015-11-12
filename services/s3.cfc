@@ -273,10 +273,10 @@ component {
 		numeric Expires = 300
 	) {
 		var path = '/' & Bucket & '/' & ObjectKey;
-    var isoTime = utils.iso8601();
-    var queryParams = { 'X-Amz-Expires': Expires };
-    var params = signer.appendAuthorizationQueryParams( variables.service, variables.host, variables.region, isoTime, 'GET', path, queryParams );
-    return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
+		var isoTime = utils.iso8601();
+		var queryParams = { 'X-Amz-Expires': Expires };
+		var params = signer.appendAuthorizationQueryParams( variables.service, variables.host, variables.region, isoTime, 'GET', path, queryParams );
+		return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
 }
 
 	/**
@@ -421,7 +421,7 @@ component {
 	* @ObjectKey The object key to store the uploaded file at.
 	* @FormParams An array of form params that are are going to be included in the browser POST to s3
 	* @MaxSize The maximum size in bytes that an uploaded file can be.
-	*	@Expires How long in seconds that the POST authorization is valid for.
+	* @Expires How long in seconds that the POST authorization is valid for.
 	*/
 	public array function getFormPostParams(
 		required string Bucket,
@@ -434,7 +434,7 @@ component {
 		var isoTime = utils.iso8601( requestTime );
 		var result = signer.getAuthorizationParams( variables.service, variables.region, isoTime ).reduce( function( authParamArray, key, value ) {
 			authParamArray.append( { 'name': key, 'value': value } );
-      return authParamArray;
+			return authParamArray;
 		}, [ ] );
 		var expiration = utils.iso8601Full( dateAdd( 's', expires, requestTime ) );
 
