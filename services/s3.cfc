@@ -10,6 +10,9 @@ component {
 	) {
 		variables.emptyStringHash = hash( '', 'SHA-256' ).lcase();
 		variables.host = variables.service & '.amazonaws.com';
+		if (arguments.region neq 'us-east-1') {
+			variables.host = 's3-' & arguments.region & '.amazonaws.com';
+		}
 		variables.region = arguments.region;
 		variables.api = arguments.api;
 		variables.signer = arguments.signer;
