@@ -276,7 +276,7 @@ component {
 		var isoTime = utils.iso8601();
 		var queryParams = { 'X-Amz-Expires': Expires };
 		var params = signer.appendAuthorizationQueryParams( variables.service, variables.host, variables.region, isoTime, 'GET', path, queryParams );
-		return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
+		return variables.host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
 }
 
 	/**
