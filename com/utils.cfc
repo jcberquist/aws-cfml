@@ -54,7 +54,7 @@ component {
 
   public string function parseQueryParams( required struct queryParams, boolean encodeQueryParams = true, boolean includeEmptyValues = true ) {
     var sortedKeyArray = queryParams.keyArray();
-    sortedKeyArray.sort( 'textnocase' );
+    sortedKeyArray.sort( 'text' );
     var queryString = arrayReduce( sortedKeyArray, function( queryString, queryParamKey ) {
         var encodedKey = encodeQueryParams ? encodeUrl( queryParamKey ) : queryParamKey;
         var encodedValue = encodeQueryParams && len( queryParams[ queryParamKey ] ) ? encodeUrl( queryParams[ queryParamKey ] ) : queryParams[ queryParamKey ];
