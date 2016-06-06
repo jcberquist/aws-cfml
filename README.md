@@ -11,7 +11,7 @@ It currently supports only AWS Signature v4 for authentication.
 ## Getting Started
 
 	// aws.cfc returns a struct of CFC's for interacting with AWS services
-	aws = new aws( awsKey = 'YOUR_PUBLIC_KEY', awsPrivateKey = 'YOUR_PRIVATE_KEY', region = 'us-east-1' );
+	aws = new aws( awsKey = 'YOUR_PUBLIC_KEY', awsSecretKey = 'YOUR_PRIVATE_KEY', region = 'us-east-1' );
 
 	buckets = aws.s3.listBuckets();
 	tables = aws.dynamodb.listTables();

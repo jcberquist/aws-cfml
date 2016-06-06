@@ -10,6 +10,9 @@ component {
 	) {
 		variables.emptyStringHash = hash( '', 'SHA-256' ).lcase();
 		variables.host = variables.service & '.amazonaws.com';
+		if (arguments.region neq 'us-east-1') {
+			variables.host = 's3-' & arguments.region & '.amazonaws.com';
+		}
 		variables.region = arguments.region;
 		variables.api = arguments.api;
 		variables.signer = arguments.signer;
@@ -279,7 +282,7 @@ component {
 		var queryParams = { 'X-Amz-Expires': Expires };
 		if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
 		var params = signer.appendAuthorizationQueryParams( variables.service, variables.host, variables.region, isoTime, 'GET', path, queryParams );
-		return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
+		return variables.host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
 }
 
 	/**
