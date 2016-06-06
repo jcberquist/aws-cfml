@@ -217,7 +217,7 @@ component {
 		string VersionId = ''
 	) {
 		var queryParams = { };
-		if ( len( arguments.VersionId ) ) queryParams[ 'VersionId' ] = arguments.VersionId;
+		if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
 		return apiCall( 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
 	}
 
@@ -234,7 +234,7 @@ component {
 		string VersionId = ''
 	) {
 		var queryParams = { };
-		if ( len( arguments.VersionId ) ) queryParams[ 'VersionId' ] = arguments.VersionId;
+		if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
 		var apiResponse = apiCall( 'HEAD', '/' & Bucket & '/' & ObjectKey, queryParams );
 		return apiResponse;
 	}
@@ -252,7 +252,7 @@ component {
 		string VersionId = ''
 	) {
 		var queryParams = { 'acl': '' };
-		if ( len( arguments.VersionId ) ) queryParams[ 'VersionId' ] = arguments.VersionId;
+		if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
 		var apiResponse = apiCall( 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
 		if ( apiResponse.statusCode == 200 ) {
 			apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'AccessControlPolicy' );
@@ -266,15 +266,18 @@ component {
 	* @Bucket The name of the bucket containing the object
 	* @ObjectKey The object key
 	* @Expires The length of time in seconds for which the url is valid
+	* @VersionId the specific version of an object to get (if versioning is enabled)
 	*/
 	public string function generatePresignedURL(
 		required string Bucket,
 		required string ObjectKey,
-		numeric Expires = 300
+		numeric Expires = 300,
+		string VersionId = ''
 	) {
 		var path = '/' & Bucket & '/' & ObjectKey;
 		var isoTime = utils.iso8601();
 		var queryParams = { 'X-Amz-Expires': Expires };
+		if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
 		var params = signer.appendAuthorizationQueryParams( variables.service, variables.host, variables.region, isoTime, 'GET', path, queryParams );
 		return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
 }
