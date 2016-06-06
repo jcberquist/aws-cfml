@@ -402,7 +402,7 @@ component {
 		required string target,
 		struct payload = { }
 	) {
-		var payloadString = variables.platform == 'Lucee' ? serializeJSON( payload ) : cleanAttributeValuesJSON( serializeJSON( payload ) );
+		var payloadString = toJSON( payload );
 
 		var headers = { };
 		headers[ 'X-Amz-Target' ] = 'DynamoDB_' & variables.apiVersion & '.' & arguments.target;
@@ -412,6 +412,17 @@ component {
 		apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
 		return apiResponse;
+	}
+
+	private string function toJSON( required struct source ) {
+		var json = serializeJSON( source );
+		// clean up ColdFusion serialization
+		if ( variables.platform == 'ColdFusion' ) {
+			json = reReplace(json, '\{"N":([^\}]+)\}', '{"N":"\1"}', "all");
+			json = reReplace(json, '\{"BOOL":(true|false)\}', '{"BOOL":"\1"}', "all");
+			json = replace( json, '{"NULL":true}', '{"NULL":"true"}' );
+		}
+		return json;
 	}
 
 	private any function buildPayload( required any args ) {
@@ -445,15 +456,6 @@ component {
 			}
 		}
 		return payload;
-	}
-
-	private string function cleanAttributeValuesJSON(
-		required string json
-	) {
-		var result = reReplace(json, '\{"N":([\d\-\.]+)\}', '{"N":"\1"}', "all");
-		result = reReplace(result, '\{"BOOL":(true|false)\}', '{"BOOL":"\1"}', "all");
-		result = replace( result, '{"NULL":true}', '{"NULL":"true"}' );
-		return result;
 	}
 
 	private struct function getArgTypes() {
