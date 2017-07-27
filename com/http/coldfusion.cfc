@@ -1,24 +1,25 @@
 component {
 
-  public any function init( 
+  public any function init(
     required any utils
   ) {
     variables.utils = utils;
     return this;
   }
 
-  public any function makeHttpRequest( 
-    required string httpMethod, 
-    required string path, 
-    required struct queryParams, 
-    required struct headers, 
-    any body
+  public any function makeHttpRequest(
+    required string httpMethod,
+    required string path,
+    struct queryParams = { },
+    struct headers = { },
+    any body,
+    boolean useSSL = true
   ) {
     var result = '';
     var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams, false ) ) : '' );
     var request_headers = utils.parseHeaders( headers );
 
-    cfhttp( url = 'https://' & fullPath, method = httpMethod, result = 'result' ) {
+    cfhttp( url = 'http#useSSL ? 's' : ''#://' & fullPath, method = httpMethod, result = 'result' ) {
 
       for ( var header in request_headers ) {
         if ( header.name == 'host' ) continue;

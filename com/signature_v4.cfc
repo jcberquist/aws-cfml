@@ -1,12 +1,10 @@
 component {
 
 	public any function init(
-		required string awsKey,
-		required string awsSecretKey,
+		required any credentials,
 		required any utils
 	) {
-		variables.awsKey = arguments.awsKey;
-		variables.awsSecretKey = arguments.awsSecretKey;
+		variables.credentials = arguments.credentials;
 		variables.utils = arguments.utils;
 		variables.lf = chr( 10 );
 		return this;
@@ -30,7 +28,7 @@ component {
 		var signedHeaders = canonicalRequest.listGetAt( canonicalRequest.listLen( lf ) - 1, lf );
 		var signature = sign( isoTime.left( 8 ), region, service, stringToSign );
 		var authorization = 'AWS4-HMAC-SHA256 ';
-		authorization &= 'Credential=' & awsKey & '/' & credentialScope & ', ';
+		authorization &= 'Credential=' & credentials.get( 'awsKey' ) & '/' & credentialScope & ', ';
 		authorization &= 'SignedHeaders=' & signedHeaders & ', ';
 		authorization &= 'Signature=' & signature;
 		return authorization;
@@ -48,6 +46,10 @@ component {
 		var params = getAuthorizationParams( service, region, isoTime );
 		params.append( queryParams );
 		params[ 'X-Amz-SignedHeaders' ] = 'host';
+
+		var token = credentials.get( 'token' );
+    	if ( len( token ) ) params[ 'X-Amz-Security-Token' ] = token;
+
 		var canonicalRequest = createCanonicalRequest( httpMethod, path, params, { 'Host': host }, '', true );
 		var stringToSign = createStringToSign( region, service, isoTime, canonicalRequest );
 		// writeDump( canonicalRequest );
@@ -63,7 +65,7 @@ component {
 	) {
 		var params = {
 			'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
-			'X-Amz-Credential': awsKey & '/' & isoTime.left( 8 ) & '/' & region & '/' & service & '/aws4_request',
+			'X-Amz-Credential': credentials.get( 'awsKey' ) & '/' & isoTime.left( 8 ) & '/' & region & '/' & service & '/aws4_request',
 			'X-Amz-Date': isoTime
 		};
 		return params;
@@ -117,7 +119,7 @@ component {
 		required string service,
 		required string stringToSign
 	) {
-		var signingKey = binaryDecode( hmac( isoDateShort, 'AWS4' & awsSecretKey, 'hmacSHA256', 'utf-8' ), 'hex' );
+		var signingKey = binaryDecode( hmac( isoDateShort, 'AWS4' & credentials.get( 'awsSecretKey' ), 'hmacSHA256', 'utf-8' ), 'hex' );
 		signingKey = binaryDecode( hmac( region, signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );
 		signingKey = binaryDecode( hmac( service, signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );
 		signingKey = binaryDecode( hmac( 'aws4_request', signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );

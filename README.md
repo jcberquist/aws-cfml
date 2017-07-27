@@ -1,20 +1,33 @@
 # aws-cfml
 
-**aws-cfml** is a CFML library for interacting with the AWS S3 and AWS DynamoDB REST API's.
+**aws-cfml** is a CFML library for interacting with AWS APIs.
 
-It is set up so that other AWS services can be added, but at the moment these services are the only ones included. (There is the stub of a CFC for interacting with the ElasticTranscoder API).
+**It requires Lucee 4.5+ or ColdFusion 11+.**
+
+It has full support for the AWS S3 and AWS DynamoDB REST APIs. It is set up so that support for other AWS services can be added, but at the moment these services are the only ones that are fully fleshed out. It also supports making signed requests to arbitrary AWS endpoints.
 
 It currently supports only AWS Signature v4 for authentication.
 
-**It will run on Lucee 4.5+ and ColdFusion 11+.**
 
 ## Getting Started
 
 	// aws.cfc returns a struct of CFC's for interacting with AWS services
-	aws = new aws( awsKey = 'YOUR_PUBLIC_KEY', awsSecretKey = 'YOUR_PRIVATE_KEY', region = 'us-east-1' );
+	aws = new aws( awsKey = 'YOUR_PUBLIC_KEY', awsSecretKey = 'YOUR_PRIVATE_KEY', defaultRegion = 'us-east-1' );
 
 	buckets = aws.s3.listBuckets();
 	tables = aws.dynamodb.listTables();
+
+    // you can make signed requests to any AWS endpoint using the following:
+    response = aws.api.call(service, host, region, httpMethod, path, queryParams, headers, body);
+
+    // using named arguments you can supply a `region` to any method call
+    // this overrides the default region supplied at init
+    response = aws.s3.listBucket( region = 'us-west-1', bucket = 'mybucket' );
+
+    // if you do not supply an `awsKey` and `awsSecretKey` at init then it
+    // will attempt to retrieve those credentials from an IAM role
+    aws = new aws( defaultRegion = 'us-east-1' );
+
 
 All responses are returned as a struct with the following format:
 

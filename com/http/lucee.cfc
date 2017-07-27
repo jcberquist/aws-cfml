@@ -10,15 +10,16 @@ component {
   public any function makeHttpRequest(
     required string httpMethod,
     required string path,
-    required struct queryParams,
-    required struct headers,
-    any body
+    struct queryParams = { },
+    struct headers = { },
+    any body,
+    boolean useSSL = true
   ) {
     var result = '';
     var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams ) ) : '' );
     var request_headers = utils.parseHeaders( headers );
 
-    http url = "https://#fullPath#" method = httpMethod result = "result" encodeurl = false {
+    http url = "http#useSSL ? 's' : ''#://#fullPath#" method = httpMethod result = "result" encodeurl = false {
 
       for ( var header in request_headers ) {
         if ( header.name == 'host' ) continue;

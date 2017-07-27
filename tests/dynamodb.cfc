@@ -11,6 +11,14 @@ component extends=testbox.system.BaseSpec {
 
 		describe( "the toJSON() method", function() {
 
+			it( "correctly serializes the string type", function() {
+
+				var data = {'test_string':{'S':'123'}};
+				var expected_json = '{"test_string":{"S":"123"}}';
+				expect( dynamodb.toJSON( data ) ).toBe( expected_json );
+
+			} );
+
 			it( "correctly serializes the number type", function() {
 
 				var data = {'test_number':{'N':'123'}};
@@ -36,6 +44,20 @@ component extends=testbox.system.BaseSpec {
 			} );
 
 		} );
+
+		describe( "the encodeValues() method", function() {
+
+			it( "correctly types nested map key values", function() {
+
+				var data = {'a': {'b': 1}};
+				var typeDefinitions = {'b': 'S'};
+				var expected_struct = { a: { M: { b: { S:"1"} } } };
+				expect( dynamodb.encodeValues( data, typeDefinitions ) ).toBe( expected_struct );
+
+			} );
+
+		} );
+
 
 	}
 
