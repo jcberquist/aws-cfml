@@ -18,9 +18,9 @@
     "description":"",
     "instructions":"",
     "changelog":"",
-    "type":"",
+    "type":"Projects",
     "keywords":[
-        
+
     ],
     "private":false,
     "engines":[
@@ -41,10 +41,10 @@
         }
     ],
     "installPaths":{
-        
+
     },
     "scripts":{
-        
+
     },
     "ignore":[
         "**/.*",
