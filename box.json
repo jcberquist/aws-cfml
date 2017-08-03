@@ -20,7 +20,7 @@
     "changelog":"",
     "type":"",
     "keywords":[
-
+        
     ],
     "private":false,
     "engines":[
@@ -35,13 +35,16 @@
     ],
     "projectURL":"",
     "license":[
-        { "type" : "MIT", "URL" : "http://opensource.org/licenses/MIT" }
+        {
+            "type":"MIT",
+            "URL":"http://opensource.org/licenses/MIT"
+        }
     ],
     "installPaths":{
-
+        
     },
     "scripts":{
-
+        
     },
     "ignore":[
         "**/.*",
