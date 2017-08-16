@@ -24,11 +24,6 @@ It currently supports only AWS Signature v4 for authentication.
     // this overrides the default region supplied at init
     response = aws.s3.listBucket( region = 'us-west-1', bucket = 'mybucket' );
 
-    // if you do not supply an `awsKey` and `awsSecretKey` at init then it
-    // will attempt to retrieve those credentials from an IAM role
-    aws = new aws( defaultRegion = 'us-east-1' );
-
-
 All responses are returned as a struct with the following format:
 
 	response = {
@@ -42,6 +37,20 @@ All responses are returned as a struct with the following format:
 
 _Note:_ The `data` key might not be present if the request is one where it does not make sense to parse the body of the response. (For instance when getting an object from S3.)
 
+## Credentials
+
+You can supply an aws key and secret key at initialization:
+
+    aws = new aws( awsKey = 'YOUR_PUBLIC_KEY', awsSecretKey = 'YOUR_PRIVATE_KEY' )
+
+If you do not, then it will check environment variables and java system properties, in that order, for the following keys: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. If credentials are still not found, then it will check and see if there is an IAM role it can access to retrieve credentials (this is only available when running in the AWS cloud).
+
+    // if you do not supply an `awsKey` and `awsSecretKey` at init then it
+    // will check environment variables and java system properties for credentials
+    // and finally will attempt to retrieve those credentials from an IAM role
+    aws = new aws();
+
+
 ### DynamoDB
 
 DynamoDB data is typed. The types supported are `Number`, `String`, `Binary`, `Boolean`, `Null`, `String Set`, `Number Set`, `Binary Set`, `List` and `Map`.
@@ -51,7 +60,7 @@ This library's DynamoDB implementation is set up to work with CFML types by defa
 
 _Note:_ This has worked really well for me on Lucee, however, it might not work as well with ColdFusion due to its less accurate variable typing. In both cases, keep in mind that data will typed as a `Number` if an `isNumeric()` check returns true, which it may well do in situations you do not expect. In addition, when using ColdFusion the `serializeJSON()` function seems to want to encode anything that can be cast as a number to a number in the JSON string, so the JSON string has to be edited by `dynamodb.cfc` before posting it to DynamoDB. It seems to work in my (limited) testing, but it is quite possible I have missed some of the encoding mistakes, which would lead to DynamoDB returning errors for invalidly encoded JSON strings.
 
-Similarily when you retrieve data from a DynamoDB table, it will be automatically decoded for you, so that you get back a struct of data for each row.
+Similarly when you retrieve data from a DynamoDB table, it will be automatically decoded for you, so that you get back a struct of data for each row.
 
 Here is an example:
 

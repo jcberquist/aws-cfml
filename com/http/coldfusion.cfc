@@ -13,13 +13,14 @@ component {
     struct queryParams = { },
     struct headers = { },
     any body,
-    boolean useSSL = true
+    boolean useSSL = true,
+    numeric timeout = 50
   ) {
     var result = '';
     var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams, false ) ) : '' );
     var request_headers = utils.parseHeaders( headers );
 
-    cfhttp( url = 'http#useSSL ? 's' : ''#://' & fullPath, method = httpMethod, result = 'result' ) {
+    cfhttp( url = 'http#useSSL ? 's' : ''#://' & fullPath, method = httpMethod, result = 'result', timeout = timeout ) {
 
       for ( var header in request_headers ) {
         if ( header.name == 'host' ) continue;
