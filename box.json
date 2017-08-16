@@ -2,7 +2,7 @@
     "name":"aws-cfml",
     "version":"1.1.0",
     "author":"John Berquist",
-    "location":"jcberquist/aws-cfml#v1.0.0",
+    "location":"jcberquist/aws-cfml#v1.1.0",
     "directory":"",
     "createPackageDirectory":true,
     "packageDirectory":"",
@@ -20,7 +20,7 @@
     "changelog":"",
     "type":"Projects",
     "keywords":[
-        
+
     ],
     "private":false,
     "engines":[
@@ -41,10 +41,10 @@
         }
     ],
     "installPaths":{
-        
+
     },
     "scripts":{
-        
+
     },
     "ignore":[
         "**/.*",
