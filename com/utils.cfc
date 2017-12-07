@@ -7,9 +7,10 @@ component {
     public any function parseXmlResponse( required string response, required string rootElement ) {
         var start = getTickCount();
         var result = [ ];
-        var elementNodes = xmlSearch( xmlParse( response ), "//*[ local-name() = '#rootElement#' ]" );
-        for ( var thisNode in elementNodes ) {
-            result.append( parseXmlNode( thisNode ) );
+
+        var elementNodes = xmlParse( toString(response) );
+        for ( var thisNode in elementNodes[rootElement] ) {
+            result.append( parseXmlNode( elementNodes[rootElement][thisNode] ) );
         }
         return result.len() ? ( result.len() > 1 ? result : result[ 1 ] ) : '';
     }
