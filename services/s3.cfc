@@ -225,6 +225,28 @@ component {
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
         return apiCall( region, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
     }
+    
+    /**
+    * Retrieve an Object's tags from Amazon S3.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGETtagging.html
+    * @Bucket the name of the bucket containing the object
+    * @ObjectKey the object to get
+    * @VersionId the specific version of an object to get (if versioning is enabled)
+    */
+    public any function getObjectTagging(
+        required string Bucket,
+        required string ObjectKey,
+        string VersionId = ''
+    ) {
+        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var queryParams = {'tagging': '' };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        var apiResponse = apiCall( region, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'TagSet' );
+        }
+        return apiResponse;
+    }
 
     /**
     * Retrieves metadata from an object without returning the object itself.
