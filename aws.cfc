@@ -1,16 +1,21 @@
 component {
 
     variables.services = [
-        's3',
         'dynamodb',
+        'elasticsearch',
         'elastictranscoder',
-        'elasticsearch'
+        's3',
+        'sns',
+        'sqs'
     ];
+
     variables.constructorArgs = {
         s3: { },
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
-        elasticsearch: { endpoint: '' }
+        elasticsearch: { endpoint: '' },
+        sns: { apiVersion: '2010-03-31' },
+        sqs: { apiVersion: '2012-11-05' }
     };
 
     public struct function init(
