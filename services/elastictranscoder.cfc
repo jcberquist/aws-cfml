@@ -7,7 +7,6 @@ component {
         required struct settings
     ) {
         variables.api = arguments.api;
-        variables.defaultRegion = variables.api.getDefaultRegion();
         variables.apiVersion = arguments.settings.apiVersion;
         return this;
     }
@@ -22,11 +21,11 @@ component {
         boolean Ascending,
         string PageToken
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryString = { };
         if ( !isNull( arguments.Ascending ) ) queryString[ 'Ascending' ] = Ascending;
         if ( !isNull( arguments.PageToken ) ) queryString[ 'PageToken' ] = PageToken;
-        var apiResponse = apiCall( region, 'GET', '/pipelines', queryString );
+        var apiResponse = apiCall( requestSettings, 'GET', '/pipelines', queryString );
         return apiResponse;
     }
 
@@ -40,11 +39,11 @@ component {
         boolean Ascending,
         string PageToken
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryString = { };
         if ( !isNull( arguments.Ascending ) ) queryString[ 'Ascending' ] = ( Ascending ? 'true' : 'false' );
         if ( !isNull( arguments.PageToken ) ) queryString[ 'PageToken' ] = PageToken;
-        return apiCall( region, 'GET', '/presets', queryString );
+        return apiCall( requestSettings, 'GET', '/presets', queryString );
     }
 
     /**
@@ -55,25 +54,35 @@ component {
     public any function createJob(
         required struct Job
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
-        return apiCall( region, 'POST', '/jobs', { }, Job );
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        return apiCall( requestSettings, 'POST', '/jobs', { }, Job );
     }
 
     private any function apiCall(
-        required string region,
+        required struct requestSettings,
         required string httpMethod,
         required string path,
         struct queryString = { },
         struct payload = { }
     ) {
-        var host = variables.service & '.' & region & '.amazonaws.com';
+        var host = variables.service & '.' & requestSettings.region & '.amazonaws.com';
 
         var payloadString = payload.isEmpty() ? '' : serializeJSON( payload );
 
         var headers = { };
         if ( !payload.isEmpty() ) headers[ 'Content-Type' ] = 'application/x-amz-json-1.0';
 
-        var apiResponse = api.call( variables.service, host, region, httpMethod, '/' & variables.apiVersion & path, queryString, headers, payloadString );
+        var apiResponse = api.call(
+            variables.service,
+            host,
+            requestSettings.region,
+            httpMethod,
+            '/' & variables.apiVersion & path,
+            queryString,
+            headers,
+            payloadString,
+            requestSettings.awsCredentials
+        );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;

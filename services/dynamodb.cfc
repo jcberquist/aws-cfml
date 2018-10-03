@@ -7,7 +7,6 @@ component {
         required struct settings
     ) {
         variables.api = arguments.api;
-        variables.defaultRegion = variables.api.getDefaultRegion();
         variables.apiVersion = arguments.settings.apiVersion;
         variables.argumentTypes = getArgTypes();
         variables.argumentKeys = variables.argumentTypes.keyArray();
@@ -25,9 +24,9 @@ component {
         string ExclusiveStartTableName = '',
         numeric Limit = 0
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        return apiCall( region, 'ListTables', payload );
+        return apiCall( requestSettings, 'ListTables', payload );
     }
 
     /**
@@ -50,9 +49,9 @@ component {
         array LocalSecondaryIndexes = [ ],
         struct StreamSpecification = { }
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        return apiCall( region, 'CreateTable', payload );
+        return apiCall( requestSettings, 'CreateTable', payload );
     }
 
     /**
@@ -63,9 +62,9 @@ component {
     public any function describeTable(
         required string TableName
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'DescribeTable', payload );
+        var apiResponse = apiCall( requestSettings, 'DescribeTable', payload );
         return apiResponse;
     }
 
@@ -85,9 +84,9 @@ component {
         struct ProvisionedThroughput = { },
         struct StreamSpecification = { }
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        return apiCall( region, 'UpdateTable', payload );
+        return apiCall( requestSettings, 'UpdateTable', payload );
     }
 
     /**
@@ -98,9 +97,9 @@ component {
     public any function deleteTable(
         required string TableName
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'DeleteTable', payload );
+        var apiResponse = apiCall( requestSettings, 'DeleteTable', payload );
         return apiResponse;
     }
 
@@ -126,9 +125,9 @@ component {
         string ReturnItemCollectionMetrics = '',
         string ReturnValues = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'PutItem', payload );
+        var apiResponse = apiCall( requestSettings, 'PutItem', payload );
         return apiResponse;
     }
 
@@ -150,9 +149,9 @@ component {
         string ProjectionExpression = '',
         string ReturnConsumedCapacity = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'GetItem', payload );
+        var apiResponse = apiCall( requestSettings, 'GetItem', payload );
         if ( apiResponse.data.keyExists( 'item' ) ) {
             apiResponse.data.item = decodeValues( apiResponse.data.item );
         }
@@ -184,10 +183,10 @@ component {
         string ReturnValues = '',
         string UpdateExpression = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
 
-        var apiResponse = apiCall( region, 'UpdateItem', payload );
+        var apiResponse = apiCall( requestSettings, 'UpdateItem', payload );
         if ( apiResponse.data.keyExists( 'Attributes' ) ) {
             apiResponse.data.Attributes = decodeValues( apiResponse.data.Attributes );
         }
@@ -216,9 +215,9 @@ component {
         string ReturnItemCollectionMetrics = '',
         string ReturnValues = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'DeleteItem', payload );
+        var apiResponse = apiCall( requestSettings, 'DeleteItem', payload );
         if ( apiResponse.data.keyExists( 'Attributes' ) ) {
             apiResponse.data.Attributes = decodeValues( apiResponse.data.Attributes );
         }
@@ -235,7 +234,7 @@ component {
         required struct RequestItems,
         string ReturnConsumedCapacity = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
 
         // encode keys
@@ -249,7 +248,7 @@ component {
             } );
         }
 
-        var apiResponse = apiCall( region, 'BatchGetItem', payload );
+        var apiResponse = apiCall( requestSettings, 'BatchGetItem', payload );
 
         if ( apiResponse.data.keyExists( 'Responses' ) ) {
             for ( var TableName in apiResponse.data.Responses ) {
@@ -277,7 +276,7 @@ component {
         string ReturnConsumedCapacity = '',
         string ReturnItemCollectionMetrics = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
 
         // encode keys and items
@@ -294,7 +293,7 @@ component {
             } );
         }
 
-        var apiResponse = apiCall( region, 'BatchWriteItem', payload );
+        var apiResponse = apiCall( requestSettings, 'BatchWriteItem', payload );
         return apiResponse;
     }
 
@@ -330,9 +329,9 @@ component {
         boolean ScanIndexForward = false,
         string Select = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( region, 'Query', payload );
+        var apiResponse = apiCall( requestSettings, 'Query', payload );
         if ( apiResponse.data.keyExists( 'Items' ) ) {
             apiResponse.data.Items = apiResponse.data.Items.map( decodeValues );
         }
@@ -375,7 +374,7 @@ component {
         string Select = '',
         numeric TotalSegments = 0
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
 
         // special handing for segments since they are zero based
@@ -383,7 +382,7 @@ component {
             payload[ 'Segment' ] = arguments[ 'Segment' ];
         }
 
-        var apiResponse = apiCall( region, 'Scan', payload );
+        var apiResponse = apiCall( requestSettings, 'Scan', payload );
         if ( apiResponse.data.keyExists( 'Items' ) ) {
             apiResponse.data.Items = apiResponse.data.Items.map( decodeValues );
         }
@@ -414,18 +413,18 @@ component {
     // private methods
 
     private any function apiCall(
-        required string region,
+        required struct requestSettings,
         required string target,
         struct payload = { }
     ) {
-        var host = variables.service & '.' & region & '.amazonaws.com';
+        var host = variables.service & '.' & requestSettings.region & '.amazonaws.com';
         var payloadString = toJSON( payload );
 
         var headers = { };
         headers[ 'X-Amz-Target' ] = 'DynamoDB_' & variables.apiVersion & '.' & arguments.target;
         headers[ 'Content-Type' ] = 'application/x-amz-json-1.0';
 
-        var apiResponse = api.call( variables.service, host, region, 'POST', '/', { }, headers, payloadString );
+        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, headers, payloadString, requestSettings.awsCredentials );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;

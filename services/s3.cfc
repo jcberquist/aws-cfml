@@ -7,8 +7,6 @@ component {
         required struct settings
     ) {
         variables.api = arguments.api;
-        variables.defaultRegion = variables.api.getDefaultRegion();
-        variables.signer = variables.api.getSigner();
         variables.utils = variables.api.getUtils();
         variables.emptyStringHash = hash( '', 'SHA-256' ).lcase();
         return this;
@@ -19,8 +17,8 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTServiceGET.html
     */
     public any function listBuckets() {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
-        var apiResponse = apiCall( region );
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var apiResponse = apiCall( requestSettings );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListAllMyBucketsResult' );
         }
@@ -45,14 +43,14 @@ component {
         numeric MaxKeys = 0,
         string Prefix = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
         for ( var key in [ 'Delimiter','EncodingType','Marker','Prefix' ] ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
 
-        var apiResponse = apiCall( region, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListBucketResult' );
             if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
@@ -70,8 +68,8 @@ component {
     public any function getBucketAccess(
         required string Bucket
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
-        var apiResponse = apiCall( region, 'HEAD', '/' & Bucket );
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var apiResponse = apiCall( requestSettings, 'HEAD', '/' & Bucket );
         return apiResponse;
     }
 
@@ -85,13 +83,13 @@ component {
         required string Bucket,
         required string Setting
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var validSettings = [ 'acl','cors','lifecycle','location','logging','notification','policy','tagging','requestPayment','versioning','website' ];
         var returnedXmlElement = [ 'AccessControlPolicy','CORSConfiguration','LifecycleConfiguration','LocationConstraint','BucketLoggingStatus','NotificationConfiguration','','Tagging','RequestPaymentConfiguration','VersioningConfiguration','WebsiteConfiguration' ];
         var typeIndex = validSettings.findNoCase( Setting );
         if ( !typeIndex ) { throw( 'Invalid setting specified. Valid options are: #validSettings.toList( ', ' )#' ); }
         var queryParams = { '#validSettings[ typeIndex ]#': '' };
-        var apiResponse = apiCall( region, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             if ( Setting != 'policy' ) {
                 apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
@@ -122,14 +120,14 @@ component {
         string Prefix = '',
         string VersionIdMarker = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'versions': '' };
         for ( var key in [ 'Delimiter','EncodingType','KeyMarker','Prefix','VersionIdMarker' ] ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
 
-        var apiResponse = apiCall( region, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListVersionsResult' );
         }
@@ -156,14 +154,14 @@ component {
         string Prefix = '',
         string UploadIdMarker = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'uploads': '' };
         for ( var key in [ 'Delimiter','EncodingType','KeyMarker','Prefix','UploadIdMarker' ] ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxUploads ) queryParams[ utils.parseKey( 'MaxUploads' ) ] = arguments.MaxUploads;
 
-        var apiResponse = apiCall( region, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListMultipartUploadsResult' );
         }
@@ -182,7 +180,7 @@ component {
         string Acl = '',
         string Region = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
         var payload = '';
 
@@ -194,7 +192,7 @@ component {
             payload = '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>#arguments.region#</LocationConstraint></CreateBucketConfiguration>';
         }
 
-        return apiCall( region, 'PUT', '/' & bucket, { }, headers, payload );
+        return apiCall( requestSettings, 'PUT', '/' & bucket, { }, headers, payload );
     }
 
     /**
@@ -205,7 +203,7 @@ component {
     public any function deleteBucket(
         required string Bucket
     ) {
-        return apiCall( region, 'DELETE', '/' & Bucket );
+        return apiCall( requestSettings, 'DELETE', '/' & Bucket );
     }
 
     /**
@@ -220,12 +218,12 @@ component {
         required string ObjectKey,
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        return apiCall( region, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        return apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
     }
-    
+
     /**
     * Retrieve an Object's tags from Amazon S3.
     * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGETtagging.html
@@ -238,10 +236,10 @@ component {
         required string ObjectKey,
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = {'tagging': '' };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( region, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'TagSet' );
         }
@@ -260,10 +258,10 @@ component {
         required string ObjectKey,
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( region, 'HEAD', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall( requestSettings, 'HEAD', '/' & Bucket & '/' & ObjectKey, queryParams );
         return apiResponse;
     }
 
@@ -279,10 +277,10 @@ component {
         required string ObjectKey,
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'acl': '' };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( region, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'AccessControlPolicy' );
         }
@@ -303,15 +301,22 @@ component {
         numeric Expires = 300,
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
-        var host = getHost( region );
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var host = getHost( requestSettings.region );
         var path = '/' & Bucket & '/' & ObjectKey;
-        var isoTime = utils.iso8601();
-        var queryParams = { 'X-Amz-Expires': Expires };
+        var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var params = signer.appendAuthorizationQueryParams( variables.service, host, region, isoTime, 'GET', path, queryParams );
-        return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( params );
-}
+        return api.signedUrl(
+            variables.service,
+            host,
+            requestSettings.region,
+            'GET',
+            path,
+            queryParams,
+            Expires,
+            requestSettings.awsCredentials
+        );
+    }
 
     /**
     * adds an object to a bucket
@@ -343,7 +348,7 @@ component {
         string StorageClass = '',
         string WebsiteRedirectLocation = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
 
         headers[ 'Content-MD5' ] = binaryEncode( binaryDecode( hash( FileContent, 'MD5', 'utf-8' ), 'hex' ), 'base64' );
@@ -360,7 +365,7 @@ component {
             headers[ 'X-Amz-Meta-' & key ] = arguments.Metadata[ key ];
         }
 
-        var apiResponse = apiCall( region, 'PUT', '/' & Bucket & '/' & ObjectKey, { }, headers, FileContent );
+        var apiResponse = apiCall( requestSettings, 'PUT', '/' & Bucket & '/' & ObjectKey, { }, headers, FileContent );
         return apiResponse;
     }
 
@@ -391,7 +396,7 @@ component {
         string WebsiteRedirectLocation = '',
         string VersionId = ''
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
         headers [ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
         if ( len( arguments.VersionId ) ) headers [ 'X-Amz-Copy-Source' ] &= '?versionId=' & arguments.VersionId;
@@ -405,7 +410,7 @@ component {
             if ( len( arguments[ key ] ) ) headers[ 'X-Amz-' & utils.parseKey( key ) ] = arguments[ key ];
         }
 
-        var apiResponse = apiCall( region, 'PUT', '/' & destinationBucket & '/' & destinationObjectKey, { }, headers );
+        var apiResponse = apiCall( requestSettings, 'PUT', '/' & destinationBucket & '/' & destinationObjectKey, { }, headers );
         apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'CopyObjectResult' );
         return apiResponse;
     }
@@ -420,8 +425,8 @@ component {
         required string Bucket,
         required string ObjectKey
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
-        return apiCall( region, 'DELETE', '/' & bucket & '/' & objectKey );
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        return apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
     }
 
     /**
@@ -436,7 +441,7 @@ component {
         required array ObjectKeys,
         boolean Quiet = false
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr(10)#<Delete>';
         xmlBody &= '<Quiet>' & ( Quiet ?  'true' : 'false' ) & '</Quiet>';
         ObjectKeys.each( function( objectKey ) { xmlBody &= '<Object><Key>#encodeforXML( objectKey )#</Key></Object>'; } );
@@ -447,7 +452,7 @@ component {
         headers[ 'Content-MD5' ] = binaryEncode( binaryDecode( hash( xmlBody, 'MD5', 'utf-8' ), 'hex' ), 'base64' );
 
         var queryParams = { 'delete': '' };
-        var apiResponse = apiCall( region, 'POST', '/' & bucket, queryParams, headers, xmlBody );
+        var apiResponse = apiCall( requestSettings, 'POST', '/' & bucket, queryParams, headers, xmlBody );
         apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'DeleteResult' );
         return apiResponse;
     }
@@ -457,53 +462,76 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
     * @Bucket the name of the bucket containing the object.
     * @ObjectKey The object key to store the uploaded file at.
-    * @FormParams An array of form params that are are going to be included in the browser POST to s3
+    * @FormFields An array of form fields that are are going to be included in the browser POST to s3
     * @MaxSize The maximum size in bytes that an uploaded file can be.
     * @Expires How long in seconds that the POST authorization is valid for.
     */
     public array function getFormPostParams(
         required string Bucket,
         required any ObjectKey,
-        array FormParams = [ ],
+        array FormFields = [ ],
         numeric MaxSize = 0,
         numeric Expires = 300
     ) {
-        if ( !structKeyExists( arguments, 'Region' ) ) arguments.Region = variables.defaultRegion;
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var requestTime = now();
         var isoTime = utils.iso8601( requestTime );
-        var result = signer.getAuthorizationParams( variables.service, region, isoTime ).reduce( function( authParamArray, key, value ) {
+        var postParams = [ ];
+
+        var expiration = utils.iso8601Full( dateAdd( 's', expires, requestTime ) );
+        var conditions = [ { 'name': 'bucket', 'value': bucket } ];
+        if ( isSimpleValue( objectKey ) ) objectKey = { name: 'key', value: objectKey };
+        conditions.append( objectKey );
+
+        postParams.append( objectKey );
+
+        // passed in form fields also need to be added to policy conditions
+        conditions.append( FormFields, true );
+        // is there a max size?
+        if ( maxSize > 0 ) conditions.append( [ 'content-length-range', 0, maxSize ] );
+
+        var authParams = api.authorizationParams(
+            variables.service,
+            requestSettings.region,
+            isoTime,
+            requestSettings.awsCredentials
+        )
+            .reduce( function( authParamArray, key, value ) {
             authParamArray.append( { 'name': key, 'value': value } );
             return authParamArray;
         }, [ ] );
-        var expiration = utils.iso8601Full( dateAdd( 's', expires, requestTime ) );
-
-        // objectKey processing
-        if ( isSimpleValue( objectKey ) ) objectKey = { name: 'key', value: objectKey };
-        result.append( objectKey );
-
-        var conditions = [ ];
-
-        // add bucket and result form fields to conditions
-        conditions.append( { 'name': 'bucket', 'value': bucket } );
-        conditions.append( result, true );
-
-        // is there a max size? default to 10MB or set to 0 to allow any size
-        if ( maxSize > 0 ) conditions.append( [ 'content-length-range', 0, maxSize ] );
-
-        // passed in form fields also need to be added to policy conditions
-        conditions.append( formParams, true );
+        conditions.append( authParams, true );
+        postParams.append( authParams, true );
 
         // build policy
-        var policy = { 'expiration': expiration, 'conditions': conditions.map( function( item ) {
-            if ( isArray( item ) ) return item;
-            if ( item.keyExists( 'startsWith' ) ) return [ 'starts-with', '$' & item.name, item.startsWith ];
-            return { '#item.name#': item.value };
-        } ) };
-        var policyString = serializeJSON( policy );
-        policyString = reReplace( policyString, '[\r\n]+', '', 'all' );
-        result.append( { 'name': 'Policy', 'value': binaryEncode( charsetDecode( policyString, 'utf-8' ), 'base64' ) } );
-        result.append( { 'name': 'X-Amz-Signature', 'value': signer.sign( isoTime.left( 8 ), region, service, result[ result.len() ].value ) } );
-        return result;
+        var policy = {
+            'expiration': expiration,
+            'conditions': conditions.map( function( item ) {
+                if ( isArray( item ) ) return item;
+                if ( item.keyExists( 'startsWith' ) ) return [ 'starts-with', '$' & item.name, item.startsWith ];
+                return { '#item.name#': item.value };
+            } )
+        };
+        var policyString = reReplace(
+            serializeJSON( policy ),
+            '[\r\n]+',
+            '',
+            'all'
+        );
+        var base64Policy = binaryEncode( charsetDecode( policyString, 'utf-8' ), 'base64' );
+
+        postParams.append( { 'name': 'Policy', 'value': base64Policy } );
+        postParams.append( {
+            'name': 'X-Amz-Signature',
+            'value': api.sign(
+                requestSettings.awsCredentials,
+                isoTime.left( 8 ),
+                requestSettings.region,
+                service,
+                base64Policy
+            )
+        } );
+        return postParams;
     }
 
 
@@ -516,14 +544,14 @@ component {
     }
 
     private any function apiCall(
-        required string region,
+        required struct requestSettings,
         string httpMethod = 'GET',
         string path = '/',
         struct queryParams = { },
         struct headers = { },
         any payload = ''
     ) {
-        var host = getHost( region );
+        var host = getHost( requestSettings.region );
 
         if ( !isSimpleValue( payload ) || len( payload ) ) {
             headers[ 'X-Amz-Content-Sha256' ] = hash( payload, 'SHA-256' ).lcase();
@@ -531,7 +559,17 @@ component {
             headers[ 'X-Amz-Content-Sha256' ] = variables.emptyStringHash;
         }
 
-        return api.call( variables.service, host, region, httpMethod, path, queryParams, headers, payload );
+        return api.call(
+            variables.service,
+            host,
+            requestSettings.region,
+            httpMethod,
+            path,
+            queryParams,
+            headers,
+            payload,
+            requestSettings.awsCredentials
+        );
     }
 
 }
