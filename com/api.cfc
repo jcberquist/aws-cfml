@@ -1,32 +1,34 @@
-component {
+component accessors="true" {
 
-    public any function init(
-        required string awsKey,
-        required string awsSecretKey,
-        required string defaultRegion
-    ) {
+    property utils;
+    property httpService;
+    property credentials;
+    property signer;
+    property defaultRegion;
+
+    public any function init( required string awsKey, required string awsSecretKey, required string defaultRegion ) {
         variables.utils = new utils();
-        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( variables.utils ) : new http.coldfusion( variables.utils );
-        variables.credentials = new credentials( arguments.awsKey, arguments.awsSecretKey, variables.httpService );
-        variables.signer = new signature_v4( credentials, utils );
-        variables.defaultRegion = arguments.defaultRegion;
+        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils ) : new http.coldfusion( utils );
+        variables.credentials = new credentials( awsKey, awsSecretKey, this );
+        variables.signer = new signature_v4( this );
+        variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting( 'AWS_DEFAULT_REGION', '' );
+
+        if ( !variables.defaultRegion.len() ) {
+            var profile = utils.getSystemSetting( 'AWS_PROFILE', 'default' );
+            var userHome = utils.getSystemSetting( 'user.home' ).replace( '\', '/', 'all' );
+            var configFile = utils.getSystemSetting( 'AWS_CONFIG_FILE', userHome & '/.aws/config' );
+            var region = getProfileString( configFile, profile, 'region' );
+            variables.defaultRegion = region.len() ? region : 'us-east-1';
+        }
+
         return this;
     }
 
-    public any function getUtils() {
-        return variables.utils;
-    }
-
-    public any function getHttpService() {
-        return variables.httpService;
-    }
-
-    public any function getSigner() {
-        return variables.signer;
-    }
-
-    public string function getDefaultRegion() {
-        return variables.defaultRegion;
+    public struct function resolveRequestSettings( struct awsCredentials = { }, string region = defaultRegion ) {
+        if ( !awsCredentials.isEmpty() ) {
+            awsCredentials = credentials.defaultCredentials( argumentCollection = awsCredentials );
+        }
+        return { awsCredentials: awsCredentials, region: region };
     }
 
     public any function call(
@@ -37,21 +39,29 @@ component {
         string path = '/',
         struct queryParams = { },
         struct headers = { },
-        any body = ''
+        any body = '',
+        struct awsCredentials = { }
     ) {
-        var isoTime = utils.iso8601();
-        var api_request_headers = { 'Host': host, 'X-Amz-Date': isoTime };
+        if ( awsCredentials.isEmpty() ) {
+            awsCredentials = credentials.getCredentials();
+        }
 
-        var token = credentials.get( 'token' );
-        if ( len( token ) ) api_request_headers[ 'X-Amz-Security-Token' ] = token;
-
-        api_request_headers.append( headers );
-        api_request_headers[ 'Authorization' ] = signer.getAuthorization( service, region, isoTime, httpMethod, path, queryParams, api_request_headers, body );
+        var signedRequestHeaders = signer.getHeadersWithAuthorization(
+            service,
+            host,
+            region,
+            httpMethod,
+            path,
+            queryParams,
+            headers,
+            body,
+            awsCredentials
+        );
 
         var httpArgs = { };
         httpArgs[ 'httpMethod' ] = httpMethod;
         httpArgs[ 'path' ] = host & path;
-        httpArgs[ 'headers' ] = api_request_headers;
+        httpArgs[ 'headers' ] = signedRequestHeaders;
         httpArgs[ 'queryParams' ] = queryParams;
         if ( !isNull( arguments.body ) ) httpArgs[ 'body' ] = body;
         // writeDump( httpArgs );
@@ -64,14 +74,72 @@ component {
         apiResponse[ 'responseTime' ] = getTickCount() - requestStart;
         apiResponse[ 'responseHeaders' ] = rawResponse.responseheader;
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
-        apiResponse[ 'statusText' ] = listRest( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
-                apiResponse[ 'error' ] = utils.parseXmlResponse( apiResponse.rawData, 'Error' );
+            apiResponse[ 'error' ] = utils.parseXmlResponse( apiResponse.rawData, 'Error' );
         }
 
         return apiResponse;
+    }
+
+    public any function signedUrl(
+        required string service,
+        required string host,
+        string region = defaultRegion,
+        string httpMethod = 'GET',
+        string path = '/',
+        struct queryParams = { },
+        numeric expires = 300,
+        struct awsCredentials = { }
+    ) {
+        if ( awsCredentials.isEmpty() ) {
+            awsCredentials = credentials.getCredentials();
+        }
+
+        var signedQueryParams = signer.getQueryParamsWithAuthorization(
+            service,
+            host,
+            region,
+            httpMethod,
+            path,
+            queryParams,
+            expires,
+            awsCredentials
+        );
+
+        return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( signedQueryParams );
+    }
+
+    public any function authorizationParams(
+        required string service,
+        string region = defaultRegion,
+        string isoTime = '',
+        struct awsCredentials = { }
+    ) {
+        if ( awsCredentials.isEmpty() ) {
+            awsCredentials = credentials.getCredentials();
+        }
+
+        return signer.getAuthorizationParams(
+            service,
+            region,
+            isoTime,
+            awsCredentials
+        );
+    }
+
+    public any function sign(
+        required struct awsCredentials,
+        required string isoDateShort,
+        required string region,
+        required string service,
+        required string stringToSign
+    ) {
+        if ( awsCredentials.isEmpty() ) {
+            awsCredentials = credentials.getCredentials();
+        }
+        return signer.sign( argumentCollection = arguments );
     }
 
 }

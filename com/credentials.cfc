@@ -1,66 +1,74 @@
 component {
 
-    public any function init( string awsKey = '', string awsSecretKey = '', any httpService ) {
+    public any function init( string awsKey = '', string awsSecretKey = '', any api ) {
+        variables.api = api;
         variables.iamRolePath = '169.254.169.254/latest/meta-data/iam/security-credentials/';
-        variables.httpService = httpService;
-
-        variables.awsKey = '';
-        variables.awsSecretKey = '';
-        variables.token = '';
-        variables.expires = javacast( 'null', '' );
         variables.iamRole = '';
-
-        setAccessKeys(arguments.awsKey, arguments.awsSecretKey);
+        variables.credentials = resolveCredentials( awsKey, awsSecretKey );
         return this;
     }
 
-    public string function get(
-        required string key
-    ) {
-        if ( isExpired() ) refresh();
-        return variables[ key ];
+    public struct function getCredentials() {
+        if ( !isNull( credentials.expires ) && credentials.expires <= now() ) {
+            refreshCredentials();
+        }
+        return credentials;
     }
 
-    private boolean function isExpired() {
-        return !isNull( expires ) && expires <= now();
+    public struct function defaultCredentials( string awsKey = '', string awsSecretKey = '', string token = '' ) {
+        return {
+            awsKey: awsKey,
+            awsSecretKey: awsSecretKey,
+            token: token,
+            expires: javacast( 'null', '' )
+        }
     }
 
-    private void function refresh() {
-        var httpArgs = { };
-        httpArgs[ 'httpMethod' ] = 'get';
-        httpArgs[ 'path' ] = iamRolePath & iamRole;
-        httpArgs[ 'useSSL' ] = false;
-        var req = httpService.makeHttpRequest( argumentCollection = httpArgs );
+    private function resolveCredentials( awsKey, awsSecretKey ) {
+        var credentials = defaultCredentials( awsKey, awsSecretKey );
 
-        var data = deserializeJSON( req.filecontent );
-        awsKey = data.AccessKeyId;
-        awsSecretKey = data.SecretAccessKey;
-        token = data.Token;
-        expires = parseDateTime( data.Expiration );
-    }
+        if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+            return credentials;
+        }
 
-    private void function setAccessKeys( awsKey, awsSecretKey ) {
-        var keyNameMap = { 'awsKey': 'AWS_ACCESS_KEY_ID', 'awsSecretKey': 'AWS_SECRET_ACCESS_KEY' };
-        var keys = { };
+        var utils = api.getUtils();
 
-        // check for passed in keys
-        for ( var key in keyNameMap ) variables[ key ] = arguments[ key ];
-        if ( len( variables.awsKey ) ) return;
+        // check environment
+        credentials.awsKey = utils.getSystemSetting( 'AWS_ACCESS_KEY_ID', '' );
+        credentials.awsSecretKey = utils.getSystemSetting( 'AWS_SECRET_ACCESS_KEY', '' );
+        credentials.token = utils.getSystemSetting( 'AWS_SESSION_TOKEN', '' );
 
-        var system = createObject( 'java', 'java.lang.System' );
+        if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+            return credentials;
+        }
 
-        // environment variables
-        for ( var key in keyNameMap ) variables[ key ] = system.getenv( keyNameMap[ key ] );
-        if ( !isNull( variables.awsKey ) ) return;
+        // // check for an AWS credentials file
+        var userHome = utils.getSystemSetting( 'user.home' ).replace( '\', '/', 'all' );
+        var credentialsFile = utils.getSystemSetting( 'AWS_SHARED_CREDENTIALS_FILE', userHome & '/.aws/credentials' );
+        var profile = utils.getSystemSetting( 'AWS_PROFILE', 'default' );
+        credentials.awsKey = getProfileString( credentialsFile, profile, 'aws_access_key_id' );
+        credentials.awsSecretKey = getProfileString( credentialsFile, profile, 'aws_secret_access_key' );
+        credentials.token = getProfileString( credentialsFile, profile, 'aws_session_token' );
 
-        // java system properties
-        for ( var key in keyNameMap ) variables[ key ] = system.getProperty( keyNameMap[ key ] );
-        if ( !isNull( variables.awsKey ) ) return;
+        if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+            return credentials;
+        }
 
         // IAM role
-        variables.iamRole = requestIamRole();
-        if ( !len( variables.iamRole ) ) throw( type = 'aws.com.credentials', message = 'Unable to fetch IAM role.' );
-        refresh();
+        try {
+            variables.iamRole = requestIamRole();
+            if ( iamRole.len() ) {
+                refreshCredentials();
+            }
+        } catch ( any e ) {
+            // pass
+        }
+
+        if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+            return credentials;
+        }
+
+        throw( type = 'aws.com.credentials', message = 'Unable to resolve AWS credentials.' );
     }
 
     private string function requestIamRole() {
@@ -68,10 +76,23 @@ component {
         httpArgs[ 'httpMethod' ] = 'get';
         httpArgs[ 'path' ] = iamRolePath;
         httpArgs[ 'useSSL' ] = false;
-        httpArgs[ 'timeout' ] = 5;
-        var req = httpService.makeHttpRequest( argumentCollection = httpArgs );
+        httpArgs[ 'timeout' ] = 1;
+        var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
         if ( listFirst( req.statuscode, ' ' ) == 408 ) return '';
         return req.filecontent;
+    }
+
+    private void function refreshCredentials() {
+        var httpArgs = { };
+        httpArgs[ 'httpMethod' ] = 'get';
+        httpArgs[ 'path' ] = iamRolePath & iamRole;
+        httpArgs[ 'useSSL' ] = false;
+        var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
+        var data = deserializeJSON( req.filecontent );
+        credentials.awsKey = data.AccessKeyId;
+        credentials.awsSecretKey = data.SecretAccessKey;
+        credentials.token = data.Token;
+        credentials.expires = parseDateTime( data.Expiration );
     }
 
 }
