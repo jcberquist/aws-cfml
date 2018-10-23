@@ -7,18 +7,24 @@ component {
       required struct settings
   ) {
       variables.api = arguments.api;
+      variables.defaultSourceLanguageCode = arguments.settings.defaultSourceLanguageCode;
+      variables.defaultTargetLanguageCode = arguments.settings.defaultTargetLanguageCode;
       return this;
   }
 
-  public any function translate(required string text, string sourceLang='es', string targetLang='en' ){
+  public any function translate(
+      required string Text,
+      string SourceLanguageCode = defaultSourceLanguageCode,
+      string TargetLanguageCode = defaultTargetLanguageCode) {
     var payload = {};
-    payload[ 'SourceLanguageCode' ] = sourceLang;
-    payload[ 'TargetLanguageCode'] = targetLang;
+    payload[ 'SourceLanguageCode' ] = SourceLanguageCode;
+    payload[ 'TargetLanguageCode'] = TargetLanguageCode;
     payload[ 'Text' ] = text;
 
-    var apiResponse = apiCall( payload = serializeJSON(payload) );
+    var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+    var apiResponse = apiCall( requestSettings = requestSettings, payload = payload );
     if ( apiResponse.statusCode == 200 ) {
-      apiResponse[ 'data' ] = deserializeJSON(apiResponse.rawData).TranslatedText;
+      apiResponse[ 'translatedText' ] = apiResponse[ 'data' ].TranslatedText;
     }
     return apiResponse;
   }
@@ -30,19 +36,20 @@ component {
   }
 
   private any function apiCall(
+      required struct requestSettings,
       string httpMethod = 'POST',
       string path = '/',
       struct queryParams = { },
       struct headers = { },
-      any payload = ''
+      any payload = { }
   ) {
-    var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
     var host = getHost( requestSettings.region );
+    var payloadString = serializeJSON( payload );
 
     headers[ 'X-Amz-Target' ] = 'AWSShineFrontendService_20170701.TranslateText';
     headers[ 'Content-Type' ] = 'application/x-amz-json-1.1';
 
-    return api.call(
+    var apiResponse = api.call(
         variables.service,
         host,
         requestSettings.region,
@@ -50,9 +57,12 @@ component {
         path,
         queryParams,
         headers,
-        payload,
+        payloadString,
         requestSettings.awsCredentials
     );
+    apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
+
+    return apiResponse;
   }
 
 }
