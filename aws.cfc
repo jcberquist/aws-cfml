@@ -18,8 +18,9 @@ component {
         sns: { apiVersion: '2010-03-31' },
         sqs: { apiVersion: '2012-11-05' },
         translate: {
-          defaultSourceLanguageCode: 'es',
-          defaultTargetLanguageCode: 'en'
+            apiVersion: '20170701',
+            defaultSourceLanguageCode: 'es',
+            defaultTargetLanguageCode: 'en'
         }
     };
 

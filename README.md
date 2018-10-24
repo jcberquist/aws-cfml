@@ -144,20 +144,22 @@ TODO: provide an example for using the `getFormPostParams()` method.
 
 ### Translate
 
-You can configure the defaults source language and target language with:
+You can configure the default source and target languages by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
 
-'''
-translate: {
-  defaultSourceLanguageCode: 'es',
-  defaultTargetLanguageCode: 'en'
+```cfc
+{
+    translate: {
+        defaultSourceLanguageCode: 'es',
+        defaultTargetLanguageCode: 'en'
+    }
 }
-'''
+```
 
 Also you can override in the translate call:
 
 ```cfc
-response = aws.translate.translate( 'house', SourceLanguageCode: 'en', TargetLanguageCode: 'de' );
-// The translated text is in: response.translatedText;
+response = aws.translate.translateText( Text = 'house', SourceLanguageCode = 'en', TargetLanguageCode = 'de' );
+// The translated text is in: response.data.TranslatedText;
 ```
 
-You can see the supported language codes by the service in the api docs:  https://docs.aws.amazon.com/en_en/translate/latest/dg/API_TranslateText.html
+You can see the supported language codes by the service in the api docs: <https://docs.aws.amazon.com/en_en/translate/latest/dg/API_TranslateText.html>
