@@ -141,3 +141,23 @@ If you do not want your data to be type encoded automatically you have two optio
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
+
+### Translate
+
+You can configure the defaults source language and target language with:
+
+'''
+translate: {
+  defaultSourceLanguageCode: 'es',
+  defaultTargetLanguageCode: 'en'
+}
+'''
+
+Also you can override in the translate call:
+
+```cfc
+response = aws.translate.translate( 'house', SourceLanguageCode: 'en', TargetLanguageCode: 'de' );
+// The translated text is in: response.translatedText;
+```
+
+You can see the supported language codes by the service in the api docs:  https://docs.aws.amazon.com/en_en/translate/latest/dg/API_TranslateText.html
