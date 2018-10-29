@@ -7,7 +7,8 @@ component {
         's3',
         'sns',
         'sqs',
-        'rekognition'
+        'rekognition',
+        'translate'
     ];
 
     variables.constructorArgs = {
@@ -17,7 +18,12 @@ component {
         elasticsearch: { endpoint: '' },
         sns: { apiVersion: '2010-03-31' },
         sqs: { apiVersion: '2012-11-05' },
-        rekognition: { apiVersion: '2016-06-27' }
+        rekognition: { apiVersion: '2016-06-27' },
+        translate: {
+            apiVersion: '20170701',
+            defaultSourceLanguageCode: 'es',
+            defaultTargetLanguageCode: 'en'
+        }
     };
 
     public struct function init(

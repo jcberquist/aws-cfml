@@ -156,3 +156,24 @@ response = aws.rekognition.detectLabels({"Bytes":imagebytes});
 moderationlabels = response.data.ModerationLabels; // array of labels i.e. "Suggestive", "Revealing Clothes", "Nudity", "Explicit Nudity"
 ```
 
+### Translate
+
+You can configure the default source and target languages by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
+
+```cfc
+{
+    translate: {
+        defaultSourceLanguageCode: 'es',
+        defaultTargetLanguageCode: 'en'
+    }
+}
+```
+
+Also you can override in the translate call:
+
+```cfc
+response = aws.translate.translateText( Text = 'house', SourceLanguageCode = 'en', TargetLanguageCode = 'de' );
+// The translated text is in: response.data.TranslatedText;
+```
+
+You can see the supported language codes by the service in the api docs: <https://docs.aws.amazon.com/en_en/translate/latest/dg/API_TranslateText.html>
