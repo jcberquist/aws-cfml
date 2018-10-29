@@ -6,7 +6,8 @@ component {
         'elastictranscoder',
         's3',
         'sns',
-        'sqs'
+        'sqs',
+        'rekognition'
     ];
 
     variables.constructorArgs = {
@@ -15,7 +16,8 @@ component {
         elastictranscoder: { apiVersion: '2012-09-25' },
         elasticsearch: { endpoint: '' },
         sns: { apiVersion: '2010-03-31' },
-        sqs: { apiVersion: '2012-11-05' }
+        sqs: { apiVersion: '2012-11-05' },
+        rekognition: { apiVersion: '2016-06-27' }
     };
 
     public struct function init(

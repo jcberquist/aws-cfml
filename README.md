@@ -141,3 +141,18 @@ If you do not want your data to be type encoded automatically you have two optio
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
+
+### Rekognition
+
+The following basic image processing operations have been implemented: DetectText, DetectFaces, RecognizeCelebrities, DetectLabels, DetectModerationLabels.
+
+Here is an example for detecting nudity in images:
+
+```cfc
+image = ImageRead(expandPath("/path/to/rekognition-nudity.jpg"));
+imagebytes = toBase64(ImageGetBlob(image)); 
+
+response = aws.rekognition.detectLabels({"Bytes":imagebytes});
+moderationlabels = response.data.ModerationLabels; // array of labels i.e. "Suggestive", "Revealing Clothes", "Nudity", "Explicit Nudity"
+```
+
