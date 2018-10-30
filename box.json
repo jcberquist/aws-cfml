@@ -1,8 +1,8 @@
 {
     "name":"aws-cfml",
-    "version":"1.3.0",
+    "version":"1.4.0",
     "author":"John Berquist",
-    "location":"jcberquist/aws-cfml#v1.3.0",
+    "location":"jcberquist/aws-cfml#v1.4.0",
     "packageDirectory":"awscfml",
     "homepage":"https://github.com/jcberquist/aws-cfml",
     "bugs":"https://github.com/jcberquist/aws-cfml/issues",
