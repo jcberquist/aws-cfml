@@ -142,6 +142,20 @@ Most basic operations are supported for S3. However, there is currently no suppo
 
 TODO: provide an example for using the `getFormPostParams()` method.
 
+### Rekognition
+
+The following basic image processing operations have been implemented: DetectText, DetectFaces, RecognizeCelebrities, DetectLabels, DetectModerationLabels.
+
+Here is an example for detecting nudity in images:
+
+```cfc
+image = ImageRead(expandPath("/path/to/rekognition-nudity.jpg"));
+imagebytes = toBase64(ImageGetBlob(image)); 
+
+response = aws.rekognition.detectLabels({"Bytes":imagebytes});
+moderationlabels = response.data.ModerationLabels; // array of labels i.e. "Suggestive", "Revealing Clothes", "Nudity", "Explicit Nudity"
+```
+
 ### Translate
 
 You can configure the default source and target languages by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
