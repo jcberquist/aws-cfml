@@ -4,9 +4,19 @@
 
 **It requires Lucee 4.5+ or ColdFusion 11+.**
 
-It has full support for the AWS S3 and AWS DynamoDB REST APIs. It is set up so that support for other AWS services can be added, but at the moment these services are the only ones that are fully fleshed out. It also supports making signed requests to arbitrary AWS endpoints.
+It currently supports the following APIs:
+ - dynamodb
+ - elasticsearch
+ - elastictranscoder
+ - rekognition
+ - s3
+ - sns
+ - sqs
+ - translate
 
-It currently supports only AWS Signature v4 for authentication.
+_Note: It has full support for the AWS S3 and AWS DynamoDB REST APIs. Other services are supported to varying degrees - if you are using a service and add a method you need, please consider contributing it back to this project. My thanks to [@davidsf](https://github.com/davidsf) and [@sjdaniels](https://github.com/sjdaniels) who contributed the translate and rekognition service components respectively._
+
+**aws-cfml** also supports making signed requests to arbitrary AWS endpoints. It currently supports only AWS Signature v4 for authentication.
 
 ## Installation
 This wrapper can be installed as standalone library or as a ColdBox Module. Either approach requires a simple CommandBox command:
