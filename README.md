@@ -136,25 +136,27 @@ If you do not want your data to be type encoded automatically you have two optio
 
  _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items.
 
+### Rekognition
+
+The following basic image processing operations have been implemented: DetectText, DetectFaces, RecognizeCelebrities, DetectLabels, DetectModerationLabels.
+
+Here is an example for detecting unsafe content in an image:
+
+```cfc
+imageBinary = fileReadBinary(expandPath('/path/to/image.jpg'));
+imageBase64 = binaryEncode(imageBinary, 'base64');
+
+response = aws.rekognition.detectModerationLabels({'Bytes': imageBase64});
+moderationlabels = response.data.ModerationLabels;
+// moderationlabels is an array of moderation label structs
+// see https://docs.aws.amazon.com/rekognition/latest/dg/moderation.html
+```
+
 ### S3
 
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
-
-### Rekognition
-
-The following basic image processing operations have been implemented: DetectText, DetectFaces, RecognizeCelebrities, DetectLabels, DetectModerationLabels.
-
-Here is an example for detecting nudity in images:
-
-```cfc
-image = ImageRead(expandPath("/path/to/rekognition-nudity.jpg"));
-imagebytes = toBase64(ImageGetBlob(image)); 
-
-response = aws.rekognition.detectLabels({"Bytes":imagebytes});
-moderationlabels = response.data.ModerationLabels; // array of labels i.e. "Suggestive", "Revealing Clothes", "Nudity", "Explicit Nudity"
-```
 
 ### Translate
 

@@ -12,13 +12,13 @@ component {
     ];
 
     variables.constructorArgs = {
-        s3: { },
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
         elasticsearch: { endpoint: '' },
+        rekognition: { apiVersion: '2016-06-27' },
+        s3: { },
         sns: { apiVersion: '2010-03-31' },
         sqs: { apiVersion: '2012-11-05' },
-        rekognition: { apiVersion: '2016-06-27' },
         translate: {
             apiVersion: '20170701',
             defaultSourceLanguageCode: 'es',
