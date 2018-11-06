@@ -17,7 +17,7 @@ component accessors="true" {
             var profile = utils.getSystemSetting( 'AWS_PROFILE', 'default' );
             var userHome = utils.getSystemSetting( 'user.home' ).replace( '\', '/', 'all' );
             var configFile = utils.getSystemSetting( 'AWS_CONFIG_FILE', userHome & '/.aws/config' );
-            var region = getProfileString( configFile, profile, 'region' );
+            var region = getProfileString( configFile, profile, 'region' ).trim();
             variables.defaultRegion = region.len() ? region : 'us-east-1';
         }
 

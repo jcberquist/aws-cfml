@@ -17,7 +17,7 @@ component {
         numeric timeout = 50
     ) {
         var result = '';
-        var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams, false ) ) : '' );
+        var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams ) ) : '' );
         var request_headers = utils.parseHeaders( headers );
 
         cfhttp( url = 'http#useSSL ? 's' : ''#://' & fullPath, method = httpMethod, result = 'result', timeout = timeout ) {

@@ -4,11 +4,11 @@ component {
         return this;
     }
 
-    public any function getSystemSetting( required string key, any default ) {
+    public any function getSystemSetting( required string key, any defaultValue ) {
         var system = createObject( 'java', 'java.lang.System' );
         if ( !isNull( system.getenv( key ) ) ) return system.getenv( key );
         if ( !isNull( system.getProperty( key ) ) ) return system.getProperty( key );
-        if ( !isNull( arguments.default ) ) return default;
+        if ( !isNull( arguments.defaultValue ) ) return defaultValue;
     }
 
     public any function parseXmlResponse( required string response, required string rootElement ) {

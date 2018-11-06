@@ -21,7 +21,7 @@ component {
             awsSecretKey: awsSecretKey,
             token: token,
             expires: javacast( 'null', '' )
-        }
+        };
     }
 
     private function resolveCredentials( awsKey, awsSecretKey ) {
@@ -46,9 +46,9 @@ component {
         var userHome = utils.getSystemSetting( 'user.home' ).replace( '\', '/', 'all' );
         var credentialsFile = utils.getSystemSetting( 'AWS_SHARED_CREDENTIALS_FILE', userHome & '/.aws/credentials' );
         var profile = utils.getSystemSetting( 'AWS_PROFILE', 'default' );
-        credentials.awsKey = getProfileString( credentialsFile, profile, 'aws_access_key_id' );
-        credentials.awsSecretKey = getProfileString( credentialsFile, profile, 'aws_secret_access_key' );
-        credentials.token = getProfileString( credentialsFile, profile, 'aws_session_token' );
+        credentials.awsKey = getProfileString( credentialsFile, profile, 'aws_access_key_id' ).trim();
+        credentials.awsSecretKey = getProfileString( credentialsFile, profile, 'aws_secret_access_key' ).trim();
+        credentials.token = getProfileString( credentialsFile, profile, 'aws_session_token' ).trim();
 
         if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
             return credentials;
