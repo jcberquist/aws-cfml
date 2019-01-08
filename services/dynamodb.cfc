@@ -512,9 +512,7 @@ component {
             case 'L':
                 return { 'L': data.map( function( item ) { return encodeAttributeValue( item, determineValueType( item ), typeDefinitions ); } ) };
             case 'M':
-                return { 'M': structMap( data, function( key, value ) {
-                    return encodeAttributeValue( data[ key ], typeDefinitions.keyExists( key ) ? typeDefinitions[ key ] : determineValueType( value ), typeDefinitions );
-                } ) };
+                return { 'M': encodeValues( data, typeDefinitions ) };
         }
         return { 'S': toString( data ) };
     }
