@@ -10,7 +10,7 @@ component {
 
     public struct function getCredentials() {
         if ( !isNull( credentials.expires ) && credentials.expires <= now() ) {
-            refreshCredentials();
+            refreshCredentials( credentials );
         }
         return credentials;
     }
@@ -58,7 +58,7 @@ component {
         try {
             variables.iamRole = requestIamRole();
             if ( iamRole.len() ) {
-                refreshCredentials();
+                refreshCredentials( credentials );
             }
         } catch ( any e ) {
             // pass
@@ -82,17 +82,17 @@ component {
         return req.filecontent;
     }
 
-    private void function refreshCredentials() {
+    private void function refreshCredentials( src ) {
         var httpArgs = { };
         httpArgs[ 'httpMethod' ] = 'get';
         httpArgs[ 'path' ] = iamRolePath & iamRole;
         httpArgs[ 'useSSL' ] = false;
         var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
         var data = deserializeJSON( req.filecontent );
-        credentials.awsKey = data.AccessKeyId;
-        credentials.awsSecretKey = data.SecretAccessKey;
-        credentials.token = data.Token;
-        credentials.expires = parseDateTime( data.Expiration );
+        src.awsKey = data.AccessKeyId;
+        src.awsSecretKey = data.SecretAccessKey;
+        src.token = data.Token;
+        src.expires = parseDateTime( data.Expiration );
     }
 
 }
