@@ -57,10 +57,6 @@ component {
         params[ 'X-Amz-SignedHeaders' ] = 'host';
         params[ 'X-Amz-Expires' ] = expires;
 
-        if ( len( awsCredentials.token ) ) {
-            params[ 'X-Amz-Security-Token' ] = awsCredentials.token;
-        }
-
         var canonicalRequest = createCanonicalRequest( httpMethod, path, params, { 'Host': host }, '', true );
         var stringToSign = createStringToSign( region, service, isoTime, canonicalRequest );
         // writeDump( canonicalRequest );
@@ -80,6 +76,11 @@ component {
             'X-Amz-Credential': awsCredentials.awsKey & '/' & isoTime.left( 8 ) & '/' & region & '/' & service & '/aws4_request',
             'X-Amz-Date': isoTime
         };
+
+        if ( len( awsCredentials.token ) ) {
+            params[ 'X-Amz-Security-Token' ] = awsCredentials.token;
+        }
+
         return params;
     }
 
