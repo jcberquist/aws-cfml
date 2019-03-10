@@ -25,7 +25,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListTopicsResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -44,7 +44,7 @@ component {
         var queryParams = { 'Action': 'CreateTopic', 'Name': arguments.Name };
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'CreateTopicResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -63,7 +63,7 @@ component {
         var queryParams = { 'Action': 'DeleteTopic', 'TopicArn': arguments.TopicArn };
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'DeleteTopicResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -81,7 +81,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListSubscriptionsResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -103,7 +103,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListSubscriptionsByTopicResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -141,7 +141,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'POST', '/', { }, { }, formParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'PublishResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -168,7 +168,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'SubscribeResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -189,7 +189,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'UnsubscribeResponse' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }

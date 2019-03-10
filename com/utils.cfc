@@ -11,10 +11,13 @@ component {
         if ( !isNull( arguments.defaultValue ) ) return defaultValue;
     }
 
-    public any function parseXmlResponse( required string response, required string rootElement ) {
-        var start = getTickCount();
+    public any function parseXmlDocument( required string xmlDocument ) {
+        return parseXmlNode( xmlParse( xmlDocument ).xmlRoot );
+    }
+
+    public any function parseXmlElement( required string xmlDocument, required string elementName ) {
         var result = [ ];
-        var elementNodes = xmlSearch( xmlParse( response ), "//*[ local-name() = '#rootElement#' ]" );
+        var elementNodes = xmlSearch( xmlParse( response ), "//*[ local-name() = '#elementName#' ]" );
         for ( var thisNode in elementNodes ) {
             result.append( parseXmlNode( thisNode ) );
         }
@@ -29,7 +32,8 @@ component {
         }
 
         for ( var thisChild in xmlNode.xmlChildren ) {
-            var thisValue = ( len( thisChild.XmlText ) || !thisChild.xmlChildren.len() ) ? thisChild.XmlText : parseXmlNode( thisChild );
+            var xmlText = thisChild.xmlText.trim();
+            var thisValue = ( len( xmlText ) || !thisChild.xmlChildren.len() ) ? xmlText : parseXmlNode( thisChild );
             if ( !result.keyExists( thisChild.XmlName ) ) {
                 result[ thisChild.XmlName ] = thisValue;
             } else {

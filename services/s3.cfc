@@ -20,7 +20,7 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var apiResponse = apiCall( requestSettings );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListAllMyBucketsResult' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -52,7 +52,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListBucketResult' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
             if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
                 apiResponse.data.Contents = [ apiResponse.data.Contents ];
             }
@@ -129,7 +129,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListVersionsResult' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -163,7 +163,7 @@ component {
 
         var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'ListMultipartUploadsResult' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -241,7 +241,7 @@ component {
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
         var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'TagSet' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -282,7 +282,7 @@ component {
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
         var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
         if ( apiResponse.statusCode == 200 ) {
-            apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'AccessControlPolicy' );
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
     }
@@ -411,7 +411,7 @@ component {
         }
 
         var apiResponse = apiCall( requestSettings, 'PUT', '/' & destinationBucket & '/' & destinationObjectKey, { }, headers );
-        apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'CopyObjectResult' );
+        apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         return apiResponse;
     }
 
@@ -453,7 +453,7 @@ component {
 
         var queryParams = { 'delete': '' };
         var apiResponse = apiCall( requestSettings, 'POST', '/' & bucket, queryParams, headers, xmlBody );
-        apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, 'DeleteResult' );
+        apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         return apiResponse;
     }
 

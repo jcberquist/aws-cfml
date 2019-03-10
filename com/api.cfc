@@ -77,7 +77,7 @@ component accessors="true" {
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
-            apiResponse[ 'error' ] = utils.parseXmlResponse( apiResponse.rawData, 'Error' );
+            apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
 
         return apiResponse;
