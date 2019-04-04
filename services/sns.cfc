@@ -116,7 +116,6 @@ component {
     * http://docs.aws.amazon.com/sns/latest/api/API_Publish.html
     * @Message The ARN of the topic for which you wish to find subscriptions. This can be a JSON object in order to specify different formats for different protocals - see the documentation for examples. If you use a JSON object `MessageStructure` must be set to `json`
     * @MessageAttributes Message attributes for Publish action.
-    * @MessageAttributeTypes Message attributes are typed, use this struct to specify the types (String|Number|Binary). If this struct is not used, a best guess will be made.
     * @MessageStructure Set MessageStructure to json if you want to send a different message for each protocol.
     * @PhoneNumber The phone number to which you want to deliver an SMS message. Use E.164 format.
     * @Subject Optional parameter to be used as the "Subject" line when the message is delivered to email endpoints. This field will also be included, if present, in the standard JSON messages delivered to other endpoints.
@@ -126,7 +125,6 @@ component {
     public any function publish(
         required string Message,
         struct MessageAttributes = { },
-        struct MessageAttributeTypes = { },
         string MessageStructure = '',
         string PhoneNumber = '',
         string Subject = '',
@@ -137,6 +135,29 @@ component {
         var formParams = { 'Action': 'Publish', 'Message': arguments.Message };
         for ( var key in [ 'MessageStructure', 'PhoneNumber', 'Subject', 'TargetArn', 'TopicArn' ] ) {
             if ( len( arguments[ key ] ) ) formParams[ key ] = arguments[ key ];
+        }
+
+        if ( arguments.keyExists( "MessageAttributes" ) ) {
+            var i = 1;
+            MessageAttributes.each(function(k, v) {
+                var dataType = "String";
+
+                if ( isNumeric(v) ) {
+                    dataType = "Number";
+                } else if ( isArray(v) ) {
+                    dataType = "String.Array";
+                }
+
+                formParams [ "MessageAttributes.entry.#i#.Name" ] = k;
+                formParams [ "MessageAttributes.entry.#i#.Value.DataType" ] = dataType;
+                if ( dataType == "String.Array" ) {
+                    formParams [ "MessageAttributes.entry.#i#.Value.StringValue" ] = "[\""#v.toList("\"", \""")#\""]";
+                } else {
+                    formParams [ "MessageAttributes.entry.#i#.Value.StringValue" ] = "#v#";
+                }
+
+                i++;
+            });
         }
 
         var apiResponse = apiCall( requestSettings, 'POST', '/', { }, { }, formParams );
