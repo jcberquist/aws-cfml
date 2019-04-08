@@ -140,21 +140,23 @@ component {
         if ( arguments.keyExists( "MessageAttributes" ) ) {
             var i = 1;
             MessageAttributes.each(function(k, v) {
-                var dataType = "String";
+                var dataType = 'String';
+                var valueType = 'StringValue';
 
-                if ( isNumeric(v) ) {
-                    dataType = "Number";
-                } else if ( isArray(v) ) {
-                    dataType = "String.Array";
+                if ( isBinary( v ) ) {
+                    dataType = 'Binary';
+                    valueType = 'BinaryValue';
+                    v = binaryEncode( v, 'base64' );
+                } else if ( isArray( v ) ) {
+                    dataType = 'String.Array';
+                    v = serializeJSON( v );
+                } else if ( isNumeric( v ) ) {
+                    dataType = 'Number';
                 }
 
-                formParams [ "MessageAttributes.entry.#i#.Name" ] = k;
-                formParams [ "MessageAttributes.entry.#i#.Value.DataType" ] = dataType;
-                if ( dataType == "String.Array" ) {
-                    formParams [ "MessageAttributes.entry.#i#.Value.StringValue" ] = "[\""#v.toList("\"", \""")#\""]";
-                } else {
-                    formParams [ "MessageAttributes.entry.#i#.Value.StringValue" ] = "#v#";
-                }
+                formParams[ 'MessageAttributes.entry.#i#.Name' ] = k;
+                formParams[ 'MessageAttributes.entry.#i#.Value.DataType' ] = dataType;
+                formParams[ 'MessageAttributes.entry.#i#.Value.#valueType#' ] = v;
 
                 i++;
             });
