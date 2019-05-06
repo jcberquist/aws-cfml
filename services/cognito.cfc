@@ -7,8 +7,10 @@ component {
         required struct settings
     ) {
         variables.api = arguments.api;
+        variables.apiVersion = arguments.settings.apiVersion;
         variables.argumentTypes = getArgTypes();
         variables.argumentKeys = variables.argumentTypes.keyArray();
+        variables.platform = server.keyExists( 'lucee' ) ? 'Lucee' : 'ColdFusion';
         return this;
     }
 
@@ -20,8 +22,10 @@ component {
         string TokenDuration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        writeDump(arguments);
+        var headers = {'Action' : 'GetOpenIdTokenForDeveloperIdentity'};
         var payload = buildPayload( arguments );
-        var apiResponse = apiCall( requestSettings, payload );
+        var apiResponse = apiCall( requestSettings, payload, headers);
         return apiResponse;
     }
 
@@ -37,7 +41,9 @@ component {
             switch( argType ) {
                 case 'array':
                 case 'string':
-                    if ( args[ key ].len() ) payload[ casedKey ] = args[ key ];
+                    if ( structKeyExists(arguments, "args") ) {
+                        payload[ casedKey ] = args[ key ];
+                    }
                     break;
                 case 'boolean':
                 case 'numeric':
@@ -68,14 +74,15 @@ component {
 
     private any function apiCall(
         required struct requestSettings,
-        struct payload = { }
+        struct payload = { },
+        struct headers = { }
     ) {
         var host = getHost(requestSettings.region);
         var payloadString = toJSON( payload );
 
-        var headers = { };
+        headers['Version'] = apiVersion;
 
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'GET', '/', { }, headers, payloadString, requestSettings.awsCredentials );
+        var apiResponse = api.call( variables.service, host, requestSettings.region, 'GET', '/', {}, headers, payloadString, requestSettings.awsCredentials );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
@@ -90,5 +97,20 @@ component {
             json = replace( json, '{"NULL":true}', '{"NULL":"true"}' );
         }
         return json;
+    }
+
+    private struct function getArgTypes() {
+        var metadata = getMetadata( this );
+        var typed = [ 'ExclusiveStartKey','ExpressionAttributeValues','Item','Key' ];
+        var result = { };
+
+        for ( var funct in metadata.functions ) {
+            if ( arrayFindNoCase( [ 'init','encodeValues','decodeValues' ], funct.name ) || funct.access != 'public' ) continue;
+            for ( var param in funct.parameters ) {
+                result[ param.name ] = typed.findNoCase( param.name ) ? 'typed' : param.type;
+            }
+        }
+
+        return result;
     }
 }
