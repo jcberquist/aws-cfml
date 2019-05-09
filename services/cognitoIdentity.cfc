@@ -35,8 +35,6 @@ component {
             structInsert(inputStruct, "TokenDuration", TokenDuration);
         }
         StructInsert(payloadStruct, "Input", inputStruct);
-
-        writeDump(payloadStruct);
         var apiResponse = apiCall( requestSettings, payloadStruct);
         return apiResponse;
     }
@@ -55,11 +53,9 @@ component {
     ) {
         var host = getHost(requestSettings.region);
         var payloadString = toJSON( payload );
-        writeDump(payloadString);
         queryParams['Version'] = apiVersion;
 
         var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, {"Content-Type" : "application/json" }, payloadString, requestSettings.awsCredentials );
-        writeDump(apiResponse);
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
