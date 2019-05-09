@@ -1,6 +1,6 @@
 component {
 
-    variables.service = 'cognito';
+    variables.service = 'cognito-identity';
 
     public any function init(
         required any api,
@@ -19,52 +19,29 @@ component {
         required string IdentityPoolId,
         required struct Logins,
         string IdentityId,
-        string TokenDuration
+        int TokenDuration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        writeDump(arguments);
-        var headers = {'Action' : 'GetOpenIdTokenForDeveloperIdentity'};
-        var payload = buildPayload( arguments );
-        var apiResponse = apiCall( requestSettings, payload, headers);
+        var payloadStruct = StructNew("ordered");
+        StructInsert(payloadStruct, "Operation", "com.amazonaws.cognito.identity.model#Chr(35)#GetOpenIdTokenForDeveloperIdentity");
+        StructInsert(payloadStruct, "Service", "com.amazonaws.cognito.identity.model#Chr(35)#AWSCognitoIdentityService");
+        var inputStruct = StructNew("ordered");
+        if (structKeyExists(arguments, "IdentityId")) {
+            structInsert(inputStruct, "IdentityId", IdentityId);
+        }
+        structInsert(inputStruct, "IdentityPoolId", IdentityPoolId);
+        structInsert(inputStruct, "Logins", Logins);
+        if (structKeyExists(arguments,"TokenDuration")) {
+            structInsert(inputStruct, "TokenDuration", TokenDuration);
+        }
+        StructInsert(payloadStruct, "Input", inputStruct);
+
+        writeDump(payloadStruct);
+        var apiResponse = apiCall( requestSettings, payloadStruct);
         return apiResponse;
     }
 
     //private functions
-
-    private any function buildPayload( required any args ) {
-        var payload = { };
-        for ( var key in args ) {
-            var keyIndex = variables.argumentKeys.findNoCase( key );
-            if ( !keyIndex ) continue;
-            var argType = variables.argumentTypes[ key ];
-            var casedKey = variables.argumentKeys[ keyIndex ];
-            switch( argType ) {
-                case 'array':
-                case 'string':
-                    if ( structKeyExists(arguments, "args") ) {
-                        payload[ casedKey ] = args[ key ];
-                    }
-                    break;
-                case 'boolean':
-                case 'numeric':
-                    if ( args[ key ] ) payload[ casedKey ] = args[ key ];
-                    break;
-                case 'struct':
-                    if ( !args[ key ].isEmpty() ) payload[ casedKey ] = args[ key ];
-                    break;
-                case 'typed':
-                    if ( !args[ key ].isEmpty() ) {
-                        if ( args.keyExists( 'dataTypeEncoding' ) && !args.dataTypeEncoding ) {
-                            payload[ casedKey ] = args[ key ];
-                        } else {
-                            payload[ casedKey ] = encodeValues( args[ key ], args.keyExists( 'typeDefinitions' ) ? args.typeDefinitions : { } );
-                        }
-                    }
-                    break;
-            }
-        }
-        return payload;
-    }
 
     private string function getHost(
         required string region
@@ -74,15 +51,15 @@ component {
 
     private any function apiCall(
         required struct requestSettings,
-        struct payload = { },
-        struct headers = { }
+        required struct payload
     ) {
         var host = getHost(requestSettings.region);
         var payloadString = toJSON( payload );
+        writeDump(payloadString);
+        queryParams['Version'] = apiVersion;
 
-        headers['Version'] = apiVersion;
-
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'GET', '/', {}, headers, payloadString, requestSettings.awsCredentials );
+        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, {"Content-Type" : "application/json" }, payloadString, requestSettings.awsCredentials );
+        writeDump(apiResponse);
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;

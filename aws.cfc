@@ -1,7 +1,7 @@
 component {
 
     variables.services = [
-        'cognito',
+        'cognitoIdentity',
         'dynamodb',
         'elasticsearch',
         'elastictranscoder',
@@ -13,7 +13,7 @@ component {
     ];
 
     variables.constructorArgs = {
-        cognito: {apiVersion: '2014-06-30'},
+        cognitoIdentity: {apiVersion: '2014-06-30'},
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
         elasticsearch: { endpoint: '' },
