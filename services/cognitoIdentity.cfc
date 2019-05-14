@@ -19,14 +19,14 @@ component {
         required string IdentityPoolId,
         required struct Logins,
         string IdentityId,
-        int TokenDuration
+        numeric TokenDuration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payloadStruct = StructNew("ordered");
         StructInsert(payloadStruct, "Operation", "com.amazonaws.cognito.identity.model#Chr(35)#GetOpenIdTokenForDeveloperIdentity");
         StructInsert(payloadStruct, "Service", "com.amazonaws.cognito.identity.model#Chr(35)#AWSCognitoIdentityService");
         var inputStruct = StructNew("ordered");
-        if (structKeyExists(arguments, "IdentityId")) {
+        if (structKeyExists(arguments, "IdentityId") and IdentityId != "") {
             structInsert(inputStruct, "IdentityId", IdentityId);
         }
         structInsert(inputStruct, "IdentityPoolId", IdentityPoolId);
