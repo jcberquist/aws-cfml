@@ -14,7 +14,14 @@ component {
         return this;
     }
 
-    // https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetOpenIdTokenForDeveloperIdentity.html
+    /*
+    * Returns an IdentityId and a Token
+    * https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetOpenIdTokenForDeveloperIdentity.html
+    * @IdentityPoolId An identity pool ID in the format REGION:GUID.
+    * @Logins A set of optional name-value pairs that map provider names to provider tokens.
+    * @IdentityId A unique identifier in the format REGION:GUID.
+    * @TokenDuration The expiration time of the token, in seconds.
+    */
     public any function GetOpenIdTokenForDeveloperIdentity (
         required string IdentityPoolId,
         required struct Logins,
