@@ -8,8 +8,6 @@ component {
     ) {
         variables.api = arguments.api;
         variables.apiVersion = arguments.settings.apiVersion;
-        variables.argumentTypes = getArgTypes();
-        variables.argumentKeys = variables.argumentTypes.keyArray();
         variables.platform = server.keyExists( 'lucee' ) ? 'Lucee' : 'ColdFusion';
         return this;
     }
@@ -29,20 +27,24 @@ component {
         numeric TokenDuration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var payloadStruct = StructNew("ordered");
-        StructInsert(payloadStruct, "Operation", "com.amazonaws.cognito.identity.model#Chr(35)#GetOpenIdTokenForDeveloperIdentity");
-        StructInsert(payloadStruct, "Service", "com.amazonaws.cognito.identity.model#Chr(35)#AWSCognitoIdentityService");
-        var inputStruct = StructNew("ordered");
+        var payload = "{#Chr(34)#Operation#Chr(34)#:#Chr(34)#com.amazonaws.cognito.identity.model#Chr(35)#GetOpenIdTokenForDeveloperIdentity#Chr(34)#,";
+        payload &= "#Chr(34)#Service#Chr(34)#:#Chr(34)#com.amazonaws.cognito.identity.model#Chr(35)#AWSCognitoIdentityService#Chr(34)#,";
+        payload &= "#Chr(34)#Input#Chr(34)#:{";
         if (structKeyExists(arguments, "IdentityId") and IdentityId != "") {
-            structInsert(inputStruct, "IdentityId", IdentityId);
+            payload &= "#Chr(34)#IndentityId#Chr(34)#:#Chr(34)##IdentityId##Chr(34)#,";
         }
-        structInsert(inputStruct, "IdentityPoolId", IdentityPoolId);
-        structInsert(inputStruct, "Logins", Logins);
-        if (structKeyExists(arguments,"TokenDuration")) {
-            structInsert(inputStruct, "TokenDuration", TokenDuration);
+        payload &= "#Chr(34)#IdentityPoolId#Chr(34)#:#Chr(34)##IdentityPoolId##Chr(34)#,";
+        payload &= "#Chr(34)#Logins#Chr(34)#: {";
+        for (key in Logins) {
+            payload &= "#Chr(34)##key##Chr(34)#:#Chr(34)##Logins[key]##Chr(34)#";
         }
-        StructInsert(payloadStruct, "Input", inputStruct);
-        var apiResponse = apiCall( requestSettings, payloadStruct);
+        payload &= "}";
+        if (structKeyExists(arguments,"TokenDuration") and TokenDuration>0) {
+            payload &= ",#Chr(34)#TokenDuration#Chr(34)#:#TokenDuration#";
+        }
+        payload &= "}}"
+        writeDump(payload);
+        var apiResponse = apiCall( requestSettings, payload);
         return apiResponse;
     }
 
@@ -56,41 +58,14 @@ component {
 
     private any function apiCall(
         required struct requestSettings,
-        required struct payload
+        required string payload
     ) {
         var host = getHost(requestSettings.region);
-        var payloadString = toJSON( payload );
         queryParams['Version'] = apiVersion;
 
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, {"Content-Type" : "application/json" }, payloadString, requestSettings.awsCredentials );
+        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, {"Content-Type" : "application/json" }, payload, requestSettings.awsCredentials );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
-    }
-
-    private string function toJSON( required struct source ) {
-        var json = serializeJSON( source );
-        // clean up ColdFusion serialization
-        if ( variables.platform == 'ColdFusion' ) {
-            json = reReplace(json, '\{"([NS])":([^\}"]+)\}', '{"\1":"\2"}', "all");
-            json = reReplace(json, '\{"BOOL":(true|false)\}', '{"BOOL":"\1"}', "all");
-            json = replace( json, '{"NULL":true}', '{"NULL":"true"}' );
-        }
-        return json;
-    }
-
-    private struct function getArgTypes() {
-        var metadata = getMetadata( this );
-        var typed = [ 'ExclusiveStartKey','ExpressionAttributeValues','Item','Key' ];
-        var result = { };
-
-        for ( var funct in metadata.functions ) {
-            if ( arrayFindNoCase( [ 'init','encodeValues','decodeValues' ], funct.name ) || funct.access != 'public' ) continue;
-            for ( var param in funct.parameters ) {
-                result[ param.name ] = typed.findNoCase( param.name ) ? 'typed' : param.type;
-            }
-        }
-
-        return result;
     }
 }
