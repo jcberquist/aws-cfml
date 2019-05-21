@@ -8,7 +8,6 @@ component {
     ) {
         variables.api = arguments.api;
         variables.apiVersion = arguments.settings.apiVersion;
-        variables.platform = server.keyExists( 'lucee' ) ? 'Lucee' : 'ColdFusion';
         return this;
     }
 
@@ -27,43 +26,38 @@ component {
         numeric TokenDuration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var payload = "{#Chr(34)#Operation#Chr(34)#:#Chr(34)#com.amazonaws.cognito.identity.model#Chr(35)#GetOpenIdTokenForDeveloperIdentity#Chr(34)#,";
-        payload &= "#Chr(34)#Service#Chr(34)#:#Chr(34)#com.amazonaws.cognito.identity.model#Chr(35)#AWSCognitoIdentityService#Chr(34)#,";
-        payload &= "#Chr(34)#Input#Chr(34)#:{";
-        if (structKeyExists(arguments, "IdentityId") and IdentityId != "") {
-            payload &= "#Chr(34)#IndentityId#Chr(34)#:#Chr(34)##IdentityId##Chr(34)#,";
-        }
-        payload &= "#Chr(34)#IdentityPoolId#Chr(34)#:#Chr(34)##IdentityPoolId##Chr(34)#,";
-        payload &= "#Chr(34)#Logins#Chr(34)#: {";
-        for (key in Logins) {
-            payload &= "#Chr(34)##key##Chr(34)#:#Chr(34)##Logins[key]##Chr(34)#";
-        }
-        payload &= "}";
-        if (structKeyExists(arguments,"TokenDuration") and TokenDuration>0) {
-            payload &= ",#Chr(34)#TokenDuration#Chr(34)#:#TokenDuration#";
-        }
-        payload &= "}}"
-        writeDump(payload);
-        var apiResponse = apiCall( requestSettings, payload);
-        return apiResponse;
+        var payload = { 'IdentityPoolId': arguments.IdentityPoolId, 'Logins': arguments.Logins };
+
+        if ( !isNull( arguments.IdentityId ) ) payload[ 'IdentityId' ] = arguments.IdentityId;
+        if ( !isNull( arguments.TokenDuration ) ) payload[ 'TokenDuration' ] = arguments.TokenDuration;
+
+        return apiCall( requestSettings, 'GetOpenIdTokenForDeveloperIdentity', payload );
     }
 
     //private functions
 
-    private string function getHost(
-        required string region
-    ) {
-        return variables.service & ( region == 'us-east-1' ? '' : '-' & region ) & '.amazonaws.com';
-    }
-
     private any function apiCall(
         required struct requestSettings,
-        required string payload
+        required string target,
+        struct payload = { }
     ) {
-        var host = getHost(requestSettings.region);
-        queryParams['Version'] = apiVersion;
+        var host = variables.service & '.' & requestSettings.region & '.amazonaws.com';
+        var payloadString = payload.isEmpty() ? '' : serializeJSON( payload );
+        var headers = { };
+        headers[ 'X-Amz-Target' ] = 'AWSCognitoIdentityService.#target#';
+        if ( !payload.isEmpty() ) headers[ 'Content-Type' ] = 'application/x-amz-json-1.1';
 
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, {"Content-Type" : "application/json" }, payload, requestSettings.awsCredentials );
+        var apiResponse = api.call(
+            variables.service,
+            host,
+            requestSettings.region,
+            'POST',
+            '/',
+            { },
+            headers,
+            payloadString,
+            requestSettings.awsCredentials
+        );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
