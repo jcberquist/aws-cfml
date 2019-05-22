@@ -5,6 +5,7 @@
 **It requires Lucee 4.5+ or ColdFusion 11+.**
 
 It currently supports the following APIs:
+ - cognitoIdentity
  - dynamodb
  - elasticsearch
  - elastictranscoder
