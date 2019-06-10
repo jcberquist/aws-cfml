@@ -40,11 +40,15 @@ component accessors="true" {
         struct queryParams = { },
         struct headers = { },
         any body = '',
-        struct awsCredentials = { }
+        struct awsCredentials = { },
+        boolean encodeurl = true
     ) {
         if ( awsCredentials.isEmpty() ) {
             awsCredentials = credentials.getCredentials();
         }
+
+        var encodedPath = utils.encodeUrl( path, false );
+        if ( encodeurl ) path = encodedPath;
 
         var signedRequestHeaders = signer.getHeadersWithAuthorization(
             service,
@@ -60,7 +64,7 @@ component accessors="true" {
 
         var httpArgs = { };
         httpArgs[ 'httpMethod' ] = httpMethod;
-        httpArgs[ 'path' ] = host & path;
+        httpArgs[ 'path' ] = host & encodedPath;
         httpArgs[ 'headers' ] = signedRequestHeaders;
         httpArgs[ 'queryParams' ] = queryParams;
         if ( !isNull( arguments.body ) ) httpArgs[ 'body' ] = body;
@@ -91,11 +95,15 @@ component accessors="true" {
         string path = '/',
         struct queryParams = { },
         numeric expires = 300,
-        struct awsCredentials = { }
+        struct awsCredentials = { },
+        boolean encodeurl = true
     ) {
         if ( awsCredentials.isEmpty() ) {
             awsCredentials = credentials.getCredentials();
         }
+
+        var encodedPath = utils.encodeUrl( path, false );
+        if ( encodeurl ) path = encodedPath;
 
         var signedQueryParams = signer.getQueryParamsWithAuthorization(
             service,
@@ -108,7 +116,7 @@ component accessors="true" {
             awsCredentials
         );
 
-        return host & utils.encodeurl( path, false ) & '?' & utils.parseQueryParams( signedQueryParams );
+        return host & encodedPath & '?' & utils.parseQueryParams( signedQueryParams );
     }
 
     public any function authorizationParams(

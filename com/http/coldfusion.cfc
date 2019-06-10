@@ -17,10 +17,11 @@ component {
         numeric timeout = 50
     ) {
         var result = '';
-        var fullPath = utils.encodeUrl( path, false ) & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams ) ) : '' );
+        var fullPath = path & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams ) ) : '' );
         var request_headers = utils.parseHeaders( headers );
+        var urlPath = 'http' & (useSSL ? 's' : '') & '://' & fullPath;
 
-        cfhttp( url = 'http#useSSL ? 's' : ''#://' & fullPath, method = httpMethod, result = 'result', timeout = timeout ) {
+        cfhttp( url = urlPath, method = httpMethod, result = 'result', timeout = timeout ) {
 
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;

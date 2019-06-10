@@ -314,7 +314,8 @@ component {
             path,
             queryParams,
             Expires,
-            requestSettings.awsCredentials
+            requestSettings.awsCredentials,
+            false
         );
     }
 
@@ -568,7 +569,8 @@ component {
             queryParams,
             headers,
             payload,
-            requestSettings.awsCredentials
+            requestSettings.awsCredentials,
+            false
         );
     }
 

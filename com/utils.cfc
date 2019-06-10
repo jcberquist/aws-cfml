@@ -75,7 +75,7 @@ component {
     }
 
     public string function encodeUrl( required string str, boolean encodeSlash = true ) {
-        var result = replacelist( urlEncodedFormat( arguments.str, 'utf-8' ), '%2D,%2E,%5F,%7E', '-,.,_,~' );
+        var result = replacelist( encodeForURL( arguments.str ), '%2D,%2E,%5F,%7E', '-,.,_,~' );
         if ( !encodeSlash ) result = replace( result, '%2F', '/', 'all' );
         return result;
     }
