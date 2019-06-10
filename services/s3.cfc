@@ -173,12 +173,12 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUT.html
     * @Bucket the name of the bucket to create
     * @Acl The canned ACL to apply to the bucket you are creating. Valid values: private | public-read | public-read-write | authenticated-read | bucket-owner-read | bucket-owner-full-control
-    * @Region Specifies the region where the bucket will be created. Valid values:  us-west-1 | us-west-2 | eu-west-1 | eu-central-1 | ap-southeast-1 | ap-northeast-1 | ap-southeast-2 | sa-east-1 (Empty for us-east-1)
+    * @Location Specifies the region where the bucket will be created. Valid values:  us-west-1 | us-west-2 | eu-west-1 | eu-central-1 | ap-southeast-1 | ap-northeast-1 | ap-southeast-2 | sa-east-1 (Empty for us-east-1)
     */
     public any function createBucket(
         required string Bucket,
         string Acl = '',
-        string Region = ''
+        string Location = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
@@ -188,8 +188,8 @@ component {
             headers[ 'X-Amz-Acl' ] = arguments.Acl;
         }
 
-        if ( len( arguments.region ) ) {
-            payload = '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>#arguments.region#</LocationConstraint></CreateBucketConfiguration>';
+        if ( len( arguments.Location ) && arguments.Location != 'us-east-1' ) {
+            payload = '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>#arguments.Location#</LocationConstraint></CreateBucketConfiguration>';
         }
 
         return apiCall( requestSettings, 'PUT', '/' & bucket, { }, headers, payload );
