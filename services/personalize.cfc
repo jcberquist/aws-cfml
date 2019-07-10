@@ -30,6 +30,27 @@ component {
     }
 
     /**
+    * Returns a list of campaigns that use the given solution. When a solution is not specified, all the campaigns associated with the account are listed. The response provides the properties for each campaign, including the Amazon Resource Name (ARN). For more information on campaigns, see CreateCampaign.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListCampaigns.html
+    * @solutionArn a string: The Amazon Resource Name (ARN) of the solution to list the campaigns for. When a solution is not specified, all the campaigns associated with the account are listed.
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListCampaigns for getting the next set of campaigns (if they exist).
+    */
+    public any function listCampaigns(
+        string solutionArn,
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = {};
+        if ( !isNull( arguments.solutionArn ) ) args[ 'solutionArn' ] = arguments.solutionArn;
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListCampaigns', args );
+    }
+
+    /**
     * Returns a list of solutions that use the given dataset group. When a dataset group is not specified, all the solutions associated with the account are listed. The response provides the properties for each solution, including the Amazon Resource Name (ARN). For more information on solutions, see CreateSolution.
     * https://docs.aws.amazon.com/personalize/latest/dg/API_ListSolutions.html
     * @datasetGroupArn a string: The Amazon Resource Name (ARN) of the dataset group.
@@ -75,7 +96,7 @@ component {
     * @solutionArn a string: The Amazon Resource Name (ARN) of the solution.
     */
     public any function describeSolution(
-        required string solutionArn,
+        required string solutionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var args = { 'solutionArn': arguments.solutionArn };
@@ -84,12 +105,40 @@ component {
     }
 
     /**
+    * Describes the given campaign, including its status.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeCampaign.html
+    * @campaignArn a string: The Amazon Resource Name (ARN) of the campaign.
+    */
+    public any function describeCampaign(
+        required string campaignArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'campaignArn': arguments.campaignArn };
+
+        return apiCall( requestSettings, 'DescribeCampaign', args );
+    }
+
+    /**
+    * Describes the given campaign, including its status.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeCampaign.html
+    * @campaignArn a string: The Amazon Resource Name (ARN) of the campaign.
+    */
+    public any function describeSolutionVersion(
+        required string solutionVersionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'solutionVersionArn': arguments.solutionVersionArn };
+
+        return apiCall( requestSettings, 'DescribeSolutionVersion', args );
+    }
+
+    /**
     * Gets the metrics for the specified solution version.
     * https://docs.aws.amazon.com/personalize/latest/dg/API_GetSolutionMetrics.html
     * @solutionVersionArn a string: The Amazon Resource Name (ARN) of the solution version.
     */
     public any function getSolutionMetrics(
-        required string solutionVersionArn,
+        required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var args = { 'solutionVersionArn': arguments.solutionVersionArn };
