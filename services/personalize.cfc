@@ -163,7 +163,7 @@ component {
     /**
     * Trains or retrains an active solution. A solution is created using the CreateSolution operation and must be in the ACTIVE state before calling CreateSolutionVersion. A new version of the solution is created every time you call this operation.
     * https://docs.aws.amazon.com/personalize/latest/dg/API_CreateSolutionVersion.html
-    * @name required string. The name for the schema.
+    * @solutionArn required string. The Amazon Resource Name (ARN) of the solution to retrain.
     */
     public any function createSolutionVersion(
         required string solutionArn
@@ -172,6 +172,95 @@ component {
         var args = { 'solutionArn'=arguments.solutionArn };
 
         return apiCall( requestSettings, 'CreateSolutionVersion', args );
+    }
+
+    /**
+    * Removes a campaign by deleting the solution deployment. The solution that the campaign is based on is not deleted and can be redeployed when needed. A deleted campaign can no longer be specified in a GetRecommendations request. For more information on campaigns, see CreateCampaign.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteCampaign.html
+    * @campaignArn required string. The Amazon Resource Name (ARN) of the campaign to delete.
+    */
+    public any function deleteCampaign(
+        required string campaignArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'campaignArn'=arguments.campaignArn };
+
+        return apiCall( requestSettings, 'DeleteCampaign', args );
+    }
+
+    /**
+    * Deletes a dataset. You can't delete a dataset if an associated DatasetImportJob or SolutionVersion is in the CREATE PENDING or IN PROGRESS state. For more information on datasets, see CreateDataset.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteDataset.html
+    * @datasetArn required string. The Amazon Resource Name (ARN) of the dataset to delete.
+    */
+    public any function deleteDataset(
+        required string datasetArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetArn'=arguments.datasetArn };
+
+        return apiCall( requestSettings, 'DeleteDataset', args );
+    }
+
+    /**
+    * Deletes a dataset group. Before you delete a dataset group, you must delete the following:
+      All associated event trackers.
+      All associated solutions.
+      All datasets in the dataset group.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteDatasetGroup.html
+    * @datasetGroupArn required string. The Amazon Resource Name (ARN) of the dataset group to delete.
+    */
+    public any function deleteDatasetGroup(
+        required string datasetGroupArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+
+        return apiCall( requestSettings, 'DeleteDatasetGroup', args );
+    }
+
+    /**
+    * Deletes the event tracker. Does not delete the event-interactions dataset from the associated dataset group. For more information on event trackers, see CreateEventTracker.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteEventTracker.html
+    * @eventTrackerArn required string. The Amazon Resource Name (ARN) of the event tracker to delete.
+    */
+    public any function deleteEventTracker(
+        required string eventTrackerArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'eventTrackerArn'=arguments.eventTrackerArn };
+
+        return apiCall( requestSettings, 'DeleteEventTracker', args );
+    }
+
+    /**
+    * Deletes a schema. Before deleting a schema, you must delete all datasets referencing the schema. For more information on schemas, see CreateSchema.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteSchema.html
+    * @schemaArn required string. The Amazon Resource Name (ARN) of the schema to delete.
+    */
+    public any function deleteSchema(
+        required string schemaArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'schemaArn'=arguments.schemaArn };
+
+        return apiCall( requestSettings, 'DeleteSchema', args );
+    }
+
+    /**
+    * Deletes all versions of a solution and the Solution object itself. Before deleting a solution, you must delete all campaigns based on the solution. 
+      To determine what campaigns are using the solution, call ListCampaigns and supply the Amazon Resource Name (ARN) of the solution. 
+      You can't delete a solution if an associated SolutionVersion is in the CREATE PENDING or IN PROGRESS state.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteSolution.html
+    * @solutionArn required string. The Amazon Resource Name (ARN) of the solution to delete.
+    */
+    public any function deleteSolution(
+        required string solutionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'solutionArn'=arguments.solutionArn };
+
+        return apiCall( requestSettings, 'DeleteSolution', args );
     }
 
     /**
