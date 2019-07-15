@@ -28,7 +28,7 @@ component {
         numeric numResults
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn': arguments.campaignArn };
+        var args = { 'campaignArn'=arguments.campaignArn };
         if ( !isNull( arguments.itemId ) ) args[ 'itemId' ] = arguments.itemId;
         if ( !isNull( arguments.userId ) ) args[ 'userId' ] = arguments.userId;
         if ( !isNull( arguments.numResults ) ) args[ 'numResults' ] = arguments.numResults;
@@ -51,7 +51,7 @@ component {
         string userId
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn': arguments.campaignArn, 'itemList':arguments.itemList, 'userId':arguments.userId };
+        var args = { 'campaignArn'=arguments.campaignArn, 'itemList'=arguments.itemList, 'userId'=arguments.userId };
 
         return apiCall( requestSettings, 'GetPersonalizedRanking', "/personalize-ranking", args );
     }
