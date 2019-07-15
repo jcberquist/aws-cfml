@@ -12,6 +12,44 @@ component {
     }
 
     /**
+    * Creates a campaign by deploying a solution version. When a client calls the GetRecommendations and GetPersonalizedRanking APIs, a campaign is specified in the request.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_CreateCampaign.html
+    * @minProvisionedTPS required numeric. Specifies the requested minimum provisioned transactions (recommendations) per second that Amazon Personalize will support.
+    * @name required string. A name for the new campaign. The campaign name must be unique within your account.
+    * @solutionVersionArn required string. The Amazon Resource Name (ARN) of the solution version to deploy.
+    */
+    public any function createCampaign(
+        required numeric minProvisionedTPS,
+        required string name,
+        required string solutionVersionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'minProvisionedTPS'=arguments.minProvisionedTPS, 'name'=arguments.name, 'solutionVersionArn'=arguments.solutionVersionArn };
+
+        return apiCall( requestSettings, 'CreateCampaign', args );
+    }
+
+    /**
+    * Creates an empty dataset and adds it to the specified dataset group. Use CreateDatasetImportJob to import your training data to a dataset.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDataset.html
+    * @datasetGroupArn required string. The Amazon Resource Name (ARN) of the dataset group to add the dataset to.
+    * @datasetType required string. The type of dataset. One of the following (case insensitive) values: Interactions Items Users
+    * @name required string. The name for the dataset.
+    * @schemaArn required string. The ARN of the schema to associate with the dataset. The schema defines the dataset fields.
+    */
+    public any function createDataset(
+        required string datasetGroupArn,
+        required string datasetType,
+        required string name,
+        required string schemaArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn, 'datasetType'=arguments.datasetType, 'name'=arguments.name, 'schemaArn'=arguments.schemaArn };
+
+        return apiCall( requestSettings, 'CreateDataset', args );
+    }
+
+    /**
     * Returns a list of dataset groups. The response provides the properties for each dataset group, including the Amazon Resource Name (ARN).
     * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetGroups.html
     * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
