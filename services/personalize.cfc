@@ -264,6 +264,166 @@ component {
     }
 
     /**
+    * Describes the given algorithm.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeAlgorithm.html
+    * @algorithmArn required string. The Amazon Resource Name (ARN) of the algorithm to describe.
+    */
+    public any function describeAlgorithm(
+        required string algorithmArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'algorithmArn'=arguments.algorithmArn };
+
+        return apiCall( requestSettings, 'DescribeAlgorithm', args );
+    }
+
+    /**
+    * Describes the given campaign, including its status.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeCampaign.html
+    * @campaignArn required string. The Amazon Resource Name (ARN) of the campaign.
+    */
+    public any function describeCampaign(
+        required string campaignArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'campaignArn'=arguments.campaignArn };
+
+        return apiCall( requestSettings, 'DescribeCampaign', args );
+    }
+
+    /**
+    * Describes the given dataset. For more information on datasets, see CreateDataset.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeDataset.html
+    * @datasetArn required string. The Amazon Resource Name (ARN) of the dataset to describe.
+    */
+    public any function describeDataset(
+        required string datasetArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetArn'=arguments.datasetArn };
+
+        return apiCall( requestSettings, 'DescribeDataset', args );
+    }
+
+    /**
+    * Describes the given dataset group.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeDatasetGroup.html
+    * @datasetGroupArn required string. The Amazon Resource Name (ARN) of the dataset group to describe.
+    */
+    public any function describeDatasetGroup(
+        required string datasetGroupArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+
+        return apiCall( requestSettings, 'DescribeDatasetGroup', args );
+    }
+
+    /**
+    * Describes the dataset import job created by CreateDatasetImportJob, including the import job status.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeDatasetImportJob.html
+    * @datasetImportJobArn required string. The Amazon Resource Name (ARN) of the dataset import job to describe.
+    */
+    public any function describeDatasetImportJob(
+        required string datasetImportJobArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetImportJobArn'=arguments.datasetImportJobArn };
+
+        return apiCall( requestSettings, 'DescribeDatasetImportJob', args );
+    }
+
+    /**
+    * Describes an event tracker. The response includes the trackingId and status of the event tracker. For more information on event trackers, see CreateEventTracker.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeEventTracker.html
+    * @eventTrackerArn required string. The Amazon Resource Name (ARN) of the event tracker to describe.
+    */
+    public any function describeEventTracker(
+        required string eventTrackerArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'eventTrackerArn'=arguments.eventTrackerArn };
+
+        return apiCall( requestSettings, 'DescribeEventTracker', args );
+    }
+
+    /**
+    * Describes the given feature transformation.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeFeatureTransformation.html
+    * @featureTransformationArn required string. The Amazon Resource Name (ARN) of the feature transformation to describe.
+    */
+    public any function describeFeatureTransformation(
+        required string featureTransformationArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'featureTransformationArn'=arguments.featureTransformationArn };
+
+        return apiCall( requestSettings, 'DescribeFeatureTransformation', args );
+    }
+
+    /**
+    * Describes a recipe. A recipe contains three items:
+      - An algorithm that trains a model.
+      - Hyperparameters that govern the training.
+      - Feature transformation information for modifying the input data before training.
+      Amazon Personalize provides a set of predefined recipes. You specify a recipe when you create a solution with the CreateSolution API. 
+      CreateSolution trains a model by using the algorithm in the specified recipe and a training dataset. 
+      The solution, when deployed as a campaign, can provide recommendations using the GetRecommendations API.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeRecipe.html
+    * @recipeArn required string. The Amazon Resource Name (ARN) of the feature transformation to describe.
+    */
+    public any function describeRecipe(
+        required string recipeArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'recipeArn'=arguments.recipeArn };
+
+        return apiCall( requestSettings, 'DescribeRecipe', args );
+    }
+
+    /**
+    * Describes a schema. For more information on schemas, see CreateSchema.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeSchema.html
+    * @schemaArn required string. The Amazon Resource Name (ARN) of the schema to retrieve.
+    */
+    public any function describeSchema(
+        required string schemaArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'schemaArn'=arguments.schemaArn };
+
+        return apiCall( requestSettings, 'DescribeSchema', args );
+    }
+
+    /**
+    * Describes a solution. For more information on solutions, see CreateSolution.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeSolution.html
+    * @solutionArn required string. The Amazon Resource Name (ARN) of the solution to describe.
+    */
+    public any function describeSolution(
+        required string solutionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'solutionArn'=arguments.solutionArn };
+
+        return apiCall( requestSettings, 'DescribeSolution', args );
+    }
+
+    /**
+    * Describes a specific version of a solution. For more information on solutions, see CreateSolution.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeSolutionVersion.html
+    * @solutionVersionArn required string. The Amazon Resource Name (ARN) of the solution version.
+    */
+    public any function describeSolutionVersion(
+        required string solutionVersionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
+
+        return apiCall( requestSettings, 'DescribeSolutionVersion', args );
+    }
+
+    /**
     * Returns a list of dataset groups. The response provides the properties for each dataset group, including the Amazon Resource Name (ARN).
     * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetGroups.html
     * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
