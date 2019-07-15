@@ -424,6 +424,20 @@ component {
     }
 
     /**
+    * Gets the metrics for the specified solution version.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_GetSolutionMetrics.html
+    * @solutionVersionArn a string: The Amazon Resource Name (ARN) of the solution version.
+    */
+    public any function getSolutionMetrics(
+        required string solutionVersionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
+
+        return apiCall( requestSettings, 'GetSolutionMetrics', args );
+    }
+
+    /**
     * Returns a list of dataset groups. The response provides the properties for each dataset group, including the Amazon Resource Name (ARN).
     * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetGroups.html
     * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
@@ -500,62 +514,6 @@ component {
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
         return apiCall( requestSettings, 'ListSolutionVersions', args );
-    }
-
-    /**
-    * Describes a solution. For more information on solutions, see CreateSolution.
-    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeSolution.html
-    * @solutionArn a string: The Amazon Resource Name (ARN) of the solution.
-    */
-    public any function describeSolution(
-        required string solutionArn
-    ) {
-        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn'=arguments.solutionArn };
-
-        return apiCall( requestSettings, 'DescribeSolution', args );
-    }
-
-    /**
-    * Describes the given campaign, including its status.
-    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeCampaign.html
-    * @campaignArn a string: The Amazon Resource Name (ARN) of the campaign.
-    */
-    public any function describeCampaign(
-        required string campaignArn
-    ) {
-        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn };
-
-        return apiCall( requestSettings, 'DescribeCampaign', args );
-    }
-
-    /**
-    * Describes the given campaign, including its status.
-    * https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeCampaign.html
-    * @campaignArn a string: The Amazon Resource Name (ARN) of the campaign.
-    */
-    public any function describeSolutionVersion(
-        required string solutionVersionArn
-    ) {
-        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
-
-        return apiCall( requestSettings, 'DescribeSolutionVersion', args );
-    }
-
-    /**
-    * Gets the metrics for the specified solution version.
-    * https://docs.aws.amazon.com/personalize/latest/dg/API_GetSolutionMetrics.html
-    * @solutionVersionArn a string: The Amazon Resource Name (ARN) of the solution version.
-    */
-    public any function getSolutionMetrics(
-        required string solutionVersionArn
-    ) {
-        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
-
-        return apiCall( requestSettings, 'GetSolutionMetrics', args );
     }
 
     private any function apiCall(
