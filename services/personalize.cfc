@@ -63,7 +63,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -83,7 +83,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn': arguments.solutionArn };
+        var args = { 'solutionArn'=arguments.solutionArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -99,7 +99,7 @@ component {
         required string solutionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn': arguments.solutionArn };
+        var args = { 'solutionArn'=arguments.solutionArn };
 
         return apiCall( requestSettings, 'DescribeSolution', args );
     }
@@ -113,7 +113,7 @@ component {
         required string campaignArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn': arguments.campaignArn };
+        var args = { 'campaignArn'=arguments.campaignArn };
 
         return apiCall( requestSettings, 'DescribeCampaign', args );
     }
@@ -127,7 +127,7 @@ component {
         required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn': arguments.solutionVersionArn };
+        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
 
         return apiCall( requestSettings, 'DescribeSolutionVersion', args );
     }
@@ -141,7 +141,7 @@ component {
         required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn': arguments.solutionVersionArn };
+        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
 
         return apiCall( requestSettings, 'GetSolutionMetrics', args );
     }
@@ -173,6 +173,4 @@ component {
 
         return apiResponse;
     }
-
-
 }
