@@ -438,24 +438,6 @@ component {
     }
 
     /**
-    * Returns a list of dataset groups. The response provides the properties for each dataset group, including the Amazon Resource Name (ARN).
-    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetGroups.html
-    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
-    * @nextToken Optional string. A token returned from the previous call to listDatasetGroups for getting the next set of solutions (if they exist).
-    */
-    public any function listDatasetGroups(
-        numeric maxResults,
-        string nextToken
-    ) {
-        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = {  };
-        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
-        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
-
-        return apiCall( requestSettings, 'ListDatasetGroups', args );
-    }
-
-    /**
     * Returns a list of campaigns that use the given solution. When a solution is not specified, all the campaigns associated with the account are listed. The response provides the properties for each campaign, including the Amazon Resource Name (ARN). For more information on campaigns, see CreateCampaign.
     * https://docs.aws.amazon.com/personalize/latest/dg/API_ListCampaigns.html
     * @solutionArn a string: The Amazon Resource Name (ARN) of the solution to list the campaigns for. When a solution is not specified, all the campaigns associated with the account are listed.
@@ -474,6 +456,124 @@ component {
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
         return apiCall( requestSettings, 'ListCampaigns', args );
+    }
+
+    /**
+    * Returns a list of dataset groups. The response provides the properties for each dataset group, including the Amazon Resource Name (ARN).
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetGroups.html
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to listDatasetGroups for getting the next set of solutions (if they exist).
+    */
+    public any function listDatasetGroups(
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = {  };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListDatasetGroups', args );
+    }
+
+    /**
+    * Returns a list of dataset import jobs that use the given dataset. When a dataset is not specified, all the dataset import jobs associated with the account are listed. 
+      The response provides the properties for each dataset import job, including the Amazon Resource Name (ARN).
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasetImportJobs.html
+    * @datasetArn required string. The Amazon Resource Name (ARN) of the dataset to list the dataset import jobs for.
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListDatasetImportJobs for getting the next set of dataset import jobs (if they exist).
+    */
+    public any function listDatasetImportJobs(
+        required string datasetArn,
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetArn'=arguments.datasetArn };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListDatasetImportJobs', args );
+    }
+
+    /**
+    * Returns the list of datasets contained in the given dataset group. The response provides the properties for each dataset, including the Amazon Resource Name (ARN).
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasets.html
+    * @datasetGroupArn required string. The Amazon Resource Name (ARN) of the dataset group to list the datasets for.
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListDatasets for getting the next set of datasets (if they exist).
+    */
+    public any function listDatasets(
+        required string datasetGroupArn,
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListDatasets', args );
+    }
+
+    /**
+    * Returns the list of event trackers associated with the account. The response provides the properties for each event tracker, including the Amazon Resource Name (ARN) and tracking ID.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListEventTrackers.html
+    * @datasetGroupArn required string. The Amazon Resource Name (ARN) of the dataset group to list the datasets for.
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListEventTrackers for getting the next set of event trackers (if they exist).
+    */
+    public any function listEventTrackers(
+        required string datasetGroupArn,
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListEventTrackers', args );
+    }
+
+    /**
+    * Returns a list of available recipes. The response provides the properties for each recipe, including the recipe's Amazon Resource Name (ARN).
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListRecipes.html
+    * @maxResults Optional numeric. The maximum number of solutions to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListEventTrackers for getting the next set of event trackers (if they exist).
+    * @recipeProvider Optional string. The default is SERVICE.
+    */
+    public any function listRecipes(
+        numeric maxResults,
+        string nextToken,
+        string recipeProvider
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = {  };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+        if ( !isNull( arguments.recipeProvider ) ) args[ 'recipeProvider' ] = arguments.recipeProvider;
+
+        return apiCall( requestSettings, 'ListRecipes', args );
+    }
+
+    /**
+    * Returns the list of schemas associated with the account. The response provides the properties for each schema, including the Amazon Resource Name (ARN).
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_ListSchemas.html
+    * @maxResults Optional numeric. The maximum number of schemas to return. between 1 and 100.
+    * @nextToken Optional string. A token returned from the previous call to ListEventTrackers for getting the next set of event trackers (if they exist).
+    */
+    public any function listSchemas(
+        numeric maxResults,
+        string nextToken
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = {  };
+        if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
+        if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
+
+        return apiCall( requestSettings, 'ListSchemas', args );
     }
 
     /**
@@ -514,6 +614,27 @@ component {
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
         return apiCall( requestSettings, 'ListSolutionVersions', args );
+    }
+
+    /**
+    * Updates a campaign by either deploying a new solution or changing the value of the campaign's minProvisionedTPS parameter.
+      To update a campaign, the campaign status must be ACTIVE or CREATE FAILED. Check the campaign status using the DescribeCampaign API.
+    * https://docs.aws.amazon.com/personalize/latest/dg/API_UpdateCampaign.html
+    * @campaignArn a string: The Amazon Resource Name (ARN) of the campaign.
+    * @minProvisionedTPS Optional numeric. Specifies the requested minimum provisioned transactions (recommendations) per second that Amazon Personalize will support.
+    * @solutionVersionArn Optional string. The ARN of a new solution version to deploy.
+    */
+    public any function updateCampaign(
+        required string campaignArn,
+        numeric minProvisionedTPS,
+        string solutionVersionArn
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 'campaignArn'=arguments.campaignArn };
+        if ( !isNull( arguments.minProvisionedTPS ) ) args[ 'minProvisionedTPS' ] = arguments.minProvisionedTPS;
+        if ( !isNull( arguments.solutionVersionArn ) ) args[ 'solutionVersionArn' ] = arguments.solutionVersionArn;
+
+        return apiCall( requestSettings, 'updateCampaign', args );
     }
 
     private any function apiCall(
