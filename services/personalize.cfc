@@ -79,7 +79,7 @@ component {
     */
     public any function createDatasetImportJob(
         required string datasetArn,
-        required string datasetLocation,
+        required string dataLocation,
         required string jobName,
         required string roleArn
     ) {
