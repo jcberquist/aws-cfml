@@ -30,6 +30,9 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
+        // Base64 encode the value before sending
+        payload[ 'Plaintext' ] = toBase64( payload[ 'Plaintext' ] );
+
         return apiCall( requestSettings, 'Encrypt', payload );
     }
 
@@ -47,7 +50,15 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = buildPayload( arguments );
-        return apiCall( requestSettings, 'Decrypt', payload );
+        var response = apiCall( requestSettings, 'Decrypt', payload );
+
+        // decode the Base64 encoded plaintext value, if encoded; else return the pure response
+        try {
+            response.data[ 'Plaintext' ] = toString( toBinary( response.data[ 'Plaintext' ] ) );
+            return response;
+        } catch ( any e ) {
+            return response;
+        }
     }
 
     /**
