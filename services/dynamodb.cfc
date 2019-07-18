@@ -257,7 +257,9 @@ component {
         }
         if ( apiResponse.data.keyExists( 'UnprocessedKeys' ) ) {
             for ( var TableName in apiResponse.data.UnprocessedKeys ) {
-                apiResponse.data.UnprocessedKeys[ TableName ][ 'Keys' ] = apiResponse.data.UnprocessedKeys[ TableName ].Keys.map( decodeValues );
+                apiResponse.data.UnprocessedKeys[ TableName ][ 'Keys' ] = apiResponse.data.UnprocessedKeys[ TableName ].Keys.map(
+                    decodeValues
+                );
             }
         }
 
@@ -284,7 +286,10 @@ component {
             var typeDefinitions = arguments.keyExists( 'typeDefinitions' ) ? arguments.typeDefinitions : { };
             payload[ 'RequestItems' ] = structMap( payload.RequestItems, function( TableName, requestItem ) {
                 if ( requestItem.keyExists( 'DeleteRequest' ) ) {
-                    requestItem.DeleteRequest[ 'Key' ] = encodeValues( requestItem.DeleteRequest[ 'Key' ], typeDefinitions );
+                    requestItem.DeleteRequest[ 'Key' ] = encodeValues(
+                        requestItem.DeleteRequest[ 'Key' ],
+                        typeDefinitions
+                    );
                 }
                 if ( requestItem.keyExists( 'PutRequest' ) ) {
                     requestItem.PutRequest[ 'Item' ] = encodeValues( requestItem.PutRequest[ 'Item' ], typeDefinitions );
@@ -336,7 +341,7 @@ component {
             apiResponse.data.Items = apiResponse.data.Items.map( decodeValues );
         }
         if ( apiResponse.data.keyExists( 'LastEvaluatedKey' ) ) {
-            apiResponse.data.LastEvaluatedKey = decodeValues(apiResponse.data.LastEvaluatedKey);
+            apiResponse.data.LastEvaluatedKey = decodeValues( apiResponse.data.LastEvaluatedKey );
         }
         return apiResponse;
     }
@@ -398,7 +403,11 @@ component {
     ) {
         return structMap( data, function( key, value ) {
             if ( isNull( value ) ) return { 'NULL': 'true' };
-            return encodeAttributeValue( value, typeDefinitions.keyExists( key ) ? typeDefinitions[ key ] : determineValueType( value ), typeDefinitions );
+            return encodeAttributeValue(
+                value,
+                typeDefinitions.keyExists( key ) ? typeDefinitions[ key ] : determineValueType( value ),
+                typeDefinitions
+            );
         } );
     }
 
@@ -424,31 +433,55 @@ component {
         headers[ 'X-Amz-Target' ] = 'DynamoDB_' & variables.apiVersion & '.' & arguments.target;
         headers[ 'Content-Type' ] = 'application/x-amz-json-1.0';
 
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, headers, payloadString, requestSettings.awsCredentials );
+        var apiResponse = api.call(
+            variables.service,
+            host,
+            requestSettings.region,
+            'POST',
+            '/',
+            { },
+            headers,
+            payloadString,
+            requestSettings.awsCredentials
+        );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
     }
 
-    private string function toJSON( required struct source ) {
+    private string function toJSON(
+        required struct source
+    ) {
         var json = serializeJSON( source );
         // clean up ColdFusion serialization
         if ( variables.platform == 'ColdFusion' ) {
-            json = reReplace(json, '\{"([NS])":([^\}"]+)\}', '{"\1":"\2"}', "all");
-            json = reReplace(json, '\{"BOOL":(true|false)\}', '{"BOOL":"\1"}', "all");
+            json = reReplace(
+                json,
+                '\{"([NS])":([^\}"]+)\}',
+                '{"\1":"\2"}',
+                'all'
+            );
+            json = reReplace(
+                json,
+                '\{"BOOL":(true|false)\}',
+                '{"BOOL":"\1"}',
+                'all'
+            );
             json = replace( json, '{"NULL":true}', '{"NULL":"true"}' );
         }
         return json;
     }
 
-    private any function buildPayload( required any args ) {
+    private any function buildPayload(
+        required any args
+    ) {
         var payload = { };
         for ( var key in args ) {
             var keyIndex = variables.argumentKeys.findNoCase( key );
             if ( !keyIndex ) continue;
             var argType = variables.argumentTypes[ key ];
             var casedKey = variables.argumentKeys[ keyIndex ];
-            switch( argType ) {
+            switch ( argType ) {
                 case 'array':
                 case 'string':
                     if ( args[ key ].len() ) payload[ casedKey ] = args[ key ];
@@ -465,7 +498,10 @@ component {
                         if ( args.keyExists( 'dataTypeEncoding' ) && !args.dataTypeEncoding ) {
                             payload[ casedKey ] = args[ key ];
                         } else {
-                            payload[ casedKey ] = encodeValues( args[ key ], args.keyExists( 'typeDefinitions' ) ? args.typeDefinitions : { } );
+                            payload[ casedKey ] = encodeValues(
+                                args[ key ],
+                                args.keyExists( 'typeDefinitions' ) ? args.typeDefinitions : { }
+                            );
                         }
                     }
                     break;
@@ -476,11 +512,17 @@ component {
 
     private struct function getArgTypes() {
         var metadata = getMetadata( this );
-        var typed = [ 'ExclusiveStartKey','ExpressionAttributeValues','Item','Key' ];
+        var typed = [
+            'ExclusiveStartKey',
+            'ExpressionAttributeValues',
+            'Item',
+            'Key'
+        ];
         var result = { };
 
         for ( var funct in metadata.functions ) {
-            if ( arrayFindNoCase( [ 'init','encodeValues','decodeValues' ], funct.name ) || funct.access != 'public' ) continue;
+            if ( arrayFindNoCase( [ 'init', 'encodeValues', 'decodeValues' ], funct.name ) || funct.access != 'public' )
+                continue;
             for ( var param in funct.parameters ) {
                 result[ param.name ] = typed.findNoCase( param.name ) ? 'typed' : param.type;
             }
@@ -494,7 +536,7 @@ component {
         string typeDefinition = 'S',
         struct typeDefinitions = { }
     ) {
-        switch( typeDefinition ) {
+        switch ( typeDefinition ) {
             case 'NULL':
                 return { 'NULL': 'true' };
             case 'N':
@@ -504,13 +546,29 @@ component {
             case 'BOOL':
                 return { 'BOOL': data ? 'true' : 'false' };
             case 'SS':
-                return { 'SS': data.map( function( item ) { return toString( item ); } ) };
+                return {
+                    'SS': data.map( function( item ) {
+                        return toString( item );
+                    } )
+                };
             case 'NS':
-                return { 'NS': data.map( function( item ) { return toString( item ); } ) };
+                return {
+                    'NS': data.map( function( item ) {
+                        return toString( item );
+                    } )
+                };
             case 'BS':
-                return { 'BS': data.map( function( item ) { return binaryEncode( item, 'base64' ); } ) };
+                return {
+                    'BS': data.map( function( item ) {
+                        return binaryEncode( item, 'base64' );
+                    } )
+                };
             case 'L':
-                return { 'L': data.map( function( item ) { return encodeAttributeValue( item, determineValueType( item ), typeDefinitions ); } ) };
+                return {
+                    'L': data.map( function( item ) {
+                        return encodeAttributeValue( item, determineValueType( item ), typeDefinitions );
+                    } )
+                };
             case 'M':
                 return { 'M': encodeValues( data, typeDefinitions ) };
         }
@@ -538,10 +596,10 @@ component {
     private any function decodeAttributeValue(
         required struct attribute_value
     ) {
-        var typeDefinition = attribute_value.keyArray()[1];
-        switch( typeDefinition ) {
+        var typeDefinition = attribute_value.keyArray()[ 1 ];
+        switch ( typeDefinition ) {
             case 'NULL':
-                return javaCast( 'NULL', '' );
+                return javacast( 'NULL', '' );
             case 'N':
                 return val( attribute_value[ typeDefinition ] );
             case 'BOOL':
@@ -549,7 +607,9 @@ component {
             case 'SS':
                 return attribute_value[ typeDefinition ];
             case 'NS':
-                return attribute_value[ typeDefinition ].map( function( numeric_item ) { return val( numeric_item ); } );
+                return attribute_value[ typeDefinition ].map( function( numeric_item ) {
+                    return val( numeric_item );
+                } );
             case 'L':
                 return attribute_value[ typeDefinition ].map( decodeAttributeValue );
             case 'M':

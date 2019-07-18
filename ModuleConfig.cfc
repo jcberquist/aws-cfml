@@ -6,8 +6,8 @@ component {
     this.description = 'This module will provide you with connectivity to the AWS API for any ColdFusion (CFML) application.';
 
     /**
-     * See README.md for the config struct options
-     */
+    * See README.md for the config struct options
+    */
     function configure() {
         settings = {
             awsKey: '',
@@ -18,7 +18,8 @@ component {
     }
 
     function onLoad() {
-        binder.map( 'aws@awscfml' )
+        binder
+            .map( 'aws@awscfml' )
             .to( '#moduleMapping#.aws' )
             .asSingleton()
             .initWith( argumentCollection = settings );

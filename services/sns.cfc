@@ -17,13 +17,20 @@ component {
     * http://docs.aws.amazon.com/sns/latest/api/API_ListTopics.html
     * @NextToken Token to pass along to the next listTopics request. This element is returned if there are more subscriptions to retrieve.
     */
-    public any function listTopics( string NextToken = '' ) {
+    public any function listTopics(
+        string NextToken = ''
+    ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'ListTopics' };
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -42,7 +49,12 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'CreateTopic', 'Name': arguments.Name };
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -61,7 +73,12 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'DeleteTopic', 'TopicArn': arguments.TopicArn };
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -73,13 +90,20 @@ component {
     * http://http://docs.aws.amazon.com/sns/latest/api/API_ListSubscriptions.html
     * @NextToken Token to pass along to the next ListSubscriptions request. This element is returned if there are more subscriptions to retrieve.
     */
-    public any function listSubscriptions( string NextToken = '' ) {
+    public any function listSubscriptions(
+        string NextToken = ''
+    ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'ListSubscriptions' };
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -101,7 +125,12 @@ component {
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -133,13 +162,21 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var formParams = { 'Action': 'Publish', 'Message': arguments.Message };
-        for ( var key in [ 'MessageStructure', 'PhoneNumber', 'Subject', 'TargetArn', 'TopicArn' ] ) {
+        for (
+            var key in [
+                'MessageStructure',
+                'PhoneNumber',
+                'Subject',
+                'TargetArn',
+                'TopicArn'
+            ]
+        ) {
             if ( len( arguments[ key ] ) ) formParams[ key ] = arguments[ key ];
         }
 
-        if ( arguments.keyExists( "MessageAttributes" ) ) {
+        if ( arguments.keyExists( 'MessageAttributes' ) ) {
             var i = 1;
-            MessageAttributes.each(function(k, v) {
+            MessageAttributes.each( function( k, v ) {
                 var dataType = 'String';
                 var valueType = 'StringValue';
 
@@ -159,10 +196,17 @@ component {
                 formParams[ 'MessageAttributes.entry.#i#.Value.#valueType#' ] = v;
 
                 i++;
-            });
+            } );
         }
 
-        var apiResponse = apiCall( requestSettings, 'POST', '/', { }, { }, formParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/',
+            { },
+            { },
+            formParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -185,11 +229,16 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'Subscribe' };
-        for ( var key in [ 'Endpoint','Protocol','TopicArn' ] ) {
+        for ( var key in [ 'Endpoint', 'Protocol', 'TopicArn' ] ) {
             if ( len( arguments[ key ] ) ) queryParams[ key ] = arguments[ key ];
         }
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -210,7 +259,12 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'Action': 'Unsubscribe', 'SubscriptionArn': arguments.SubscriptionArn };
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/', queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }

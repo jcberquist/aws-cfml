@@ -14,7 +14,12 @@ component {
 
     public any function listQueues() {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var apiResponse = apiCall( requestSettings, 'GET', '/', { 'Action': 'ListQueues' } );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            { 'Action': 'ListQueues' }
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }

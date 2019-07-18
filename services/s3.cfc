@@ -45,12 +45,24 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
-        for ( var key in [ 'Delimiter','EncodingType','Marker','Prefix' ] ) {
+        for (
+            var key in [
+                'Delimiter',
+                'EncodingType',
+                'Marker',
+                'Prefix'
+            ]
+        ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & bucket,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
             if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
@@ -84,12 +96,43 @@ component {
         required string Setting
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var validSettings = [ 'acl','cors','lifecycle','location','logging','notification','policy','tagging','requestPayment','versioning','website' ];
-        var returnedXmlElement = [ 'AccessControlPolicy','CORSConfiguration','LifecycleConfiguration','LocationConstraint','BucketLoggingStatus','NotificationConfiguration','','Tagging','RequestPaymentConfiguration','VersioningConfiguration','WebsiteConfiguration' ];
+        var validSettings = [
+            'acl',
+            'cors',
+            'lifecycle',
+            'location',
+            'logging',
+            'notification',
+            'policy',
+            'tagging',
+            'requestPayment',
+            'versioning',
+            'website'
+        ];
+        var returnedXmlElement = [
+            'AccessControlPolicy',
+            'CORSConfiguration',
+            'LifecycleConfiguration',
+            'LocationConstraint',
+            'BucketLoggingStatus',
+            'NotificationConfiguration',
+            '',
+            'Tagging',
+            'RequestPaymentConfiguration',
+            'VersioningConfiguration',
+            'WebsiteConfiguration'
+        ];
         var typeIndex = validSettings.findNoCase( Setting );
-        if ( !typeIndex ) { throw( 'Invalid setting specified. Valid options are: #validSettings.toList( ', ' )#' ); }
+        if ( !typeIndex ) {
+            throw( 'Invalid setting specified. Valid options are: #validSettings.toList( ', ' )#' );
+        }
         var queryParams = { '#validSettings[ typeIndex ]#': '' };
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & bucket,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             if ( Setting != 'policy' ) {
                 apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
@@ -122,12 +165,25 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'versions': '' };
-        for ( var key in [ 'Delimiter','EncodingType','KeyMarker','Prefix','VersionIdMarker' ] ) {
+        for (
+            var key in [
+                'Delimiter',
+                'EncodingType',
+                'KeyMarker',
+                'Prefix',
+                'VersionIdMarker'
+            ]
+        ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & bucket,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -156,12 +212,25 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'uploads': '' };
-        for ( var key in [ 'Delimiter','EncodingType','KeyMarker','Prefix','UploadIdMarker' ] ) {
+        for (
+            var key in [
+                'Delimiter',
+                'EncodingType',
+                'KeyMarker',
+                'Prefix',
+                'UploadIdMarker'
+            ]
+        ) {
             if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
         }
         if ( arguments.MaxUploads ) queryParams[ utils.parseKey( 'MaxUploads' ) ] = arguments.MaxUploads;
 
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & bucket, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & bucket,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -192,7 +261,14 @@ component {
             payload = '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>#arguments.Location#</LocationConstraint></CreateBucketConfiguration>';
         }
 
-        return apiCall( requestSettings, 'PUT', '/' & bucket, { }, headers, payload );
+        return apiCall(
+            requestSettings,
+            'PUT',
+            '/' & bucket,
+            { },
+            headers,
+            payload
+        );
     }
 
     /**
@@ -221,7 +297,12 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        return apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        return apiCall(
+            requestSettings,
+            'GET',
+            '/' & Bucket & '/' & ObjectKey,
+            queryParams
+        );
     }
 
     /**
@@ -237,9 +318,14 @@ component {
         string VersionId = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var queryParams = {'tagging': '' };
+        var queryParams = { 'tagging': '' };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & Bucket & '/' & ObjectKey,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -261,7 +347,12 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( requestSettings, 'HEAD', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'HEAD',
+            '/' & Bucket & '/' & ObjectKey,
+            queryParams
+        );
         return apiResponse;
     }
 
@@ -280,7 +371,12 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'acl': '' };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        var apiResponse = apiCall( requestSettings, 'GET', '/' & Bucket & '/' & ObjectKey, queryParams );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & Bucket & '/' & ObjectKey,
+            queryParams
+        );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
@@ -354,11 +450,19 @@ component {
 
         headers[ 'Content-MD5' ] = binaryEncode( binaryDecode( hash( FileContent, 'MD5', 'utf-8' ), 'hex' ), 'base64' );
 
-        for ( var key in [ 'CacheControl','ContentDisposition','ContentEncoding','ContentType','Expires' ] ) {
+        for (
+            var key in [
+                'CacheControl',
+                'ContentDisposition',
+                'ContentEncoding',
+                'ContentType',
+                'Expires'
+            ]
+        ) {
             if ( len( arguments[ key ] ) ) headers[ utils.parseKey( key ) ] = arguments[ key ];
         }
 
-        for ( var key in [ 'Acl','StorageClass','WebsiteRedirectLocation' ] ) {
+        for ( var key in [ 'Acl', 'StorageClass', 'WebsiteRedirectLocation' ] ) {
             if ( len( arguments[ key ] ) ) headers[ 'X-Amz-' & utils.parseKey( key ) ] = arguments[ key ];
         }
 
@@ -366,7 +470,14 @@ component {
             headers[ 'X-Amz-Meta-' & key ] = arguments.Metadata[ key ];
         }
 
-        var apiResponse = apiCall( requestSettings, 'PUT', '/' & Bucket & '/' & ObjectKey, { }, headers, FileContent );
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/' & Bucket & '/' & ObjectKey,
+            { },
+            headers,
+            FileContent
+        );
         return apiResponse;
     }
 
@@ -399,19 +510,25 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
-        headers [ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
-        if ( len( arguments.VersionId ) ) headers [ 'X-Amz-Copy-Source' ] &= '?versionId=' & arguments.VersionId;
+        headers[ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
+        if ( len( arguments.VersionId ) ) headers[ 'X-Amz-Copy-Source' ] &= '?versionId=' & arguments.VersionId;
 
 
-        for ( var key in [ 'ContentDisposition','ContentType' ] ) {
+        for ( var key in [ 'ContentDisposition', 'ContentType' ] ) {
             if ( len( arguments[ key ] ) ) headers[ utils.parseKey( key ) ] = arguments[ key ];
         }
 
-        for ( var key in [ 'Acl','StorageClass','WebsiteRedirectLocation' ] ) {
+        for ( var key in [ 'Acl', 'StorageClass', 'WebsiteRedirectLocation' ] ) {
             if ( len( arguments[ key ] ) ) headers[ 'X-Amz-' & utils.parseKey( key ) ] = arguments[ key ];
         }
 
-        var apiResponse = apiCall( requestSettings, 'PUT', '/' & destinationBucket & '/' & destinationObjectKey, { }, headers );
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/' & destinationBucket & '/' & destinationObjectKey,
+            { },
+            headers
+        );
         apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         return apiResponse;
     }
@@ -443,9 +560,11 @@ component {
         boolean Quiet = false
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr(10)#<Delete>';
-        xmlBody &= '<Quiet>' & ( Quiet ?  'true' : 'false' ) & '</Quiet>';
-        ObjectKeys.each( function( objectKey ) { xmlBody &= '<Object><Key>#encodeforXML( objectKey )#</Key></Object>'; } );
+        var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr( 10 )#<Delete>';
+        xmlBody &= '<Quiet>' & ( Quiet ? 'true' : 'false' ) & '</Quiet>';
+        ObjectKeys.each( function( objectKey ) {
+            xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
+        } );
         xmlBody &= '</Delete>';
 
         var headers = { };
@@ -453,7 +572,14 @@ component {
         headers[ 'Content-MD5' ] = binaryEncode( binaryDecode( hash( xmlBody, 'MD5', 'utf-8' ), 'hex' ), 'base64' );
 
         var queryParams = { 'delete': '' };
-        var apiResponse = apiCall( requestSettings, 'POST', '/' & bucket, queryParams, headers, xmlBody );
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/' & bucket,
+            queryParams,
+            headers,
+            xmlBody
+        );
         apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         return apiResponse;
     }
@@ -491,16 +617,17 @@ component {
         // is there a max size?
         if ( maxSize > 0 ) conditions.append( [ 'content-length-range', 0, maxSize ] );
 
-        var authParams = api.authorizationParams(
-            variables.service,
-            requestSettings.region,
-            isoTime,
-            requestSettings.awsCredentials
-        )
+        var authParams = api
+            .authorizationParams(
+                variables.service,
+                requestSettings.region,
+                isoTime,
+                requestSettings.awsCredentials
+            )
             .reduce( function( authParamArray, key, value ) {
-            authParamArray.append( { 'name': key, 'value': value } );
-            return authParamArray;
-        }, [ ] );
+                authParamArray.append( { 'name': key, 'value': value } );
+                return authParamArray;
+            }, [ ] );
         conditions.append( authParams, true );
         postParams.append( authParams, true );
 

@@ -85,20 +85,32 @@ component {
         headers[ 'X-Amz-Target' ] = 'TrentService.' & arguments.target;
         headers[ 'Content-Type' ] = 'application/x-amz-json-1.1';
 
-        var apiResponse = api.call( variables.service, host, requestSettings.region, 'POST', '/', { }, headers, payloadString, requestSettings.awsCredentials );
+        var apiResponse = api.call(
+            variables.service,
+            host,
+            requestSettings.region,
+            'POST',
+            '/',
+            { },
+            headers,
+            payloadString,
+            requestSettings.awsCredentials
+        );
         apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
     }
 
-    private any function buildPayload( required any args ) {
+    private any function buildPayload(
+        required any args
+    ) {
         var payload = { };
         for ( var key in args ) {
             var keyIndex = variables.argumentKeys.findNoCase( key );
             if ( !keyIndex ) continue;
             var argType = variables.argumentTypes[ key ];
             var casedKey = variables.argumentKeys[ keyIndex ];
-            switch( argType ) {
+            switch ( argType ) {
                 case 'array':
                 case 'string':
                     if ( args[ key ].len() ) payload[ casedKey ] = args[ key ];

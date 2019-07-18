@@ -1,6 +1,8 @@
 component {
 
-    public any function init( required any api ) {
+    public any function init(
+        required any api
+    ) {
         variables.utils = api.getUtils();
         variables.lf = chr( 10 );
         return this;
@@ -23,13 +25,30 @@ component {
         if ( len( awsCredentials.token ) ) {
             requestHeaders[ 'X-Amz-Security-Token' ] = awsCredentials.token;
         }
-        requestHeaders.append(headers);
+        requestHeaders.append( headers );
 
-        var canonicalRequest = createCanonicalRequest( httpMethod, path, queryParams, requestHeaders, payload );
-        var stringToSign = createStringToSign( region, service, isoTime, canonicalRequest );
+        var canonicalRequest = createCanonicalRequest(
+            httpMethod,
+            path,
+            queryParams,
+            requestHeaders,
+            payload
+        );
+        var stringToSign = createStringToSign(
+            region,
+            service,
+            isoTime,
+            canonicalRequest
+        );
         var credentialScope = stringToSign.listGetAt( stringToSign.listLen( lf ) - 1, lf );
         var signedHeaders = canonicalRequest.listGetAt( canonicalRequest.listLen( lf ) - 1, lf );
-        var signature = sign( awsCredentials, isoTime.left( 8 ), region, service, stringToSign );
+        var signature = sign(
+            awsCredentials,
+            isoTime.left( 8 ),
+            region,
+            service,
+            stringToSign
+        );
 
         var authorization = 'AWS4-HMAC-SHA256 ';
         authorization &= 'Credential=' & awsCredentials.awsKey & '/' & credentialScope & ', ';
@@ -51,17 +70,42 @@ component {
         required struct awsCredentials
     ) {
         var isoTime = utils.iso8601();
-        var params = {};
+        var params = { };
         params.append( queryParams );
-        params.append( getAuthorizationParams( service, region, isoTime, awsCredentials ) );
+        params.append(
+            getAuthorizationParams(
+                service,
+                region,
+                isoTime,
+                awsCredentials
+            )
+        );
         params[ 'X-Amz-SignedHeaders' ] = 'host';
         params[ 'X-Amz-Expires' ] = expires;
 
-        var canonicalRequest = createCanonicalRequest( httpMethod, path, params, { 'Host': host }, '', true );
-        var stringToSign = createStringToSign( region, service, isoTime, canonicalRequest );
+        var canonicalRequest = createCanonicalRequest(
+            httpMethod,
+            path,
+            params,
+            { 'Host': host },
+            '',
+            true
+        );
+        var stringToSign = createStringToSign(
+            region,
+            service,
+            isoTime,
+            canonicalRequest
+        );
         // writeDump( canonicalRequest );
         // writeDump( stringToSign );
-        params[ 'X-Amz-Signature' ] = sign( awsCredentials, isoTime.left( 8 ), region, service, stringToSign );
+        params[ 'X-Amz-Signature' ] = sign(
+            awsCredentials,
+            isoTime.left( 8 ),
+            region,
+            service,
+            stringToSign
+        );
         return params;
     }
 
@@ -103,7 +147,13 @@ component {
         }
 
         result.append( '' );
-        result.append( headersParsed.map( function( header ) { return header.name; } ).toList( ';' ) );
+        result.append(
+            headersParsed
+                .map( function( header ) {
+                    return header.name;
+                } )
+                .toList( ';' )
+        );
         if ( unsignedPayload ) {
             result.append( 'UNSIGNED-PAYLOAD' );
         } else {
@@ -121,7 +171,7 @@ component {
         var result = [ ];
         result.append( 'AWS4-HMAC-SHA256' );
         result.append( isoTime );
-        result.append( isoTime.left( 8 ) & '/' & region & '/' & service & '/aws4_request'  );
+        result.append( isoTime.left( 8 ) & '/' & region & '/' & service & '/aws4_request' );
         result.append( hash( canonicalRequest, 'SHA-256' ).lcase() );
         return result.toList( lf );
     }
@@ -133,11 +183,48 @@ component {
         required string service,
         required string stringToSign
     ) {
-        var signingKey = binaryDecode( hmac( isoDateShort, 'AWS4' & awsCredentials.awsSecretKey, 'hmacSHA256', 'utf-8' ), 'hex' );
-        signingKey = binaryDecode( hmac( region, signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );
-        signingKey = binaryDecode( hmac( service, signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );
-        signingKey = binaryDecode( hmac( 'aws4_request', signingKey, 'hmacSHA256', 'utf-8' ), 'hex' );
-        return hmac( stringToSign, signingKey, 'hmacSHA256', 'utf-8' ).lcase();
+        var signingKey = binaryDecode(
+            hmac(
+                isoDateShort,
+                'AWS4' & awsCredentials.awsSecretKey,
+                'hmacSHA256',
+                'utf-8'
+            ),
+            'hex'
+        );
+        signingKey = binaryDecode(
+            hmac(
+                region,
+                signingKey,
+                'hmacSHA256',
+                'utf-8'
+            ),
+            'hex'
+        );
+        signingKey = binaryDecode(
+            hmac(
+                service,
+                signingKey,
+                'hmacSHA256',
+                'utf-8'
+            ),
+            'hex'
+        );
+        signingKey = binaryDecode(
+            hmac(
+                'aws4_request',
+                signingKey,
+                'hmacSHA256',
+                'utf-8'
+            ),
+            'hex'
+        );
+        return hmac(
+            stringToSign,
+            signingKey,
+            'hmacSHA256',
+            'utf-8'
+        ).lcase();
     }
 
 }

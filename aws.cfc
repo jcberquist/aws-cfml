@@ -17,7 +17,7 @@ component {
     ];
 
     variables.constructorArgs = {
-        cognitoIdentity: {apiVersion: '2014-06-30'},
+        cognitoIdentity: { apiVersion: '2014-06-30' },
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
         elasticsearch: { endpoint: '' },
@@ -29,11 +29,7 @@ component {
         s3: { },
         sns: { apiVersion: '2010-03-31' },
         sqs: { apiVersion: '2012-11-05' },
-        translate: {
-            apiVersion: '20170701',
-            defaultSourceLanguageCode: 'es',
-            defaultTargetLanguageCode: 'en'
-        }
+        translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' }
     };
 
     public struct function init(

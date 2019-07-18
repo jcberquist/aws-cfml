@@ -28,12 +28,17 @@ component {
         numeric numResults
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn };
+        var args = { 'campaignArn': arguments.campaignArn };
         if ( !isNull( arguments.itemId ) ) args[ 'itemId' ] = arguments.itemId;
         if ( !isNull( arguments.userId ) ) args[ 'userId' ] = arguments.userId;
         if ( !isNull( arguments.numResults ) ) args[ 'numResults' ] = arguments.numResults;
 
-        return apiCall( requestSettings, 'GetRecommendations', "/recommendations", args );
+        return apiCall(
+            requestSettings,
+            'GetRecommendations',
+            '/recommendations',
+            args
+        );
     }
 
     /**
@@ -51,9 +56,14 @@ component {
         string userId
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn, 'itemList'=arguments.itemList, 'userId'=arguments.userId };
+        var args = { 'campaignArn': arguments.campaignArn, 'itemList': arguments.itemList, 'userId': arguments.userId };
 
-        return apiCall( requestSettings, 'GetPersonalizedRanking', "/personalize-ranking", args );
+        return apiCall(
+            requestSettings,
+            'GetPersonalizedRanking',
+            '/personalize-ranking',
+            args
+        );
     }
 
     private any function apiCall(
@@ -69,7 +79,7 @@ component {
         headers[ 'Content-Type' ] = 'application/x-amz-json-1.1';
 
         var apiResponse = api.call(
-            "personalize",
+            'personalize',
             host,
             requestSettings.region,
             'POST',
@@ -83,4 +93,5 @@ component {
 
         return apiResponse;
     }
+
 }

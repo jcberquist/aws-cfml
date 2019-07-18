@@ -25,7 +25,12 @@ component {
         var queryString = { };
         if ( !isNull( arguments.Ascending ) ) queryString[ 'Ascending' ] = Ascending;
         if ( !isNull( arguments.PageToken ) ) queryString[ 'PageToken' ] = PageToken;
-        var apiResponse = apiCall( requestSettings, 'GET', '/pipelines', queryString );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/pipelines',
+            queryString
+        );
         return apiResponse;
     }
 
@@ -43,7 +48,12 @@ component {
         var queryString = { };
         if ( !isNull( arguments.Ascending ) ) queryString[ 'Ascending' ] = ( Ascending ? 'true' : 'false' );
         if ( !isNull( arguments.PageToken ) ) queryString[ 'PageToken' ] = PageToken;
-        return apiCall( requestSettings, 'GET', '/presets', queryString );
+        return apiCall(
+            requestSettings,
+            'GET',
+            '/presets',
+            queryString
+        );
     }
 
     /**
@@ -55,7 +65,13 @@ component {
         required struct Job
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'POST', '/jobs', { }, Job );
+        return apiCall(
+            requestSettings,
+            'POST',
+            '/jobs',
+            { },
+            Job
+        );
     }
 
     private any function apiCall(
@@ -87,6 +103,5 @@ component {
 
         return apiResponse;
     }
-
 
 }

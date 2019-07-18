@@ -19,19 +19,17 @@ component {
         var result = '';
         var fullPath = path & ( !queryParams.isEmpty() ? ( '?' & utils.parseQueryParams( queryParams ) ) : '' );
         var request_headers = utils.parseHeaders( headers );
-        var urlPath = 'http' & (useSSL ? 's' : '') & '://' & fullPath;
+        var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        http url = urlPath method = httpMethod result = "result" encodeurl = false timeout = timeout {
-
+        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
-                httpparam type = "header" name = lcase( header.name ) value = header.value;
+                httpparam type="header" name=lCase( header.name ) value=header.value;
             }
 
-            if ( arrayFindNoCase( [ 'POST','PUT' ], httpMethod ) && !isNull( arguments.body ) ) {
-                httpparam type = "body" value = body;
+            if ( arrayFindNoCase( [ 'POST', 'PUT' ], httpMethod ) && !isNull( arguments.body ) ) {
+                httpparam type="body" value=body;
             }
-
         }
         return result;
     }

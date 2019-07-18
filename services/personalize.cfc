@@ -24,7 +24,11 @@ component {
         required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'minProvisionedTPS'=arguments.minProvisionedTPS, 'name'=arguments.name, 'solutionVersionArn'=arguments.solutionVersionArn };
+        var args = {
+            'minProvisionedTPS': arguments.minProvisionedTPS,
+            'name': arguments.name,
+            'solutionVersionArn': arguments.solutionVersionArn
+        };
 
         return apiCall( requestSettings, 'CreateCampaign', args );
     }
@@ -44,7 +48,12 @@ component {
         required string schemaArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn, 'datasetType'=arguments.datasetType, 'name'=arguments.name, 'schemaArn'=arguments.schemaArn };
+        var args = {
+            'datasetGroupArn': arguments.datasetGroupArn,
+            'datasetType': arguments.datasetType,
+            'name': arguments.name,
+            'schemaArn': arguments.schemaArn
+        };
 
         return apiCall( requestSettings, 'CreateDataset', args );
     }
@@ -62,7 +71,7 @@ component {
         string roleArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'name'=arguments.name };
+        var args = { 'name': arguments.name };
         if ( !isNull( arguments.kmsKeyArn ) ) args[ 'kmsKeyArn' ] = arguments.kmsKeyArn;
         if ( !isNull( arguments.roleArn ) ) args[ 'roleArn' ] = arguments.roleArn;
 
@@ -84,7 +93,12 @@ component {
         required string roleArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'jobName'=arguments.jobName, 'datasetArn'=arguments.datasetArn, 'dataSource'={'dataLocation'=arguments.dataLocation}, 'roleArn'=arguments.roleArn };
+        var args = {
+            'jobName': arguments.jobName,
+            'datasetArn': arguments.datasetArn,
+            'dataSource': { 'dataLocation': arguments.dataLocation },
+            'roleArn': arguments.roleArn
+        };
 
         return apiCall( requestSettings, 'CreateDatasetImportJob', args );
     }
@@ -102,7 +116,7 @@ component {
         required string name
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'name'=arguments.name, 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'name': arguments.name, 'datasetGroupArn': arguments.datasetGroupArn };
 
         return apiCall( requestSettings, 'CreateEventTracker', args );
     }
@@ -119,7 +133,7 @@ component {
         required string schema
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'name'=arguments.name, 'schema'=arguments.schema };
+        var args = { 'name': arguments.name, 'schema': arguments.schema };
 
         return apiCall( requestSettings, 'CreateSchema', args );
     }
@@ -150,7 +164,7 @@ component {
         struct solutionConfig
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'name'=arguments.name, 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'name': arguments.name, 'datasetGroupArn': arguments.datasetGroupArn };
         if ( !isNull( arguments.eventType ) ) args[ 'eventType' ] = arguments.eventType;
         if ( !isNull( arguments.performAutoML ) ) args[ 'performAutoML' ] = arguments.performAutoML;
         if ( !isNull( arguments.performHPO ) ) args[ 'performHPO' ] = arguments.performHPO;
@@ -169,7 +183,7 @@ component {
         required string solutionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn'=arguments.solutionArn };
+        var args = { 'solutionArn': arguments.solutionArn };
 
         return apiCall( requestSettings, 'CreateSolutionVersion', args );
     }
@@ -183,7 +197,7 @@ component {
         required string campaignArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn };
+        var args = { 'campaignArn': arguments.campaignArn };
 
         return apiCall( requestSettings, 'DeleteCampaign', args );
     }
@@ -197,7 +211,7 @@ component {
         required string datasetArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetArn'=arguments.datasetArn };
+        var args = { 'datasetArn': arguments.datasetArn };
 
         return apiCall( requestSettings, 'DeleteDataset', args );
     }
@@ -214,7 +228,7 @@ component {
         required string datasetGroupArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
 
         return apiCall( requestSettings, 'DeleteDatasetGroup', args );
     }
@@ -228,7 +242,7 @@ component {
         required string eventTrackerArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'eventTrackerArn'=arguments.eventTrackerArn };
+        var args = { 'eventTrackerArn': arguments.eventTrackerArn };
 
         return apiCall( requestSettings, 'DeleteEventTracker', args );
     }
@@ -242,7 +256,7 @@ component {
         required string schemaArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'schemaArn'=arguments.schemaArn };
+        var args = { 'schemaArn': arguments.schemaArn };
 
         return apiCall( requestSettings, 'DeleteSchema', args );
     }
@@ -258,7 +272,7 @@ component {
         required string solutionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn'=arguments.solutionArn };
+        var args = { 'solutionArn': arguments.solutionArn };
 
         return apiCall( requestSettings, 'DeleteSolution', args );
     }
@@ -272,7 +286,7 @@ component {
         required string algorithmArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'algorithmArn'=arguments.algorithmArn };
+        var args = { 'algorithmArn': arguments.algorithmArn };
 
         return apiCall( requestSettings, 'DescribeAlgorithm', args );
     }
@@ -286,7 +300,7 @@ component {
         required string campaignArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn };
+        var args = { 'campaignArn': arguments.campaignArn };
 
         return apiCall( requestSettings, 'DescribeCampaign', args );
     }
@@ -300,7 +314,7 @@ component {
         required string datasetArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetArn'=arguments.datasetArn };
+        var args = { 'datasetArn': arguments.datasetArn };
 
         return apiCall( requestSettings, 'DescribeDataset', args );
     }
@@ -314,7 +328,7 @@ component {
         required string datasetGroupArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
 
         return apiCall( requestSettings, 'DescribeDatasetGroup', args );
     }
@@ -328,7 +342,7 @@ component {
         required string datasetImportJobArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetImportJobArn'=arguments.datasetImportJobArn };
+        var args = { 'datasetImportJobArn': arguments.datasetImportJobArn };
 
         return apiCall( requestSettings, 'DescribeDatasetImportJob', args );
     }
@@ -342,7 +356,7 @@ component {
         required string eventTrackerArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'eventTrackerArn'=arguments.eventTrackerArn };
+        var args = { 'eventTrackerArn': arguments.eventTrackerArn };
 
         return apiCall( requestSettings, 'DescribeEventTracker', args );
     }
@@ -356,7 +370,7 @@ component {
         required string featureTransformationArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'featureTransformationArn'=arguments.featureTransformationArn };
+        var args = { 'featureTransformationArn': arguments.featureTransformationArn };
 
         return apiCall( requestSettings, 'DescribeFeatureTransformation', args );
     }
@@ -376,7 +390,7 @@ component {
         required string recipeArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'recipeArn'=arguments.recipeArn };
+        var args = { 'recipeArn': arguments.recipeArn };
 
         return apiCall( requestSettings, 'DescribeRecipe', args );
     }
@@ -390,7 +404,7 @@ component {
         required string schemaArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'schemaArn'=arguments.schemaArn };
+        var args = { 'schemaArn': arguments.schemaArn };
 
         return apiCall( requestSettings, 'DescribeSchema', args );
     }
@@ -404,7 +418,7 @@ component {
         required string solutionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn'=arguments.solutionArn };
+        var args = { 'solutionArn': arguments.solutionArn };
 
         return apiCall( requestSettings, 'DescribeSolution', args );
     }
@@ -418,7 +432,7 @@ component {
         required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
+        var args = { 'solutionVersionArn': arguments.solutionVersionArn };
 
         return apiCall( requestSettings, 'DescribeSolutionVersion', args );
     }
@@ -432,7 +446,7 @@ component {
         required string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionVersionArn'=arguments.solutionVersionArn };
+        var args = { 'solutionVersionArn': arguments.solutionVersionArn };
 
         return apiCall( requestSettings, 'GetSolutionMetrics', args );
     }
@@ -450,7 +464,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = {};
+        var args = { };
         if ( !isNull( arguments.solutionArn ) ) args[ 'solutionArn' ] = arguments.solutionArn;
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
@@ -469,7 +483,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = {  };
+        var args = { };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -490,7 +504,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetArn'=arguments.datasetArn };
+        var args = { 'datasetArn': arguments.datasetArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -510,7 +524,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -530,7 +544,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -550,7 +564,7 @@ component {
         string recipeProvider
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = {  };
+        var args = { };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
         if ( !isNull( arguments.recipeProvider ) ) args[ 'recipeProvider' ] = arguments.recipeProvider;
@@ -569,7 +583,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = {  };
+        var args = { };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -589,7 +603,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'datasetGroupArn'=arguments.datasetGroupArn };
+        var args = { 'datasetGroupArn': arguments.datasetGroupArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -609,7 +623,7 @@ component {
         string nextToken
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'solutionArn'=arguments.solutionArn };
+        var args = { 'solutionArn': arguments.solutionArn };
         if ( !isNull( arguments.maxResults ) ) args[ 'maxResults' ] = arguments.maxResults;
         if ( !isNull( arguments.nextToken ) ) args[ 'nextToken' ] = arguments.nextToken;
 
@@ -630,7 +644,7 @@ component {
         string solutionVersionArn
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 'campaignArn'=arguments.campaignArn };
+        var args = { 'campaignArn': arguments.campaignArn };
         if ( !isNull( arguments.minProvisionedTPS ) ) args[ 'minProvisionedTPS' ] = arguments.minProvisionedTPS;
         if ( !isNull( arguments.solutionVersionArn ) ) args[ 'solutionVersionArn' ] = arguments.solutionVersionArn;
 
@@ -664,4 +678,5 @@ component {
 
         return apiResponse;
     }
+
 }

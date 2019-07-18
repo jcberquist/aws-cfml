@@ -40,6 +40,4 @@ component {
         return result;
     }
 
-
-
 }

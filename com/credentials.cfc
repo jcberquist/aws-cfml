@@ -1,6 +1,10 @@
 component {
 
-    public any function init( string awsKey = '', string awsSecretKey = '', any api ) {
+    public any function init(
+        string awsKey = '',
+        string awsSecretKey = '',
+        any api
+    ) {
         variables.api = api;
         variables.iamRolePath = '169.254.169.254/latest/meta-data/iam/security-credentials/';
         variables.iamRole = '';
@@ -15,7 +19,11 @@ component {
         return credentials;
     }
 
-    public struct function defaultCredentials( string awsKey = '', string awsSecretKey = '', string token = '' ) {
+    public struct function defaultCredentials(
+        string awsKey = '',
+        string awsSecretKey = '',
+        string token = ''
+    ) {
         return {
             awsKey: awsKey,
             awsSecretKey: awsSecretKey,
@@ -24,7 +32,10 @@ component {
         };
     }
 
-    private function resolveCredentials( awsKey, awsSecretKey ) {
+    private function resolveCredentials(
+        awsKey,
+        awsSecretKey
+    ) {
         var credentials = defaultCredentials( awsKey, awsSecretKey );
 
         if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
@@ -82,7 +93,9 @@ component {
         return req.filecontent;
     }
 
-    private void function refreshCredentials( src ) {
+    private void function refreshCredentials(
+        src
+    ) {
         var httpArgs = { };
         httpArgs[ 'httpMethod' ] = 'get';
         httpArgs[ 'path' ] = iamRolePath & iamRole;

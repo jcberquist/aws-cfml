@@ -26,14 +26,19 @@ component {
         required string userId
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 
-        	 'eventList'=arguments.eventList 
-        	,'sessionId'=arguments.sessionId 
-        	,'trackingId'=arguments.trackingId 
-        	,'userId'=arguments.userId 
+        var args = {
+            'eventList': arguments.eventList,
+            'sessionId': arguments.sessionId,
+            'trackingId': arguments.trackingId,
+            'userId': arguments.userId
         };
 
-        return apiCall( requestSettings, 'PutEvents', "/events", args );
+        return apiCall(
+            requestSettings,
+            'PutEvents',
+            '/events',
+            args
+        );
     }
 
     private any function apiCall(
@@ -49,7 +54,7 @@ component {
         headers[ 'Content-Type' ] = 'application/x-amz-json-1.1';
 
         var apiResponse = api.call(
-            "personalize",
+            'personalize',
             host,
             requestSettings.region,
             'POST',
@@ -63,4 +68,5 @@ component {
 
         return apiResponse;
     }
+
 }

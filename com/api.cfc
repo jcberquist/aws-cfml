@@ -6,12 +6,19 @@ component accessors="true" {
     property signer;
     property defaultRegion;
 
-    public any function init( required string awsKey, required string awsSecretKey, required string defaultRegion ) {
+    public any function init(
+        required string awsKey,
+        required string awsSecretKey,
+        required string defaultRegion
+    ) {
         variables.utils = new utils();
         variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils ) : new http.coldfusion( utils );
         variables.credentials = new credentials( awsKey, awsSecretKey, this );
         variables.signer = new signature_v4( this );
-        variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting( 'AWS_DEFAULT_REGION', '' );
+        variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting(
+            'AWS_DEFAULT_REGION',
+            ''
+        );
 
         if ( !variables.defaultRegion.len() ) {
             var profile = utils.getSystemSetting( 'AWS_PROFILE', 'default' );
@@ -24,7 +31,10 @@ component accessors="true" {
         return this;
     }
 
-    public struct function resolveRequestSettings( struct awsCredentials = { }, string region = defaultRegion ) {
+    public struct function resolveRequestSettings(
+        struct awsCredentials = { },
+        string region = defaultRegion
+    ) {
         if ( !awsCredentials.isEmpty() ) {
             awsCredentials = credentials.defaultCredentials( argumentCollection = awsCredentials );
         }

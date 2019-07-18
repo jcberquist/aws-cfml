@@ -19,7 +19,7 @@ component {
     * @IdentityId A unique identifier in the format REGION:GUID.
     * @TokenDuration The expiration time of the token, in seconds.
     */
-    public any function GetOpenIdTokenForDeveloperIdentity (
+    public any function GetOpenIdTokenForDeveloperIdentity(
         required string IdentityPoolId,
         required struct Logins,
         string IdentityId,
@@ -34,7 +34,7 @@ component {
         return apiCall( requestSettings, 'GetOpenIdTokenForDeveloperIdentity', payload );
     }
 
-    //private functions
+    // private functions
 
     private any function apiCall(
         required struct requestSettings,
@@ -62,4 +62,5 @@ component {
 
         return apiResponse;
     }
+
 }
