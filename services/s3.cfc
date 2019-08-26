@@ -279,7 +279,6 @@ component {
     public any function deleteBucket(
         required string Bucket
     ) {
-		var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         return apiCall( requestSettings, 'DELETE', '/' & Bucket );
     }
 

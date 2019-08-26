@@ -51,8 +51,7 @@ component accessors="true" {
         struct headers = { },
         any body = '',
         struct awsCredentials = { },
-        boolean encodeurl = true,
-        boolean useSSL = true
+        boolean encodeurl = true
     ) {
         if ( awsCredentials.isEmpty() ) {
             awsCredentials = credentials.getCredentials();
@@ -78,7 +77,6 @@ component accessors="true" {
         httpArgs[ 'path' ] = host & encodedPath;
         httpArgs[ 'headers' ] = signedRequestHeaders;
         httpArgs[ 'queryParams' ] = queryParams;
-        httpArgs[ 'useSSL' ] = useSSL;
         if ( !isNull( arguments.body ) ) httpArgs[ 'body' ] = body;
         // writeDump( httpArgs );
 
@@ -91,7 +89,6 @@ component accessors="true" {
         apiResponse[ 'responseHeaders' ] = rawResponse.responseheader;
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
-        apiResponse[ 'host' ] = arguments.host;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
             apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
