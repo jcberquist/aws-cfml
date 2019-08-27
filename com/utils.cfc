@@ -72,7 +72,7 @@ component {
     public array function parseHeaders(
         required struct headers
     ) {
-        var sortedKeyArray = headers.keyArray();
+        var sortedKeyArray = arguments.headers.keyArray();
         sortedKeyArray.sort( 'textnocase' );
         var processedHeaders = sortedKeyArray.map( function( key ) {
             return { name: key.lcase(), value: trim( headers[ key ] ) };
