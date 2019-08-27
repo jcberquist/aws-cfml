@@ -21,14 +21,14 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        cfhttp(url=urlPath method=httpMethod result="result" timeout=timeout) {
+        cfhttp(url=urlPath, method=httpMethod, result="result", timeout=timeout) {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
-                cfhttpparam(type="header" name=lCase( header.name ) value=header.value);
+                cfhttpparam(type="header", name=lCase( header.name ), value=header.value);
             }
 
             if ( arrayFindNoCase( [ 'POST', 'PUT' ], httpMethod ) && !isNull( arguments.body ) ) {
-                cfhttpparam(type="body" value=body);
+                cfhttpparam(type="body", value=body);
             }
         }
         return result;

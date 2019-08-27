@@ -670,10 +670,11 @@ component {
     private string function getHost(
         required string region
     ) {
-        if ( structKeyExists(variables.settings, "host") and len(variables.settings.host) )
+        if ( structKeyExists( variables.settings, 'host' ) and len( variables.settings.host ) ) {
             return variables.settings.host;
-        else
+        } else {
             return variables.service & ( region == 'us-east-1' ? '' : '-' & region ) & '.amazonaws.com';
+        }
     }
 
     private any function apiCall(
@@ -691,9 +692,8 @@ component {
         } else {
             headers[ 'X-Amz-Content-Sha256' ] = variables.emptyStringHash;
         }
-        var useSSL = true;
-        if ( structKeyExists(variables.settings, "useSSL") )
-            useSSL = variables.settings.useSSL;
+
+        var useSSL = !structKeyExists( variables.settings, 'useSSL' ) || variables.settings.useSSL;
 
         return api.call(
             variables.service,
