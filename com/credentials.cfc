@@ -7,7 +7,9 @@ component {
     ) {
         variables.api = api;
         variables.iamRolePath = '169.254.169.254/latest/meta-data/iam/security-credentials/';
+        variables.ecsEndpoint = '169.254.170.2';
         variables.iamRole = '';
+        variables.credentialPath = '';
         variables.credentials = resolveCredentials( awsKey, awsSecretKey );
         return this;
     }
@@ -65,10 +67,23 @@ component {
             return credentials;
         }
 
-        // IAM role
+        // IAM role (ECS)
+        var relativeUri = utils.getSystemSetting( 'AWS_CONTAINER_CREDENTIALS_RELATIVE_URI', '' );
+        if ( len( relativeUri ) ) {
+            variables.credentialPath = ecsEndpoint & relativeUri;
+            refreshCredentials( credentials );
+        }
+
+        if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+            return credentials;
+        }
+
+
+        // IAM role (EC2)
         try {
             variables.iamRole = requestIamRole();
             if ( iamRole.len() ) {
+                variables.credentialPath = iamRolePath & iamRole;
                 refreshCredentials( credentials );
             }
         } catch ( any e ) {
@@ -98,7 +113,7 @@ component {
     ) {
         var httpArgs = { };
         httpArgs[ 'httpMethod' ] = 'get';
-        httpArgs[ 'path' ] = iamRolePath & iamRole;
+        httpArgs[ 'path' ] = credentialPath;
         httpArgs[ 'useSSL' ] = false;
         var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
         var data = deserializeJSON( req.filecontent );
