@@ -9,10 +9,12 @@ component accessors="true" {
     public any function init(
         required string awsKey,
         required string awsSecretKey,
-        required string defaultRegion
+        required string defaultRegion,
+        string proxyServer = '',
+        string proxyPort = '80'
     ) {
         variables.utils = new utils();
-        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils ) : new http.coldfusion( utils );
+        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils, proxyServer, proxyPort ) : new http.coldfusion( utils, proxyServer, proxyPort );
         variables.credentials = new credentials( awsKey, awsSecretKey, this );
         variables.signer = new signature_v4( this );
         variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting(

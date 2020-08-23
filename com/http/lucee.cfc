@@ -1,9 +1,13 @@
 component {
 
     public any function init(
-        required any utils
+        required any utils,
+        string proxyServer = '',
+        string proxyPort = '80'
     ) {
         variables.utils = utils;
+        variables.proxyServer = proxyServer;
+        variables.proxyPort = proxyPort;
         return this;
     }
 
@@ -21,7 +25,7 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout {
+        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout proxyServer=variables.proxyServer proxyPort=variables.proxyPort {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
                 httpparam type="header" name=lCase( header.name ) value=header.value;
