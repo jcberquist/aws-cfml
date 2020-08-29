@@ -25,6 +25,28 @@ component {
         }
         return apiResponse;
     }
+    
+    /**
+    * Sends a message
+    * @queueName the name of the queue to send to (e.g. "123456789/my-sqs-queue").
+    * @message the message to post, text format.
+    */
+    public any function sendMessage(
+		    required string queueName,
+		    required string message
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & queueName,
+            { 'Action': 'SendMessage', 'MessageBody': message}
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
 
     // private
 
