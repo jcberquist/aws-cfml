@@ -40,7 +40,7 @@ aws = new path.to.awscfml.aws(
 );
 ```
 
-*Note: Optional `proxyServer` and `proxyPort` arguments are available when initializing the core `aws` component.  This will proxy all AWS requests.*
+*Note: An optional `httpProxy` argument is available when initializing the core `aws` component (a struct with `server` and `port` keys).  When set this will proxy all AWS requests.*
 
 ### ColdBox Module
 

@@ -10,11 +10,10 @@ component accessors="true" {
         required string awsKey,
         required string awsSecretKey,
         required string defaultRegion,
-        string proxyServer = '',
-        string proxyPort = '80'
+        struct httpProxy = { server: '', port: 80 }
     ) {
         variables.utils = new utils();
-        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils, proxyServer, proxyPort ) : new http.coldfusion( utils, proxyServer, proxyPort );
+        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils, httpProxy ) : new http.coldfusion( utils, httpProxy );
         variables.credentials = new credentials( awsKey, awsSecretKey, this );
         variables.signer = new signature_v4( this );
         variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting(

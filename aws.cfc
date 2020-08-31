@@ -37,10 +37,9 @@ component {
         string awsSecretKey = '',
         string defaultRegion = '',
         struct constructorArgs = { },
-        string proxyServer = '',
-        string proxyPort = '80'
+        struct httpProxy = { server: '', port: 80 }
     ) {
-        this.api = new com.api( awsKey, awsSecretKey, defaultRegion, proxyServer, proxyPort );
+        this.api = new com.api( awsKey, awsSecretKey, defaultRegion, httpProxy );
 
         for ( var service in variables.services ) {
             if ( structKeyExists( arguments.constructorArgs, service ) ) {
