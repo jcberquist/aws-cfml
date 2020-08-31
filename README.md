@@ -40,6 +40,8 @@ aws = new path.to.awscfml.aws(
 );
 ```
 
+*Note: An optional `httpProxy` argument is available when initializing the core `aws` component (a struct with `server` and `port` keys).  When set this will proxy all AWS requests.*
+
 ### ColdBox Module
 
 To use the library as a ColdBox Module, add the init arguments to the `moduleSettings` struct in `config/Coldbox.cfc`:

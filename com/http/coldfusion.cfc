@@ -1,7 +1,8 @@
 component {
 
     public any function init(
-        required any utils
+        required any utils,
+        struct httpProxy = { server: '', port: 80 }
     ) {
         variables.utils = utils;
         return this;
@@ -21,7 +22,7 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        cfhttp(url=urlPath, method=httpMethod, result="result", timeout=timeout) {
+        cfhttp(url=urlPath, method=httpMethod, result="result", timeout=timeout, proxyserver=httpProxy.server, proxyport=httpProxy.port) {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
                 cfhttpparam(type="header", name=lCase( header.name ), value=header.value);

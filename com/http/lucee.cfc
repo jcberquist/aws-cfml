@@ -1,9 +1,11 @@
 component {
 
     public any function init(
-        required any utils
+        required any utils,
+        struct httpProxy = { server: '', port: 80 }
     ) {
         variables.utils = utils;
+        variables.httpProxy = httpProxy;
         return this;
     }
 
@@ -21,7 +23,7 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout {
+        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout proxyServer=httpProxy.server proxyPort=httpProxy.port {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
                 httpparam type="header" name=lCase( header.name ) value=header.value;
