@@ -23,7 +23,14 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        http url=urlPath method=httpMethod result="result" encodeurl=false timeout=timeout proxyServer=httpProxy.server proxyPort=httpProxy.port {
+        http
+            url=urlPath
+            method=httpMethod
+            result="result"
+            encodeurl=false
+            timeout=timeout
+            proxyServer=httpProxy.server
+            proxyPort=httpProxy.port {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
                 httpparam type="header" name=lCase( header.name ) value=header.value;
