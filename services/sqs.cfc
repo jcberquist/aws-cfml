@@ -47,26 +47,26 @@ component {
             required string queueName,
             required string message,
             numeric delaySeconds,
-            array messageAttriubes = [ ],
+            array messageAttributes = [ ],
             string messageDeduplicationId,
             string messageGroupId
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = { 'Action': 'SendMessage', 'MessageBody': message };
-        if( isDefined( 'delaySeconds' ) && isNumeric( delaySeconds ) ) {
+        if( structKeyExists( arguments, 'delaySeconds' ) && isNumeric( delaySeconds ) ) {
             structAppend( payload, { 'DelaySeconds': delaySeconds } );
         }
-        for( var idx=1; idx LTE arrayLen(messageAttriubes); idx++ ) {
+        for( var idx=1; idx <= arrayLen(messageAttributes); idx++ ) {
             structAppend( payload, { 
-                'MessageAttribute.#idx#.Name': messageAttriubes[idx].Name,
-                'MessageAttribute.#idx#.Value.StringValue': messageAttriubes[idx].Value,
-                'MessageAttribute.#idx#.Value.DataType': messageAttriubes[idx].DataType
+                'MessageAttribute.#idx#.Name': messageAttributes[idx].Name,
+                'MessageAttribute.#idx#.Value.StringValue': messageAttributes[idx].Value,
+                'MessageAttribute.#idx#.Value.DataType': messageAttributes[idx].DataType
             });
         }
-        if( isDefined( 'messageDeduplicationId' ) && len( messageDeduplicationId ) ) {
+        if( structKeyExists( arguments, 'messageDeduplicationId' ) && len( messageDeduplicationId ) ) {
             structAppend( payload, { 'MessageDeduplicationId': messageDeduplicationId } );
         }
-        if( isDefined( 'messageGroupId' ) && len( messageGroupId ) ) {
+        if( structKeyExists( arguments, 'messageGroupId' ) && len( messageGroupId ) ) {
             structAppend( payload, { 'MessageGroupId': messageGroupId } );
         }
         var apiResponse = apiCall(
@@ -90,7 +90,7 @@ component {
     * Note: When AWS receives more than one message, ReceiveMessageResult is an array. 
     *       When only one message is received, ReceiveMessageResult it is not an array.
     * @waitTimeSeconds Optional numeric. The duration (in seconds) for which the call waits for a message to arrive in the queue before returning.
-    * @attribueNames Optional array. An array of strings for attributes that need to be returned along with each message. ['All'] returns all attributes.
+    * @aattributeNames Optional array. An array of strings for attributes that need to be returned along with each message. ['All'] returns all attributes.
     * @messageAttributeNames Optional array. An array of strings for user-defined attributes. Case-sensitive. ['All'] returns all user-defined attributes.
     * Example: ['userAttribute1','userAttribute2']
     */
@@ -99,7 +99,7 @@ component {
             numeric maxNumberOfMessages = 1,
             numeric visibilityTimeout,
             numeric waitTimeSeconds,
-            array attribueNames = [ ],
+            array aattributeNames = [ ],
             array messageAttributeNames = [ ]
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
@@ -110,18 +110,18 @@ component {
             'Action': 'ReceiveMessage', 
             'MaxNumberOfMessages': maxNumberOfMessages
         };
-        if( isDefined( 'visibilityTimeout' ) && isNumeric( visibilityTimeout ) ){
+        if( structKeyExists( arguments, 'visibilityTimeout' ) && isNumeric( visibilityTimeout ) ){
             payload[ 'VisibilityTimeout' ] = visibilityTimeout;
         }
-        if( isDefined( 'waitTimeSeconds' ) && isNumeric( waitTimeSeconds ) ){
+        if( structKeyExists( arguments, 'waitTimeSeconds' ) && isNumeric( waitTimeSeconds ) ){
             payload[ 'WaitTimeSeconds' ] = waitTimeSeconds;
         }
-        for( var idx=1; idx LTE arrayLen( attribueNames ); idx++ ) {
+        for( var idx=1; idx <= arrayLen( aattributeNames ); idx++ ) {
             structAppend( payload, { 
-                'AttributeName.#idx#': attribueNames[idx]
+                'AttributeName.#idx#': aattributeNames[idx]
             });
         }
-        for( var idx=1; idx LTE arrayLen( messageAttributeNames ); idx++ ) {
+        for( var idx=1; idx <= arrayLen( messageAttributeNames ); idx++ ) {
             structAppend( payload, { 
                 'MessageAttributeName.#idx#': messageAttributeNames[idx]
             });
