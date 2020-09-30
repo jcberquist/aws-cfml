@@ -93,7 +93,7 @@ component {
     * Note: When AWS receives more than one message, ReceiveMessageResult is an array.
     *       When only one message is received, ReceiveMessageResult it is not an array.
     * @waitTimeSeconds Optional numeric. The duration (in seconds) for which the call waits for a message to arrive in the queue before returning.
-    * @aattributeNames Optional array. An array of strings for attributes that need to be returned along with each message. ['All'] returns all attributes.
+    * @attributeNames Optional array. An array of strings for attributes that need to be returned along with each message. ['All'] returns all attributes.
     * @messageAttributeNames Optional array. An array of strings for user-defined attributes. Case-sensitive. ['All'] returns all user-defined attributes.
     * Example: ['userAttribute1','userAttribute2']
     */
@@ -102,7 +102,7 @@ component {
         numeric maxNumberOfMessages = 1,
         numeric visibilityTimeout,
         numeric waitTimeSeconds,
-        array aattributeNames = [ ],
+        array attributeNames = [ ],
         array messageAttributeNames = [ ]
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
@@ -116,8 +116,8 @@ component {
         if ( structKeyExists( arguments, 'waitTimeSeconds' ) && isNumeric( waitTimeSeconds ) ) {
             payload[ 'WaitTimeSeconds' ] = waitTimeSeconds;
         }
-        for ( var idx = 1; idx <= arrayLen( aattributeNames ); idx++ ) {
-            structAppend( payload, { 'AttributeName.#idx#': aattributeNames[ idx ] } );
+        for ( var idx = 1; idx <= arrayLen( attributeNames ); idx++ ) {
+            structAppend( payload, { 'AttributeName.#idx#': attributeNames[ idx ] } );
         }
         for ( var idx = 1; idx <= arrayLen( messageAttributeNames ); idx++ ) {
             structAppend( payload, { 'MessageAttributeName.#idx#': messageAttributeNames[ idx ] } );
