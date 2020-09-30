@@ -31,7 +31,7 @@
             "URL":"http://opensource.org/licenses/MIT"
         }
     ],
-    "location":"jcberquist/aws-cfml#v1.13.0",
+    "location":"jcberquist/aws-cfml#v1.13.1",
     "name":"aws-cfml",
     "packageDirectory":"awscfml",
     "private":false,
@@ -39,5 +39,5 @@
     "shortDescription":"AWS CFML is a CFML library for interacting with AWS APIs",
     "slug":"aws-cfml",
     "type":"modules",
-    "version":"1.13.0"
+    "version":"1.13.1"
 }
