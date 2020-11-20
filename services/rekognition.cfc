@@ -102,14 +102,11 @@ component {
         string QualityFilter
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var args = { 
-            'SourceImage': arguments.SourceImage,
-            'TargetImage': arguments.TargetImage
-        };
+        var args = { 'SourceImage': arguments.SourceImage, 'TargetImage': arguments.TargetImage };
         if ( !isNull( arguments.SimilarityThreshold ) ) args[ 'SimilarityThreshold' ] = arguments.SimilarityThreshold;
         if ( !isNull( arguments.QualityFilter ) ) args[ 'QualityFilter' ] = arguments.QualityFilter;
 
-        return apiCall( requestSettings, 'CompareFaces', args);
+        return apiCall( requestSettings, 'CompareFaces', args );
     }
 
     private any function apiCall(
