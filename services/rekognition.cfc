@@ -107,7 +107,7 @@ component {
             'TargetImage': arguments.TargetImage
         };
         if ( !isNull( arguments.SimilarityThreshold ) ) args[ 'SimilarityThreshold' ] = arguments.SimilarityThreshold;
-        if ( !isNull( arguments.QualityFilter ) ) args[ 'SimilarityThreshold' ] = arguments.QualityFilter;
+        if ( !isNull( arguments.QualityFilter ) ) args[ 'QualityFilter' ] = arguments.QualityFilter;
 
         return apiCall( requestSettings, 'CompareFaces', args);
     }
