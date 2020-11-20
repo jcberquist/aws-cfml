@@ -87,6 +87,27 @@ component {
         return apiCall( requestSettings, 'RecognizeCelebrities', { 'Image': arguments.Image } );
     }
 
+    /**
+    * Returns an array of face matches ordered by similarity score in descending order
+    * https://docs.aws.amazon.com/rekognition/latest/dg/API_CompareFaces.html
+    * @SourceImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @TargetImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    */
+    public any function compareFaces(
+        required struct SourceImage,
+        required struct TargetImage,
+        numeric SimilarityThreshold
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var args = { 
+            'SourceImage': arguments.SourceImage,
+            'TargetImage': arguments.TargetImage
+        };
+        if ( !isNull( arguments.SimilarityThreshold ) ) args[ 'SimilarityThreshold' ] = arguments.SimilarityThreshold;
+
+        return apiCall( requestSettings, 'CompareFaces', args);
+    }
+
     private any function apiCall(
         required struct requestSettings,
         required string target,
