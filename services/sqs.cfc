@@ -197,7 +197,7 @@ component {
             'Attribute.3.Value': receiveMessageWaitTimeSeconds,
             'Attribute.4.Name': 'VisibilityTimeout',
             'Attribute.4.Value': visibilityTimeout
-        }
+        };
         // Only append fifo attributes for fifo queues
         if ( fifoQueue ) {
             structAppend(
