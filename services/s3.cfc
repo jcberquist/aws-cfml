@@ -73,7 +73,7 @@ component {
         return apiResponse;
     }
 
- /** 
+    /**
     * Returns some or all (up to 1000) of the objects in a bucket. You pass returned ContinuationToken to next request to get next set of records
     * https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
     * @Bucket the name of the bucket to list objects from
@@ -82,7 +82,6 @@ component {
     * @Marker Specifies the key to start with when listing objects in a bucket. Amazon S3 returns object keys in alphabetical order, starting with key after the marker in order.
     * @MaxKeys Sets the maximum number of keys returned in the response body. You can add this to your request if you want to retrieve fewer than the default 1000 keys.
     * @Prefix Limits the response to keys that begin with the specified prefix. You can use prefixes to separate a bucket into different groupings of keys. (You can think of using prefix to make groups in the same way you'd use a folder in a file system.)
-    * @listType Its not a parameter but more of a API type of V2
     * @ContinuationToken If this is passed we will get next set of records
     */
 
@@ -93,11 +92,10 @@ component {
         string Marker = '',
         numeric MaxKeys = 0,
         string Prefix = '',
-        string listType = '',
         string ContinuationToken = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var queryParams = { };
+        var queryParams = { 'list-type': 2 };
         for (
             var key in [
                 'Delimiter',
@@ -119,7 +117,6 @@ component {
             queryParams
         );
 
-        //writeDump(apiResponse);abort;
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
             if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
