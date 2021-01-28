@@ -11,6 +11,7 @@ It currently supports the following APIs:
  - elastictranscoder
  - rekognition
  - s3
+ - secretsmanager
  - sns
  - sqs
  - translate
@@ -170,6 +171,15 @@ moderationlabels = response.data.ModerationLabels;
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
+
+### Secrets Manager
+
+Only the GetSecretValue operation has been implemented. Here's an example of using it:
+
+```cfc
+response = aws.secretsmanager.getSecretValue( 'YourSecretId' );
+secretValue = response.data.SecretString;
+```
 
 ### Translate
 
