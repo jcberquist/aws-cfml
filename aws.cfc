@@ -10,6 +10,7 @@ component {
         'personalizeEvents',
         'personalizeRuntime',
         's3',
+        'secretsmanager',
         'sns',
         'sqs',
         'rekognition',
@@ -27,6 +28,7 @@ component {
         personalizeEvents: { apiVersion: '2018-03-22' },
         rekognition: { apiVersion: '2016-06-27' },
         s3: { host: '', useSSL: true },
+        secretsmanager: { apiVersion: '2017-10-17' },
         sns: { apiVersion: '2010-03-31' },
         sqs: { apiVersion: '2012-11-05' },
         translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' }
