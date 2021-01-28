@@ -73,6 +73,62 @@ component {
         return apiResponse;
     }
 
+ /** 
+    * Returns some or all (up to 1000) of the objects in a bucket. You pass returned ContinuationToken to next request to get next set of records
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
+    * @Bucket the name of the bucket to list objects from
+    * @Delimiter A delimiter is a character you use to group keys. All keys that contain the same string between the prefix, if specified, and the first occurrence of the delimiter after the prefix are grouped under a single result element, CommonPrefixes. If you don't specify the prefix parameter, then the substring starts at the beginning of the key.
+    * @EncodingType Requests Amazon S3 to encode the response and specifies the encoding method to use. (Valid value: url)
+    * @Marker Specifies the key to start with when listing objects in a bucket. Amazon S3 returns object keys in alphabetical order, starting with key after the marker in order.
+    * @MaxKeys Sets the maximum number of keys returned in the response body. You can add this to your request if you want to retrieve fewer than the default 1000 keys.
+    * @Prefix Limits the response to keys that begin with the specified prefix. You can use prefixes to separate a bucket into different groupings of keys. (You can think of using prefix to make groups in the same way you'd use a folder in a file system.)
+    * @listType Its not a parameter but more of a API type of V2
+    * @ContinuationToken If this is passed we will get next set of records
+    */
+
+    public any function listBucketV2(
+        required string Bucket,
+        string Delimiter = '',
+        string EncodingType = '',
+        string Marker = '',
+        numeric MaxKeys = 0,
+        string Prefix = '',
+        string listType = '',
+        string ContinuationToken = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { };
+        for (
+            var key in [
+                'Delimiter',
+                'EncodingType',
+                'Marker',
+                'Prefix',
+                'listType',
+                'ContinuationToken'
+            ]
+        ) {
+            if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
+        }
+        if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/' & bucket,
+            queryParams
+        );
+
+        //writeDump(apiResponse);abort;
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+            if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
+                apiResponse.data.Contents = [ apiResponse.data.Contents ];
+            }
+        }
+        return apiResponse;
+    }
+
     /**
     * This operation is useful to determine if a bucket exists and you have permission to access it.
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketHEAD.html
