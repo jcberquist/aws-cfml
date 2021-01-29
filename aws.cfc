@@ -12,6 +12,7 @@ component {
         's3',
         'secretsmanager',
         'sns',
+        'ssm',
         'sqs',
         'rekognition',
         'translate'
@@ -30,6 +31,7 @@ component {
         s3: { host: '', useSSL: true },
         secretsmanager: { apiVersion: '2017-10-17' },
         sns: { apiVersion: '2010-03-31' },
+        ssm: { apiVersion: '2014-11-06' },
         sqs: { apiVersion: '2012-11-05' },
         translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' }
     };

@@ -13,6 +13,7 @@ It currently supports the following APIs:
  - s3
  - secretsmanager
  - sns
+ - ssm
  - sqs
  - translate
 
@@ -179,6 +180,15 @@ Only the GetSecretValue operation has been implemented. Here's an example of usi
 ```cfc
 response = aws.secretsmanager.getSecretValue( 'YourSecretId' );
 secretValue = response.data.SecretString;
+```
+
+### SSM
+
+Only the getParameter and getParameters operations have been implemented. Here's an example of using it:
+
+```cfc
+response = aws.ssm.getParameter( 'YourParameterName', true );
+decryptedValue = response.data.Parameter.Value;
 ```
 
 ### Translate
