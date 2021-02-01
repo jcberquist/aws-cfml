@@ -23,8 +23,8 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = { 'Name': arguments.Name };
-        if( !isNull( arguments.WithDecryption ) ){
-          payload[ "WithDecryption" ] = arguments.WithDecryption;
+        if ( !isNull( arguments.WithDecryption ) ) {
+            payload[ 'WithDecryption' ] = arguments.WithDecryption;
         }
         return apiCall( requestSettings, 'GetParameter', payload );
     }
@@ -41,8 +41,8 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = { 'Names': arguments.Names };
-        if( !isNull( arguments.WithDecryption ) ){
-          payload[ "WithDecryption" ] = arguments.WithDecryption;
+        if ( !isNull( arguments.WithDecryption ) ) {
+            payload[ 'WithDecryption' ] = arguments.WithDecryption;
         }
         return apiCall( requestSettings, 'GetParameters', payload );
     }
