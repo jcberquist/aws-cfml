@@ -9,6 +9,7 @@ It currently supports the following APIs:
  - dynamodb
  - elasticsearch
  - elastictranscoder
+ - polly
  - rekognition
  - s3
  - secretsmanager
@@ -150,6 +151,28 @@ If you do not want your data to be type encoded automatically you have two optio
  The other option is to pass `dataTypeEncoding = false` to any method, and data will be not be encoded at all. (Thus you will need to encode items yourself.)
 
  _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items.
+
+### Polly
+
+The following operations have been implemented: DescribeVoices, SynthesizeSpeech.
+
+You can configure the default language and default engine by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
+
+```cfc
+{
+    translate: {
+        defaultLanguageCode: 'es-ES',
+        defaultEngine: 'neural'
+    }
+}
+```
+
+Example of synthesizing text using "Kendra" voice for default language (en-US).
+
+```cfc
+response = aws.polly.synthesizeSpeech( 'Hello World', 'Kendra' );
+// The stream data is in: response.rawData
+```
 
 ### Rekognition
 
