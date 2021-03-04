@@ -34,12 +34,17 @@ component accessors="true" {
 
     public struct function resolveRequestSettings(
         struct awsCredentials = { },
-        string region = defaultRegion
+        string region = defaultRegion,
+        string bucket = ''
     ) {
         if ( !awsCredentials.isEmpty() ) {
             awsCredentials = credentials.defaultCredentials( argumentCollection = awsCredentials );
         }
-        return { awsCredentials: awsCredentials, region: region };
+        var settings = { awsCredentials: awsCredentials, region: region };
+        if ( len( arguments.bucket ) ) {
+            settings.bucket = arguments.bucket;
+        }
+        return settings;
     }
 
     public any function call(

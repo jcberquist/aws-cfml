@@ -61,7 +61,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -102,7 +102,6 @@ component {
                 'EncodingType',
                 'Marker',
                 'Prefix',
-                'listType',
                 'ContinuationToken'
             ]
         ) {
@@ -113,7 +112,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
 
@@ -135,7 +134,7 @@ component {
         required string Bucket
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var apiResponse = apiCall( requestSettings, 'HEAD', '/' & Bucket );
+        var apiResponse = apiCall( requestSettings, 'HEAD' );
         return apiResponse;
     }
 
@@ -184,12 +183,12 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
             if ( Setting != 'policy' ) {
-                apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
+                apiResponse[ 'data' ] = utils.parseXmlElement( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
             } else {
                 apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
             }
@@ -235,7 +234,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -282,7 +281,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -318,7 +317,7 @@ component {
         return apiCall(
             requestSettings,
             'PUT',
-            '/' & bucket,
+            '/',
             { },
             headers,
             payload
@@ -334,7 +333,7 @@ component {
         required string Bucket
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & Bucket );
+        return apiCall( requestSettings, 'DELETE', '/' );
     }
 
     /**
@@ -355,7 +354,7 @@ component {
         return apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
     }
@@ -378,7 +377,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -405,7 +404,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'HEAD',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         return apiResponse;
@@ -429,7 +428,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -453,8 +452,9 @@ component {
         string VersionId = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var host = getHost( requestSettings.region );
-        var path = '/' & Bucket & '/' & ObjectKey;
+        var host = getHost( requestSettings );
+        var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
+        path &= '/' & ObjectKey;
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
         return api.signedUrl(
@@ -528,7 +528,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             { },
             headers,
             FileContent
@@ -563,6 +563,7 @@ component {
         string WebsiteRedirectLocation = '',
         string VersionId = ''
     ) {
+        arguments.Bucket = arguments.DestinationBucket;
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
         headers[ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
@@ -580,7 +581,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
-            '/' & destinationBucket & '/' & destinationObjectKey,
+            '/' & destinationObjectKey,
             { },
             headers
         );
@@ -599,7 +600,7 @@ component {
         required string ObjectKey
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
+        return apiCall( requestSettings, 'DELETE', '/' & objectKey );
     }
 
     /**
@@ -630,7 +631,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'POST',
-            '/' & bucket,
+            '/',
             queryParams,
             headers,
             xmlBody
@@ -721,13 +722,21 @@ component {
     // private
 
     private string function getHost(
-        required string region
+        required struct requestSettings
     ) {
-        if ( structKeyExists( variables.settings, 'host' ) and len( variables.settings.host ) ) {
-            return variables.settings.host;
+        if ( structKeyExists( variables.settings, 'host' ) && len( variables.settings.host ) ) {
+            var host = variables.settings.host;
         } else {
-            return variables.service & ( region == 'us-east-1' ? '' : '-' & region ) & '.amazonaws.com';
+            var host = variables.service & ( requestSettings.region == 'us-east-1' ? '' : '-' & requestSettings.region ) & '.amazonaws.com';
         }
+        if (
+            requestSettings.keyExists( 'bucket' ) &&
+            len( requestSettings.bucket ) &&
+            !requestSettings.bucket.find( '.' )
+        ) {
+            host = listPrepend( host, requestSettings.bucket, '.' );
+        }
+        return host;
     }
 
     private any function apiCall(
@@ -738,7 +747,15 @@ component {
         struct headers = { },
         any payload = ''
     ) {
-        var host = getHost( requestSettings.region );
+        var host = getHost( requestSettings );
+
+        if (
+            requestSettings.keyExists( 'bucket' ) &&
+            len( requestSettings.bucket ) &&
+            requestSettings.bucket.find( '.' )
+        ) {
+            path = '/' & requestSettings.bucket & path;
+        }
 
         if ( !isSimpleValue( payload ) || len( payload ) ) {
             headers[ 'X-Amz-Content-Sha256' ] = hash( payload, 'SHA-256' ).lcase();

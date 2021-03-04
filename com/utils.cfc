@@ -25,7 +25,7 @@ component {
         required string elementName
     ) {
         var result = [ ];
-        var elementNodes = xmlSearch( xmlParse( response ), '//*[ local-name() = ''#elementName#'' ]' );
+        var elementNodes = xmlSearch( xmlParse( xmlDocument ), '//*[ local-name() = ''#elementName#'' ]' );
         for ( var thisNode in elementNodes ) {
             result.append( parseXmlNode( thisNode ) );
         }
