@@ -15,16 +15,16 @@ component {
     }
 
     /**
-     * Returns the list of voices that are available for use when requesting speech synthesis
-     * https://docs.aws.amazon.com/polly/latest/dg/API_DescribeVoices.html
-     * @Engine Specifies the engine (standard or neural) used by Amazon Polly when processing input text for speech synthesis
-     * @NextToken An opaque pagination token returned from the previous DescribeVoices operation
-     * @IncludeAdditionalLanguageCodes Specifies the engine (standard or neural) used by Amazon Polly when processing input text for speech synthesis
-     * @LanguageCode The language identification tag (ISO 639 code for the language name-ISO 3166 country code) for filtering the list of voices returned
-     */
+    * Returns the list of voices that are available for use when requesting speech synthesis
+    * https://docs.aws.amazon.com/polly/latest/dg/API_DescribeVoices.html
+    * @Engine Specifies the engine (standard or neural) used by Amazon Polly when processing input text for speech synthesis
+    * @NextToken An opaque pagination token returned from the previous DescribeVoices operation
+    * @IncludeAdditionalLanguageCodes Specifies the engine (standard or neural) used by Amazon Polly when processing input text for speech synthesis
+    * @LanguageCode The language identification tag (ISO 639 code for the language name-ISO 3166 country code) for filtering the list of voices returned
+    */
     public any function describeVoices(
         string Engine = variables.defaultEngine,
-        string NextToken = "",
+        string NextToken = '',
         boolean IncludeAdditionalLanguageCodes = false,
         string LanguageCode = variables.defaultLanguageCode
     ) {
@@ -35,8 +35,8 @@ component {
             'LanguageCode': LanguageCode
         };
 
-        if (Len(NextToken)) {
-            queryParams['NextToken'] = NextToken;
+        if ( len( NextToken ) ) {
+            queryParams[ 'NextToken' ] = NextToken;
         }
 
         var apiResponse = apiCall(
@@ -46,24 +46,24 @@ component {
             queryParams
         );
 
-        apiResponse[ 'data' ] = deserializeJSON(apiResponse.rawData);
+        apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
 
         return apiResponse;
     }
 
     /**
-     * Synthesizes UTF-8 input, plain text or SSML, to a stream of bytes.
-     * https://docs.aws.amazon.com/polly/latest/dg/API_SynthesizeSpeech.html
-     * @Text Input text to synthesize
-     * @VoiceId Voice ID to use for the synthesis
-     * @OutputFormat The format in which the returned output will be encoded
-     * @Engine Specifies the engine (standard or neural) for Amazon Polly to use when processing input text for speech synthesis
-     * @LanguageCode Optional language code for the Synthesize Speech request
-     * @SampleRate The audio frequency specified in Hz
-     * @TexType Specifies whether the input text is plain text or SSM
-     * @LexiconNames List of one or more pronunciation lexicon names you want the service to apply during synthesis
-     * @SpeechMarkTypes The type of speech marks returned for the input text
-     */
+    * Synthesizes UTF-8 input, plain text or SSML, to a stream of bytes.
+    * https://docs.aws.amazon.com/polly/latest/dg/API_SynthesizeSpeech.html
+    * @Text Input text to synthesize
+    * @VoiceId Voice ID to use for the synthesis
+    * @OutputFormat The format in which the returned output will be encoded
+    * @Engine Specifies the engine (standard or neural) for Amazon Polly to use when processing input text for speech synthesis
+    * @LanguageCode Optional language code for the Synthesize Speech request
+    * @SampleRate The audio frequency specified in Hz
+    * @TexType Specifies whether the input text is plain text or SSM
+    * @LexiconNames List of one or more pronunciation lexicon names you want the service to apply during synthesis
+    * @SpeechMarkTypes The type of speech marks returned for the input text
+    */
     public any function synthesizeSpeech(
         required string Text,
         required string VoiceId,
@@ -84,20 +84,20 @@ component {
             'OutputFormat': OutputFormat
         };
 
-        if (Len(SampleRate)) {
-            payload['SampleRate'] = SampleRate;
+        if ( len( SampleRate ) ) {
+            payload[ 'SampleRate' ] = SampleRate;
         }
 
-        if (Len(TextType)) {
-            payload['TextType'] = TextType;
+        if ( len( TextType ) ) {
+            payload[ 'TextType' ] = TextType;
         }
 
-        if (!ArrayIsEmpty(LexiconNames)) {
-            payload['LexiconNames'] = LexiconNames;
+        if ( !arrayIsEmpty( LexiconNames ) ) {
+            payload[ 'LexiconNames' ] = LexiconNames;
         }
 
-        if (!ArrayIsEmpty(SpeechMarkTypes)) {
-            payload['SpeechMarkTypes'] = SpeechMarkTypes;
+        if ( !arrayIsEmpty( SpeechMarkTypes ) ) {
+            payload[ 'SpeechMarkTypes' ] = SpeechMarkTypes;
         }
 
         var apiResponse = apiCall(
@@ -146,4 +146,5 @@ component {
             requestSettings.awsCredentials
         );
     }
+
 }
