@@ -609,7 +609,7 @@ component {
 
         var expiration = utils.iso8601Full( dateAdd( 's', expires, requestTime ) );
         var conditions = [ { 'name': 'bucket', 'value': bucket } ];
-        if ( isSimpleValue( objectKey ) ) objectKey = { name: 'key', value: objectKey };
+        if ( isSimpleValue( objectKey ) ) objectKey = { 'name': 'key', 'value': objectKey };
         conditions.append( objectKey );
 
         postParams.append( objectKey );
