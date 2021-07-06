@@ -1,5 +1,7 @@
 component {
 
+  // Docs: https://github.com/jcberquist/aws-cfml
+
     variables.services = [
         'cognitoIdentity',
         'dynamodb',
@@ -16,7 +18,8 @@ component {
         'ssm',
         'sqs',
         'rekognition',
-        'translate'
+        'translate',
+        'ec2'
     ];
 
     variables.constructorArgs = {
@@ -35,7 +38,8 @@ component {
         sns: { apiVersion: '2010-03-31' },
         ssm: { apiVersion: '2014-11-06' },
         sqs: { apiVersion: '2012-11-05' },
-        translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' }
+        translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' },
+        ec2: { apiVersion: '2016-11-15' }
     };
 
     public struct function init(
