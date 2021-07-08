@@ -1,10 +1,11 @@
 component {
 
-  // Docs: https://github.com/jcberquist/aws-cfml
+    // Docs: https://github.com/jcberquist/aws-cfml
 
     variables.services = [
         'cognitoIdentity',
         'dynamodb',
+        'ec2',
         'elasticsearch',
         'elastictranscoder',
         'kms',
@@ -12,14 +13,13 @@ component {
         'personalizeEvents',
         'personalizeRuntime',
         'polly',
+        'rekognition',
         's3',
         'secretsmanager',
         'sns',
-        'ssm',
         'sqs',
-        'rekognition',
-        'translate',
-        'ec2'
+        'ssm',
+        'translate'
     ];
 
     variables.constructorArgs = {
