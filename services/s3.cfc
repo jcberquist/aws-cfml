@@ -600,14 +600,22 @@ component {
         required string ObjectKey
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & objectKey );
+
+        if ( findNoCase("?versionid=",arguments.ObjectKey) ){
+            var Key = listFirst(arguments.Objectkey,"?");
+            var VersionID = listLast(listLast(arguments.Objectkey,"?"),"=");
+            return deleteMultipleObjects(Bucket=arguments.Bucket,ObjectKeys=[{"key":Key,"versionid":VersionID}]);
+        }
+        else
+            return apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
+
     }
 
     /**
     * Enables you to delete multiple objects from a bucket using a single HTTP request
     * http://docs.aws.amazon.com/AmazonS3/latest/API/multiobjectdeleteapi.html
     * @Bucket the name of the bucket containing the object
-    * @ObjectKeys array of object keys to delete
+    * @ObjectKeys array of object keys to delete, elements can be a string key OR a struct with key:versionid to delete a specific key version
     * @Quiet By default, the operation uses verbose mode in which the response includes the result of deletion of each key in your request. In quiet mode the response includes only keys where the delete operation encountered an error. For a successful deletion, the operation does not return any information about the delete in the response body.
     */
     public any function deleteMultipleObjects(
@@ -619,7 +627,10 @@ component {
         var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr( 10 )#<Delete>';
         xmlBody &= '<Quiet>' & ( Quiet ? 'true' : 'false' ) & '</Quiet>';
         ObjectKeys.each( function( objectKey ) {
-            xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
+            if( isStruct(objectKey) )
+                xmlBody &= '<Object><Key>#encodeForXML( objectKey['key'] )#</Key><VersionId>#encodeForXml(objectKey['versionid'])#</VersionId></Object>';
+            else
+                xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
         } );
         xmlBody &= '</Delete>';
 
