@@ -601,13 +601,9 @@ component {
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
 
-        if ( findNoCase("?versionid=",arguments.ObjectKey) ){
-            var Key = listFirst(arguments.Objectkey,"?");
-            var VersionID = listLast(listLast(arguments.Objectkey,"?"),"=");
-            return deleteMultipleObjects(Bucket=arguments.Bucket,ObjectKeys=[{"key":Key,"versionid":VersionID}]);
-        }
-        else
-            return apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
+        return findNoCase("?versionid=",arguments.ObjectKey)
+            ? deleteMultipleObjects(Bucket=arguments.Bucket,ObjectKeys=[arguments.ObjectKey])
+            : apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
 
     }
 
@@ -615,7 +611,7 @@ component {
     * Enables you to delete multiple objects from a bucket using a single HTTP request
     * http://docs.aws.amazon.com/AmazonS3/latest/API/multiobjectdeleteapi.html
     * @Bucket the name of the bucket containing the object
-    * @ObjectKeys array of object keys to delete, elements can be a string key OR a struct with key:versionid to delete a specific key version
+    * @ObjectKeys array of object keys to delete, elements can be any mix of string keys with or without versionid param or structs with key 'key' and optionally 'versionid'
     * @Quiet By default, the operation uses verbose mode in which the response includes the result of deletion of each key in your request. In quiet mode the response includes only keys where the delete operation encountered an error. For a successful deletion, the operation does not return any information about the delete in the response body.
     */
     public any function deleteMultipleObjects(
@@ -626,11 +622,26 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr( 10 )#<Delete>';
         xmlBody &= '<Quiet>' & ( Quiet ? 'true' : 'false' ) & '</Quiet>';
-        ObjectKeys.each( function( objectKey ) {
-            if( isStruct(objectKey) )
-                xmlBody &= '<Object><Key>#encodeForXML( objectKey['key'] )#</Key><VersionId>#encodeForXml(objectKey['versionid'])#</VersionId></Object>';
-            else
-                xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
+        ObjectKeys.each( function( item ) {
+            // create an empty key/version struct
+            var objectKey = { 'key': '', 'versionid' : '' };
+            // if the ObjectKey element is a struct, check for a key and versionid keys/values
+            if ( isStruct(item) ){
+                objectKey['key'] = item.keyExists('key') ? item.key : "";
+                objectKey['versionid'] = item.keyExists('versionid') ? item.versionid : "";
+            }
+            // if the ObjectKey element is a simple value assume its an object key and check for versionid param
+            else if ( isSimpleValue(item) ){
+                objectKey['key'] = findNoCase("?versionid=",item) ? listFirst(item,"?") : item;
+                objectKey['versionid'] = findNoCase("?versionid=",item) ? listLast(listLast(item,"?"),"=") : "";
+            }
+            // create the xml node if there is a key
+            if ( len(objectKey['key']) ){
+                xmlBody &= '<Object><Key>#encodeForXML( objectKey['key'] )#</Key>';
+                if ( len(objectKey.versionid) )
+                    xmlBody &= '<VersionId>#encodeForXml(objectKey['versionid'])#</VersionId>';
+                xmlBody &= "</Object>";
+            }
         } );
         xmlBody &= '</Delete>';
 
