@@ -594,17 +594,17 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETE.html
     * @Bucket the name of the bucket containing the object
     * @ObjectKey the object key
+    * @VersionId the specific version of an object to delete (if versioning is enabled)
     */
     public any function deleteObject(
         required string Bucket,
-        required string ObjectKey
+        required string ObjectKey,
+        string VersionId = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-
-        return findNoCase("?versionid=",arguments.ObjectKey)
-            ? deleteMultipleObjects(Bucket=arguments.Bucket,ObjectKeys=[arguments.ObjectKey])
-            : apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
-
+        var queryParams = { };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        return apiCall( requestSettings, 'DELETE', '/' & objectKey, queryParams );
     }
 
     /**
