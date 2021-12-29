@@ -13,6 +13,38 @@ component {
     }
 
     /**
+    * Describes the specified instances or all instances.
+    * https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
+    * @InstanceIds The IDs of the instances one wishes to describe
+    * @DryRun Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. If you have the required permissions, the error response is DryRunOperation. Otherwise, it is UnauthorizedOperation.
+    */
+    public any function DescribeInstances(
+        required array InstanceIds = [ ],
+        boolean DryRun = false
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'Action': 'DescribeInstances' };
+
+        queryParams[ 'DryRun' ] = arguments.DryRun;
+
+        if ( len( arguments.InstanceIds ) ) {
+            InstanceIds.each( ( e, i ) => {
+                queryParams[ 'InstanceId.#i#' ] = e;
+            } )
+        }
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
     * Starts an Amazon EBS-backed instance that you've previously stopped.
     * https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_StartInstances.html
     * @InstanceIds The IDs of the instances one wishes to start
