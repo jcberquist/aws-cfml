@@ -27,11 +27,8 @@ component {
 
         queryParams[ 'DryRun' ] = arguments.DryRun;
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
+        parseInstanceIds( arguments.InstanceIds, queryParams );
+
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -58,12 +55,8 @@ component {
         var queryParams = { 'Action': 'StartInstances' };
 
         queryParams[ 'DryRun' ] = arguments.DryRun;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -90,12 +83,8 @@ component {
         var queryParams = { 'Action': 'RebootInstances' };
 
         queryParams[ 'DryRun' ] = arguments.DryRun;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -128,12 +117,8 @@ component {
         queryParams[ 'DryRun' ] = arguments.DryRun;
         queryParams[ 'Hibernate' ] = arguments.Hibernate;
         queryParams[ 'Force' ] = arguments.Force;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -180,13 +165,8 @@ component {
         if ( len( arguments.Attribute ) ) queryParams[ 'Attribute' ] = arguments.Attribute;
         if ( len( arguments.Value ) ) queryParams[ 'Value' ] = arguments.Value;
         if ( len( arguments.InstanceType ) ) queryParams[ 'InstanceType.Value' ] = arguments.InstanceType;
-
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
-
+        parseInstanceIds( arguments.InstanceIds, queryParams );
+        
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -235,6 +215,17 @@ component {
             payload,
             requestSettings.awsCredentials
         );
+    }
+
+    private void function parseInstanceIds(
+        required array InstanceIds = [ ],
+        struct queryParams
+    ) {
+        if ( len( arguments.InstanceIds ) ) {
+            InstanceIds.each( function( e, i ) {
+                queryParams[ 'InstanceId.#i#' ] = e;
+            } );
+        }
     }
 
 }
