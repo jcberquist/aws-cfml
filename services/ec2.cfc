@@ -13,6 +13,35 @@ component {
     }
 
     /**
+    * Describes the specified instances or all instances.
+    * https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
+    * @InstanceIds The IDs of the instances one wishes to describe
+    * @DryRun Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. If you have the required permissions, the error response is DryRunOperation. Otherwise, it is UnauthorizedOperation.
+    */
+    public any function DescribeInstances(
+        required array InstanceIds = [ ],
+        boolean DryRun = false
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'Action': 'DescribeInstances' };
+
+        queryParams[ 'DryRun' ] = arguments.DryRun;
+
+        parseInstanceIds( arguments.InstanceIds, queryParams );
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
     * Starts an Amazon EBS-backed instance that you've previously stopped.
     * https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_StartInstances.html
     * @InstanceIds The IDs of the instances one wishes to start
@@ -26,12 +55,8 @@ component {
         var queryParams = { 'Action': 'StartInstances' };
 
         queryParams[ 'DryRun' ] = arguments.DryRun;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -58,12 +83,8 @@ component {
         var queryParams = { 'Action': 'RebootInstances' };
 
         queryParams[ 'DryRun' ] = arguments.DryRun;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -96,12 +117,8 @@ component {
         queryParams[ 'DryRun' ] = arguments.DryRun;
         queryParams[ 'Hibernate' ] = arguments.Hibernate;
         queryParams[ 'Force' ] = arguments.Force;
+        parseInstanceIds( arguments.InstanceIds, queryParams );
 
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -148,13 +165,8 @@ component {
         if ( len( arguments.Attribute ) ) queryParams[ 'Attribute' ] = arguments.Attribute;
         if ( len( arguments.Value ) ) queryParams[ 'Value' ] = arguments.Value;
         if ( len( arguments.InstanceType ) ) queryParams[ 'InstanceType.Value' ] = arguments.InstanceType;
-
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( ( e, i ) => {
-                queryParams[ 'InstanceId.#i#' ] = e;
-            } )
-        }
-
+        parseInstanceIds( arguments.InstanceIds, queryParams );
+        
         var apiResponse = apiCall(
             requestSettings,
             'GET',
@@ -203,6 +215,17 @@ component {
             payload,
             requestSettings.awsCredentials
         );
+    }
+
+    private void function parseInstanceIds(
+        required array InstanceIds = [ ],
+        struct queryParams
+    ) {
+        if ( len( arguments.InstanceIds ) ) {
+            InstanceIds.each( function( e, i ) {
+                queryParams[ 'InstanceId.#i#' ] = e;
+            } );
+        }
     }
 
 }
