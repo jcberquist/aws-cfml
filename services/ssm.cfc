@@ -85,26 +85,6 @@ component {
         }
 
         return apiCall( requestSettings, 'GetParametersByPath', payload );
-        // var response = apiCall( requestSettings, 'GetParametersByPath', payload );
-
-        // for ( var parameter in response.data.parameters ) {
-        //     rtn[ parameter.Name ] = parameter.value;
-        // }
-
-        // var nextToken = structKeyExists( response.data, 'NextToken' ) ? response.data.NextToken : '';
-
-        // while ( nextToken neq '' ) {
-        //     payload[ 'NextToken' ] = nextToken;
-        //     response = apiCall( requestSettings, 'GetParametersByPath', payload );
-
-        //     for ( var parameter in response.data.parameters ) {
-        //         rtn[ parameter.Name ] = parameter.value;
-        //     }
-
-        //     nextToken = structKeyExists( response.data, 'NextToken' ) ? response.data.NextToken : '';
-        // }
-
-        return rtn;
     }
 
 
