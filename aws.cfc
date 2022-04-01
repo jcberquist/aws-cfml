@@ -1,10 +1,12 @@
 component {
 
-  // Docs: https://github.com/jcberquist/aws-cfml
+    // Docs: https://github.com/jcberquist/aws-cfml
 
     variables.services = [
+      'autoscaling',
         'cognitoIdentity',
         'dynamodb',
+        'ec2',
         'elasticsearch',
         'elastictranscoder',
         'kms',
@@ -12,17 +14,17 @@ component {
         'personalizeEvents',
         'personalizeRuntime',
         'polly',
+        'rekognition',
         's3',
         'secretsmanager',
         'sns',
-        'ssm',
         'sqs',
-        'rekognition',
-        'translate',
-        'ec2'
+        'ssm',
+        'translate'
     ];
 
     variables.constructorArgs = {
+      autoscaling: { apiVersion: '2011-01-01' },
         cognitoIdentity: { apiVersion: '2014-06-30' },
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
@@ -41,7 +43,7 @@ component {
         translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' },
         ec2: { apiVersion: '2016-11-15' }
     };
-
+    
     public struct function init(
         string awsKey = '',
         string awsSecretKey = '',
