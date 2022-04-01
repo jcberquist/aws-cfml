@@ -594,20 +594,29 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETE.html
     * @Bucket the name of the bucket containing the object
     * @ObjectKey the object key
+    * @VersionId the specific version of an object to delete (if versioning is enabled)
     */
     public any function deleteObject(
         required string Bucket,
-        required string ObjectKey
+        required string ObjectKey,
+        string VersionId = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & objectKey );
+        var queryParams = { };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        return apiCall(
+            requestSettings,
+            'DELETE',
+            '/' & objectKey,
+            queryParams
+        );
     }
 
     /**
     * Enables you to delete multiple objects from a bucket using a single HTTP request
     * http://docs.aws.amazon.com/AmazonS3/latest/API/multiobjectdeleteapi.html
     * @Bucket the name of the bucket containing the object
-    * @ObjectKeys array of object keys to delete
+    * @ObjectKeys array of object keys to delete, elements can be any mix of string object keys or structs with 'ObjectKey' and optionally 'VersionId' keys
     * @Quiet By default, the operation uses verbose mode in which the response includes the result of deletion of each key in your request. In quiet mode the response includes only keys where the delete operation encountered an error. For a successful deletion, the operation does not return any information about the delete in the response body.
     */
     public any function deleteMultipleObjects(
@@ -618,8 +627,26 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr( 10 )#<Delete>';
         xmlBody &= '<Quiet>' & ( Quiet ? 'true' : 'false' ) & '</Quiet>';
-        ObjectKeys.each( function( objectKey ) {
-            xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
+        ObjectKeys.each( function( item ) {
+            // create an empty key/version struct
+            var objectKey = { 'ObjectKey': '', 'VersionId': '' };
+            // if the ObjectKey element is a struct, check for an object key and versionid keys/values
+            if ( isStruct( item ) ) {
+                objectKey[ 'ObjectKey' ] = item.keyExists( 'ObjectKey' ) ? item.ObjectKey : '';
+                objectKey[ 'VersionId' ] = item.keyExists( 'VersionId' ) ? item.VersionId : '';
+            }
+            // if the ObjectKey element is a simple value assume it's an object key
+            else if ( isSimpleValue( item ) ) {
+                objectKey[ 'ObjectKey' ] = item;
+            }
+            // create the xml node if there is a key
+            if ( len( objectKey[ 'ObjectKey' ] ) ) {
+                xmlBody &= '<Object><Key>#encodeForXML( objectKey[ 'ObjectKey' ] )#</Key>';
+                if ( len( objectKey.versionid ) ) {
+                    xmlBody &= '<VersionId>#encodeForXML( objectKey[ 'VersionId' ] )#</VersionId>';
+                }
+                xmlBody &= '</Object>';
+            }
         } );
         xmlBody &= '</Delete>';
 
