@@ -62,7 +62,41 @@ component {
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
         
-        parseInstanceIds( arguments.InstanceIds, queryParams );
+        parseIds( arguments.InstanceIds, queryParams );
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
+    * Gets information about the Auto Scaling groups in the account and Region.
+    * https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_DescribeAutoScalingGroups.html
+    * @InstanceIds The IDs of the instances one wishes to describe
+    * @MaxRecords The maximum number of items to return with this call. The default value is 50 and the maximum value is 50.
+    * @NextToken The token for the next set of items to return. (You received this token from a previous call.)
+    */
+    public any function DescribeAutoScalingGroups(
+        required array AutoScalingGroupNames = [ ],
+        array Filters = [],  //no support yet
+        numeric MaxRecords = 50,
+        string NextToken = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'Action': 'DescribeAutoScalingGroups' };
+
+        queryParams[ 'MaxRecords' ] = arguments.MaxRecords;
+
+        if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
+        
+        parseIds( arguments.AutoScalingGroupNames, queryParams, AutoScalingGroupNames.member );
 
         var apiResponse = apiCall(
             requestSettings,
@@ -114,13 +148,14 @@ component {
         );
     }
 
-    private void function parseInstanceIds(
-        required array InstanceIds = [ ],
-        struct queryParams
+    private void function parseIds(
+        required array IDs = [ ],
+        struct queryParams,
+        string prefix = 'InstanceID'
     ) {
-        if ( len( arguments.InstanceIds ) ) {
-            InstanceIds.each( function( e, i ) {
-                queryParams[ 'InstanceId.#i#' ] = e;
+        if ( len( arguments.IDs ) ) {
+            IDs.each( function( e, i ) {
+                queryParams[ '#prefix#.#i#' ] = e;
             } );
         }
     }
