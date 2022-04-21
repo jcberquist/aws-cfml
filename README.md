@@ -7,6 +7,8 @@
 It currently supports the following APIs:
  - cognitoIdentity
  - dynamodb
+ - ec2
+ - ec2 auto-scaling groups
  - elasticsearch
  - elastictranscoder
  - polly
