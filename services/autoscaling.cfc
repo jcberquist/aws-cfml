@@ -19,29 +19,29 @@ component {
     * @DesiredCapacity The desired capacity is the initial capacity of the Auto Scaling group after this operation completes and the capacity it attempts to maintain.
     * @HonorCooldown Indicates whether Amazon EC2 Auto Scaling waits for the cooldown period to complete before initiating a scaling activity to set your Auto Scaling group to its new capacity. By default, Amazon EC2 Auto Scaling does not honor the cooldown period during manual scaling activities.
     */
-    public any function SetDesiredCapacity (
-      string AutoScalingGroupName = '',
-      numeric DesiredCapacity  = 1,
-      boolean HonorCooldown = false
-  ) {
-      var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-      var queryParams = { 'Action': 'SetDesiredCapacity' };
+    public any function SetDesiredCapacity(
+        string AutoScalingGroupName = '',
+        numeric DesiredCapacity = 1,
+        boolean HonorCooldown = false
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'Action': 'SetDesiredCapacity' };
 
-      queryParams[ 'HonorCooldown' ] = arguments.HonorCooldown;
-      queryParams[ 'AutoScalingGroupName' ] = arguments.AutoScalingGroupName;
-      queryParams[ 'DesiredCapacity' ] = arguments.DesiredCapacity;
-      
-      var apiResponse = apiCall(
-          requestSettings,
-          'GET',
-          '/',
-          queryParams
-      );
-      if ( apiResponse.statusCode == 200 ) {
-          apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
-      }
-      return apiResponse;
-  }
+        queryParams[ 'HonorCooldown' ] = arguments.HonorCooldown;
+        queryParams[ 'AutoScalingGroupName' ] = arguments.AutoScalingGroupName;
+        queryParams[ 'DesiredCapacity' ] = arguments.DesiredCapacity;
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
 
     /**
     * Gets information about the Auto Scaling instances in the account and Region.
@@ -61,7 +61,7 @@ component {
         queryParams[ 'MaxRecords' ] = arguments.MaxRecords;
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
-        
+
         parseIds( arguments.InstanceIds, queryParams );
 
         var apiResponse = apiCall(
@@ -85,7 +85,7 @@ component {
     */
     public any function DescribeAutoScalingGroups(
         required array AutoScalingGroupNames = [ ],
-        array Filters = [],  //no support yet
+        array Filters = [ ], // no support yet
         numeric MaxRecords = 50,
         string NextToken = ''
     ) {
@@ -95,7 +95,7 @@ component {
         queryParams[ 'MaxRecords' ] = arguments.MaxRecords;
 
         if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
-        
+
         parseIds( arguments.AutoScalingGroupNames, queryParams, AutoScalingGroupNames.member );
 
         var apiResponse = apiCall(
