@@ -166,7 +166,7 @@ component {
         if ( len( arguments.Value ) ) queryParams[ 'Value' ] = arguments.Value;
         if ( len( arguments.InstanceType ) ) queryParams[ 'InstanceType.Value' ] = arguments.InstanceType;
         parseInstanceIds( arguments.InstanceIds, queryParams );
-        
+
         var apiResponse = apiCall(
             requestSettings,
             'GET',

@@ -60,8 +60,9 @@ component {
 
         queryParams[ 'MaxRecords' ] = arguments.MaxRecords;
 
-        if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
-        
+        if ( len( arguments.NextToken ) ) {
+          queryParams[ 'NextToken' ] = arguments.NextToken;
+        }
         parseIds( arguments.InstanceIds, queryParams );
 
         var apiResponse = apiCall(
@@ -94,7 +95,9 @@ component {
 
         queryParams[ 'MaxRecords' ] = arguments.MaxRecords;
 
-        if ( len( arguments.NextToken ) ) queryParams[ 'NextToken' ] = arguments.NextToken;
+        if ( len( arguments.NextToken ) ) {
+          queryParams[ 'NextToken' ] = arguments.NextToken;
+        }
         
         parseIds( arguments.AutoScalingGroupNames, queryParams, AutoScalingGroupNames.member );
 
