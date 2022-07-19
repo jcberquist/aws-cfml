@@ -290,6 +290,172 @@ component {
         return apiResponse;
     }
 
+
+    /**
+     * This action initiates a multipart upload and returns an upload ID. This upload ID is used to associate all of the parts in the specific multipart upload. You specify this upload ID in each of your subsequent upload part requests (see UploadPart). You also include this upload ID in the final request to either complete or abort the multipart upload request.
+     * https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+     * 
+     *
+     * @Bucket: The name of the bucket to which to initiate the upload
+     * @Key: Object key for which the multipart upload is to be initiated.
+     */
+    public any function createMultipartUpload(
+        required string Bucket,
+        required string Key
+    ){
+
+         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+
+        var queryParams = { 'uploads': '' };
+        for (
+            var key in arguments
+        ) {
+            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
+        }
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams,
+            {
+                // "x-amz-acl": "public-read"
+            }
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+        
+    }
+
+    public any function putPart(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required numeric PartNumber, 
+        required any body
+
+    ){
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        dump("putPart");
+        var queryParams = { 
+            'partNumber': arguments.partNumber, 
+            "uploadId": arguments.uploadId 
+        };
+
+        for (
+            var key in arguments
+        ) {
+            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
+        }
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/#arguments.Key#',
+            queryParams,
+            {
+                // "x-amz-acl": "public-read"
+            },
+            arguments.body
+        );
+
+        if ( apiResponse.statusCode == 200 ) {
+            // apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+        
+    }
+
+
+    public any function completeMultipartUpload(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required array Parts
+    ){
+
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = getPartsPayload(Parts);
+        var queryParams = {
+            "uploadId": arguments.UploadId
+        };
+        for (
+            var key in arguments
+        ) {
+            // if(key eq "Parts"){
+            //     continue;
+            // }
+
+            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
+        }
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams,
+            {},
+            toString(payload)
+           
+        );
+
+
+        if ( apiResponse.statusCode == 200 ) {
+            // apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+        
+    }
+
+    private xml function getPartsPayload(required Array Parts){
+
+        var ret = '<?xml version="1.0" encoding="UTF-8"?>';
+            ret &= '<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">';
+    
+        for (var part in arguments.Parts){
+            ret &= "<Part><ETag>#part.ETag#</ETag><PartNumber>#part.PartNumber#</PartNumber></Part>";
+        }
+
+        ret &= '</CompleteMultipartUpload>'
+        return XMLParse(ret);
+    }
+
+    // ** modified version of generate presigned. Just for putting uploads
+
+    public string function generatePresignedURLForPart(
+        required string Bucket,
+        required string Key,
+        required numeric partNumber,
+        required string uploadId,
+        // required string ContentType,
+        numeric Expires = 300,
+        string VersionId = ''
+    ) {
+     
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var host = getHost( requestSettings );
+        var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
+        path &= '/' & Key;
+        var queryParams = { 
+            "partNumber": arguments.partNumber,
+            "uploadId": arguments.uploadId
+        };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        
+
+        return api.signedUrl(
+            variables.service,
+            host,
+            requestSettings.region,
+            'PUT',
+            path,
+            queryParams,
+            Expires,
+            requestSettings.awsCredentials,
+            false
+        );
+    }
+
+
     /**
     * creates a new bucket
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUT.html
@@ -451,12 +617,15 @@ component {
         numeric Expires = 300,
         string VersionId = ''
     ) {
+
+      
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var host = getHost( requestSettings );
         var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
         path &= '/' & ObjectKey;
         var queryParams = { };
         if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+
         return api.signedUrl(
             variables.service,
             host,
@@ -792,6 +961,7 @@ component {
 
         var useSSL = !structKeyExists( variables.settings, 'useSSL' ) || variables.settings.useSSL;
 
+       
         return api.call(
             variables.service,
             host,
