@@ -307,19 +307,13 @@ component {
          var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
 
         var queryParams = { 'uploads': '' };
-        for (
-            var key in arguments
-        ) {
-            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
-        }
+        
         var apiResponse = apiCall(
             requestSettings,
             'POST',
             '/#arguments.Key#',
             queryParams,
-            {
-                // "x-amz-acl": "public-read"
-            }
+            {}
         );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
@@ -337,31 +331,19 @@ component {
 
     ){
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        dump("putPart");
         var queryParams = { 
             'partNumber': arguments.partNumber, 
             "uploadId": arguments.uploadId 
         };
 
-        for (
-            var key in arguments
-        ) {
-            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
-        }
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
             '/#arguments.Key#',
             queryParams,
-            {
-                // "x-amz-acl": "public-read"
-            },
+            {},
             arguments.body
         );
-
-        if ( apiResponse.statusCode == 200 ) {
-            // apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
-        }
         return apiResponse;
         
     }
@@ -379,15 +361,7 @@ component {
         var queryParams = {
             "uploadId": arguments.UploadId
         };
-        for (
-            var key in arguments
-        ) {
-            // if(key eq "Parts"){
-            //     continue;
-            // }
-
-            // if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
-        }
+        
         var apiResponse = apiCall(
             requestSettings,
             'POST',
@@ -398,10 +372,6 @@ component {
            
         );
 
-
-        if ( apiResponse.statusCode == 200 ) {
-            // apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
-        }
         return apiResponse;
         
     }
@@ -426,7 +396,6 @@ component {
         required string Key,
         required numeric partNumber,
         required string uploadId,
-        // required string ContentType,
         numeric Expires = 300,
         string VersionId = ''
     ) {
