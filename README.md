@@ -56,7 +56,7 @@ moduleSettings = {
     awscfml: {
         awsKey: '',
         awsSecretKey: '',
-        defaultRegion: '',
+        defaultRegion: ''
     }
 }
 ```
