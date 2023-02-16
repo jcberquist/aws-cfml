@@ -49,20 +49,28 @@ component {
         string awsSecretKey = '',
         string defaultRegion = '',
         struct constructorArgs = { },
-        struct httpProxy = { server: '', port: 80 }
+        struct httpProxy = { server: '', port: 80 },
+        string libraryMapping = ''
     ) {
-        this.api = new com.api(
+        if ( len( arguments.libraryMapping ) && mid( arguments.libraryMapping, len( arguments.libraryMapping ), 1 ) != '.' ) {
+            arguments.libraryMapping &= '.';
+        }
+
+        this.api = new '#arguments.libraryMapping#com.api'(
             awsKey,
             awsSecretKey,
             defaultRegion,
-            httpProxy
+            httpProxy,
+            libraryMapping
         );
 
         for ( var service in variables.services ) {
             if ( structKeyExists( arguments.constructorArgs, service ) ) {
                 structAppend( variables.constructorArgs[ service ], arguments.constructorArgs[ service ] );
             }
-            this[ service ] = new 'services.#service#'( this.api, variables.constructorArgs[ service ] );
+            this[ service ] = new '#arguments.libraryMapping#services.#service#'(
+                this.api, variables.constructorArgs[ service ]
+            );
         }
 
         return this;
