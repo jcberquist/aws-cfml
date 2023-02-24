@@ -4,6 +4,7 @@ component {
 
     variables.services = [
         'autoscaling',
+        'connect',
         'cognitoIdentity',
         'dynamodb',
         'ec2',
@@ -25,6 +26,7 @@ component {
 
     variables.constructorArgs = {
         autoscaling: { apiVersion: '2011-01-01' },
+        connect: { },
         cognitoIdentity: { apiVersion: '2014-06-30' },
         dynamodb: { apiVersion: '20120810' },
         elastictranscoder: { apiVersion: '2012-09-25' },
