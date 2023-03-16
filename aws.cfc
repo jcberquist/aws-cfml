@@ -45,7 +45,7 @@ component {
         translate: { apiVersion: '20170701', defaultSourceLanguageCode: 'es', defaultTargetLanguageCode: 'en' },
         ec2: { apiVersion: '2016-11-15' }
     };
-
+    
     public struct function init(
         string awsKey = '',
         string awsSecretKey = '',
