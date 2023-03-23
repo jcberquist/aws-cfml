@@ -39,6 +39,27 @@ component {
     }
 
     /**
+    * Describes the specified contact.
+    * Contact information remains available in Amazon Connect for 24 months, and then it is deleted.
+    * Only data from November 12, 2021, and later is returned by this API.
+    * https://docs.aws.amazon.com/connect/latest/APIReference/API_DescribeContact.html
+    *
+    * @preview
+    */
+    public any function describeContact(
+        required string instanceId,
+        required string contactId
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var apiResponse = apiCall(
+            requestSettings = requestSettings,
+            httpMethod = 'GET',
+            path = '/contacts/#arguments.instanceId#/#arguments.contactId#'
+        );
+        return apiResponse;
+    }
+
+    /**
     * Assigns the specified routing profile to the specified user.
     * https://docs.aws.amazon.com/connect/latest/APIReference/API_UpdateUserRoutingProfile.html
     */
