@@ -18,6 +18,9 @@ component {
     * after the CreateInstance API was invoked.
     * https://docs.aws.amazon.com/connect/latest/APIReference/API_ListInstances.html
     *
+    * @maxResults The maximum number of results to return per page. Valid Range: Minimum value of 1. Maximum value of 10.
+    * @nextToken  The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
+    *
     * @preview
     */
     public any function listInstances(
@@ -39,8 +42,36 @@ component {
     }
 
     /**
+    * Describes the specified contact.
+    * Contact information remains available in Amazon Connect for 24 months, and then it is deleted.
+    * Only data from November 12, 2021, and later is returned by this API.
+    * https://docs.aws.amazon.com/connect/latest/APIReference/API_DescribeContact.html
+    *
+    * @instanceId The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @contactId  The identifier of the contact.
+    *
+    * @preview
+    */
+    public any function describeContact(
+        required string instanceId,
+        required string contactId
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var apiResponse = apiCall(
+            requestSettings = requestSettings,
+            httpMethod = 'GET',
+            path = '/contacts/#arguments.instanceId#/#arguments.contactId#'
+        );
+        return apiResponse;
+    }
+
+    /**
     * Assigns the specified routing profile to the specified user.
     * https://docs.aws.amazon.com/connect/latest/APIReference/API_UpdateUserRoutingProfile.html
+    *
+    * @instanceId       The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @userId           The identifier of the user account.
+    * @routingProfileId The identifier of the routing profile for the user.
     */
     public any function updateUserRoutingProfile(
         required string instanceId,
@@ -62,6 +93,28 @@ component {
     * If the flow places an outbound call to a contact, and then puts the contact in queue, the call is then routed to the agent, like any other inbound case.
     * There is a 60-second dialing timeout for this operation. If the call is not connected after 60 seconds, it fails.
     * https://docs.aws.amazon.com/connect/latest/APIReference/API_StartOutboundVoiceContact.html
+    *
+    * @instanceId                              The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @contactFlowId                           The identifier of the flow for the outbound call.
+    *                                          To see the ContactFlowId in the Amazon Connect console user interface, on the navigation menu go to Routing, Contact Flows.
+    *                                          Choose the flow. On the flow page, under the name of the flow, choose Show additional flow information.
+    *                                          The ContactFlowId is the last part of the ARN.
+    * @destinationPhoneNumber                  The phone number of the customer, in E.164 format.
+    * @campaignId                   (Optional) The campaign identifier of the outbound communication.
+    * @awaitAnswerMachinePrompt     (Optional) Flag to wait for the answering machine prompt.
+    * @enableAnswerMachineDetection (Optional) The flag to indicate if answer machine detection analysis needs to be performed for a voice call.
+    *                                          If set to true, TrafficType must be set as CAMPAIGN.
+    * @queueId                      (Optional) The queue for the call. If you specify a queue, the phone displayed for caller ID is the phone number specified in the queue.
+    *                                          If you do not specify a queue, the queue defined in the flow is used.
+    *                                          If you do not specify a queue, you must specify a source phone number.
+    * @sourcePhoneNumber            (Optional) The phone number associated with the Amazon Connect instance, in E.164 format.
+    *                                          If you do not specify a source phone number, you must specify a queue.
+    * @clientToken                  (Optional) A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+    *                                          If not provided, the AWS SDK populates this field.
+    * @attributes                   (Optional) A custom key-value pair using a struct. The attributes are standard Amazon Connect attributes,
+    *                                          and can be accessed in flows just like any other contact attributes.
+    *                                          There can be up to 32,768 UTF-8 bytes across all key-value pairs per contact.
+    *                                          Attribute keys can include only alphanumeric, dash, and underscore characters.
     */
     public any function startOutboundVoiceContact(
         required string instanceId,
