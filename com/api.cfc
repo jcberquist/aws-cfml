@@ -58,7 +58,8 @@ component accessors="true" {
         any body = '',
         struct awsCredentials = { },
         boolean encodeurl = true,
-        boolean useSSL = true
+        boolean useSSL = true,
+        numeric timeout = 0
     ) {
         if ( awsCredentials.isEmpty() ) {
             awsCredentials = credentials.getCredentials();
@@ -86,6 +87,7 @@ component accessors="true" {
         httpArgs[ 'queryParams' ] = queryParams;
         httpArgs[ 'useSSL' ] = useSSL;
         if ( !isNull( arguments.body ) ) httpArgs[ 'body' ] = body;
+        if ( timeout ) httpArgs[ 'timeout' ] = timeout;
         // writeDump( httpArgs );
 
         var requestStart = getTickCount();
