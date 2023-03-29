@@ -615,7 +615,8 @@ component {
         string Expires = '',
         struct Metadata = { },
         string StorageClass = '',
-        string WebsiteRedirectLocation = ''
+        string WebsiteRedirectLocation = '',
+        numeric timeout = 0
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
@@ -648,7 +649,8 @@ component {
             '/' & ObjectKey,
             { },
             headers,
-            FileContent
+            FileContent,
+            timeout
         );
         return apiResponse;
     }
@@ -903,7 +905,8 @@ component {
         string path = '/',
         struct queryParams = { },
         struct headers = { },
-        any payload = ''
+        any payload = '',
+        numeric timeout = 0
     ) {
         var host = getHost( requestSettings );
 
@@ -935,7 +938,8 @@ component {
             payload,
             requestSettings.awsCredentials,
             false,
-            useSSL
+            useSSL,
+            timeout
         );
     }
 
