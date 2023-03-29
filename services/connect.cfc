@@ -179,6 +179,65 @@ component {
         );
     }
 
+    /**
+    * Changes the current status of a user or agent in Amazon Connect. If the agent is currently handling a contact, this sets the agent's next status.
+    * https://docs.aws.amazon.com/connect/latest/APIReference/API_PutUserStatus.html
+    *
+    * @instanceId     The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @userId         The identifier of the user account.
+    * @agentStatusId  The identifier of the agent status.
+    */
+    public any function putUserStatus(
+        required string instanceId,
+        required string userId,
+        required string agentStatusId
+    ) {
+        return apiCall(
+            requestSettings = api.resolveRequestSettings( argumentCollection = arguments ),
+            httpMethod = 'PUT',
+            path = '/users/#arguments.instanceId#/#arguments.userId#/status',
+            payload = serializeJSON( { 'AgentStatusId': arguments.agentStatusId } )
+        );
+    }
+
+    /**
+    * Updates the phone configuration settings for the specified user.
+    * https://docs.aws.amazon.com/connect/latest/APIReference/API_UpdateUserPhoneConfig.html
+    *
+    * @instanceId                 The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @userId                     The identifier of the user account.
+    * @phoneType                  The phone type. Valid values are: `SOFT_PHONE` and `DESK_PHONE`
+    * @afterContactWorkTimeLimit  The After Call Work (ACW) timeout setting, in seconds. Minimum value of 0.
+    * @autoAccept                 The auto accept setting for having the agent auto accept incoming calls routed to them.
+    * @deskPhoneNumber            The phone number for the user's desk phone.
+    */
+    public any function updateUserPhoneConfig(
+        required string instanceId,
+        required string userId,
+        string phoneType = 'SOFT_PHONE',
+        numeric afterContactWorkTimeLimit,
+        boolean autoAccept,
+        string deskPhoneNumber
+    ) {
+        var phoneConfig = { 'PhoneType': arguments.phoneType };
+        if ( !isNull( arguments.afterContactWorkTimeLimit ) ) {
+            phoneConfig[ 'AfterContactWorkTimeLimit' ] = arguments.afterContactWorkTimeLimit;
+        }
+        if ( !isNull( arguments.autoAccept ) ) {
+            phoneConfig[ 'AutoAccept' ] = arguments.autoAccept;
+        }
+        if ( !isNull( arguments.deskPhoneNumber ) ) {
+            phoneConfig[ 'DeskPhoneNumber' ] = arguments.deskPhoneNumber;
+        }
+
+        return apiCall(
+            requestSettings = api.resolveRequestSettings( argumentCollection = arguments ),
+            httpMethod = 'POST',
+            path = '/users/#arguments.instanceId#/#arguments.userId#/phone-config',
+            payload = serializeJSON( { 'PhoneConfig': phoneConfig } )
+        );
+    }
+
     private any function apiCall(
         required struct requestSettings,
         string httpMethod = 'GET',
@@ -188,6 +247,9 @@ component {
         any payload = ''
     ) {
         var host = variables.service & '.' & requestSettings.region & '.amazonaws.com';
+        if ( !structKeyExists( headers, 'Content-Type' ) ) {
+            headers[ 'Content-Type' ] = 'application/json';
+        }
         var useSSL = !structKeyExists( variables.settings, 'useSSL' ) || variables.settings.useSSL;
         var apiResponse = api.call(
             variables.service,

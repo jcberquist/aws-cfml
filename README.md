@@ -6,6 +6,7 @@
 
 It currently supports the following APIs:
  - cognitoIdentity
+ - connect
  - dynamodb
  - ec2
  - ec2 auto-scaling groups
