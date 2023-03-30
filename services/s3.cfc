@@ -441,7 +441,7 @@ component {
     * returns a pre-signed URL that can be used to access an object
     * http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
     * https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html (Overriding Response Header Values)
-    * headers = { "response-content-type": "application/octet-stream" } is useful for forcing a download
+    * queryParams = { "response-content-disposition": "attachment" } is useful for forcing a download
     * @Bucket The name of the bucket containing the object
     * @ObjectKey The object key
     * @Expires The length of time in seconds for which the url is valid
@@ -452,15 +452,14 @@ component {
         required string ObjectKey,
         numeric Expires = 300,
         string VersionId = '',
-        struct headers = {}
+        struct queryParams = {}
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var host = getHost( requestSettings );
         var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
-        path &= '/' & ObjectKey;
-        var queryParams = { };
-        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
-        if (!arguments.headers.isEmpty()) queryParams.append(arguments.headers);
+        path &= '/' & arguments.ObjectKey;
+        
+        if ( len( arguments.VersionId ) ) arguments.queryParams.append({ "versionId": arguments.VersionId });
 
         return api.signedUrl(
             variables.service,
@@ -468,7 +467,7 @@ component {
             requestSettings.region,
             'GET',
             path,
-            queryParams,
+            arguments.queryParams,
             Expires,
             requestSettings.awsCredentials,
             false
