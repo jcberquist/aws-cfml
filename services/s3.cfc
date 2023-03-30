@@ -290,6 +290,122 @@ component {
         return apiResponse;
     }
 
+
+    /**
+    * This action initiates a multipart upload and returns an upload ID. This upload ID is used to associate all of the parts in the specific multipart upload. You specify this upload ID in each of your subsequent upload part requests (see UploadPart). You also include this upload ID in the final request to either complete or abort the multipart upload request.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+    * @Bucket The name of the bucket to which to initiate the upload
+    * @Key Object key for which the multipart upload is to be initiated.
+    */
+    public any function createMultipartUpload(
+        required string Bucket,
+        required string Key
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'uploads': '' };
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
+    * Uploads a part in a multipart upload.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html
+    * @Bucket The name of the bucket to which the multipart upload was initiated.
+    * @Key Object key for which the multipart upload was initiated.
+    * @UploadId Upload ID identifying the multipart upload whose part is being uploaded.
+    * @PartNumber Part number of part being uploaded. This is a positive integer between 1 and 10,000.
+    * @body the binary content of the file part
+    */
+    public any function putPart(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required numeric PartNumber,
+        required any body
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'partNumber': arguments.PartNumber, 'uploadId': arguments.UploadId };
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/#arguments.Key#',
+            queryParams,
+            { },
+            arguments.body
+        );
+        return apiResponse;
+    }
+
+    /**
+    * Completes a multipart upload by assembling previously uploaded parts.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+    * @Bucket The name of the bucket to which the multipart upload was initiated.
+    * @Key Object key for which the multipart upload was initiated.
+    * @UploadId ID for the initiated multipart upload.
+    * @Parts Array of CompletedPart data types.
+    */
+    public any function completeMultipartUpload(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required array Parts
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'uploadId': arguments.UploadId };
+        var payload = getPartsPayload( Parts );
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams,
+            { },
+            toString( payload )
+        );
+
+        return apiResponse;
+    }
+
+    // ** modified version of generate presigned. Just for putting uploads
+
+    public string function generatePresignedURLForPart(
+        required string Bucket,
+        required string Key,
+        required numeric partNumber,
+        required string uploadId,
+        numeric Expires = 300,
+        string VersionId = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var host = getHost( requestSettings );
+        var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
+        path &= '/' & Key;
+        var queryParams = { 'partNumber': arguments.partNumber, 'uploadId': arguments.uploadId };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+
+        return api.signedUrl(
+            variables.service,
+            host,
+            requestSettings.region,
+            'PUT',
+            path,
+            queryParams,
+            Expires,
+            requestSettings.awsCredentials,
+            false
+        );
+    }
+
     /**
     * creates a new bucket
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUT.html
@@ -505,7 +621,8 @@ component {
         string Expires = '',
         struct Metadata = { },
         string StorageClass = '',
-        string WebsiteRedirectLocation = ''
+        string WebsiteRedirectLocation = '',
+        numeric timeout = 0
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
@@ -538,7 +655,8 @@ component {
             '/' & ObjectKey,
             { },
             headers,
-            FileContent
+            FileContent,
+            timeout
         );
         return apiResponse;
     }
@@ -755,6 +873,20 @@ component {
 
     // private
 
+    private xml function getPartsPayload(
+        required Array Parts
+    ) {
+        var ret = '<?xml version="1.0" encoding="UTF-8"?>';
+        ret &= '<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">';
+
+        for ( var part in arguments.Parts ) {
+            ret &= '<Part><ETag>#part.ETag#</ETag><PartNumber>#part.PartNumber#</PartNumber></Part>';
+        }
+
+        ret &= '</CompleteMultipartUpload>'
+        return xmlParse( ret );
+    }
+
     private string function getHost(
         required struct requestSettings
     ) {
@@ -779,7 +911,8 @@ component {
         string path = '/',
         struct queryParams = { },
         struct headers = { },
-        any payload = ''
+        any payload = '',
+        numeric timeout = 0
     ) {
         var host = getHost( requestSettings );
 
@@ -799,6 +932,7 @@ component {
 
         var useSSL = !structKeyExists( variables.settings, 'useSSL' ) || variables.settings.useSSL;
 
+
         return api.call(
             variables.service,
             host,
@@ -810,7 +944,8 @@ component {
             payload,
             requestSettings.awsCredentials,
             false,
-            useSSL
+            useSSL,
+            timeout
         );
     }
 

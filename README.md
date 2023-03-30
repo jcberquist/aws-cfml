@@ -6,6 +6,7 @@
 
 It currently supports the following APIs:
  - cognitoIdentity
+ - connect
  - dynamodb
  - ec2
  - ec2 auto-scaling groups
@@ -56,7 +57,7 @@ moduleSettings = {
     awscfml: {
         awsKey: '',
         awsSecretKey: '',
-        defaultRegion: '',
+        defaultRegion: ''
     }
 }
 ```
