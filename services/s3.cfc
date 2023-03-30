@@ -568,14 +568,14 @@ component {
         required string ObjectKey,
         numeric Expires = 300,
         string VersionId = '',
-        struct queryParams = {}
+        struct queryParams = { }
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var host = getHost( requestSettings );
         var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
         path &= '/' & arguments.ObjectKey;
-        
-        if ( len( arguments.VersionId ) ) arguments.queryParams.append({ "versionId": arguments.VersionId });
+
+        if ( len( arguments.VersionId ) ) arguments.queryParams[ 'versionId' ] = arguments.VersionId;
 
         return api.signedUrl(
             variables.service,
@@ -605,7 +605,7 @@ component {
     * @Metadata Used to store user-defined metadata. Struct keys are prefixed with 'x-amz-meta-' and sent as headers in the put request.
     * @StorageClass The storage class for the file. Valid values: STANDARD | STANDARD_IA | REDUCED_REDUNDANCY
     * @WebsiteRedirectLocation If the bucket is configured as a website, redirects requests for this object to another object in the same bucket or to an external URL.
-    * 
+    *
     * Example:  aws.s3.putObject( 'your-bucket-name', 'filename.ext', fileReadBinary( pathToFile ), '', '', '', fileGetMimeType( pathToFile ) )
     * https://github.com/jcberquist/aws-cfml/issues/25
     */
