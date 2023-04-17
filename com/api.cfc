@@ -98,7 +98,7 @@ component accessors="true" {
         apiResponse[ 'responseTime' ] = getTickCount() - requestStart;
         apiResponse[ 'responseHeaders' ] = rawResponse.responseheader;
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
-        apiResponse[ 'rawData' ] = rawResponse.filecontent;
+        apiResponse[ 'rawData' ] = ( server.keyExists( 'lucee' ) OR ( NOT find('application/x-amz-json', rawResponse.mimetype) ) ) ? rawResponse.filecontent : rawResponse.filecontent.toString( 'UTF-8' );
         apiResponse[ 'host' ] = arguments.host;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
