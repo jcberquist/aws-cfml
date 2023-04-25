@@ -99,6 +99,14 @@ component accessors="true" {
         apiResponse[ 'responseHeaders' ] = rawResponse.responseheader;
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
+
+        if (
+            find('application/x-amz-json', rawResponse.mimetype) &&
+            !isSimpleValue( apiResponse.rawData )
+        ) {
+            apiResponse.rawData = apiResponse.rawData.toString( 'utf-8' );
+        }
+
         apiResponse[ 'host' ] = arguments.host;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
