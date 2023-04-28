@@ -15,7 +15,7 @@ component {
     /**
     * Detects faces within an image that is provided as input.
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectFaces.html
-    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     * @Attributes Optional. An array of facial attributes to be returned. Alternately, specify "DEFAULT" to include the default set of attributes, or "ALL" to include all attributes.
     */
     public any function detectFaces(
@@ -32,7 +32,7 @@ component {
     /**
     * Detects instances of real-world entities within an image (JPEG or PNG) provided as input. This includes objects like flower, tree, and table; events like wedding, graduation, and birthday party; and concepts like landscape, evening, and nature.
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectLabels.html
-    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     * @MaxLabels Optional numeric. Maximum number of labels you want the service to return in the response. The service returns the specified number of highest confidence labels.
     */
     public any function detectLabels(
@@ -49,7 +49,7 @@ component {
     /**
     * Detects explicit or suggestive adult content in a specified JPEG or PNG format image.
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectModerationLabels.html
-    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     * @MinConfidence Optional. Specifies the minimum confidence level for the labels to return. Amazon Rekognition doesn't return any labels with a confidence level lower than this specified value. Valid Values are 0 - 100. Default when argument is not provided is 50.
     */
     public any function detectModerationLabels(
@@ -66,7 +66,7 @@ component {
     /**
     * Detects text in the input image and converts it into machine-readable text.
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectText.html
-    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     */
     public any function detectText(
         required struct Image
@@ -78,7 +78,7 @@ component {
     /**
     * Returns an array of celebrities recognized in the input image.
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_RecognizeCelebrities.html
-    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @Image a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     */
     public any function recognizeCelebrities(
         required struct Image
@@ -90,8 +90,8 @@ component {
     /**
     * Returns an array of face matches ordered by similarity score in descending order
     * https://docs.aws.amazon.com/rekognition/latest/dg/API_CompareFaces.html
-    * @SourceImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
-    * @TargetImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Key", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/dg/API_Image.html
+    * @SourceImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
+    * @TargetImage a struct with a "Bytes" key containing Base64-encoded binary data or an "S3Object" struct containing a "Bucket", "Name", and optional "Version" - https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Image.html
     * @SimilarityThreshold a numeric minimum level of confidence that a match must meet to be included. Valid Range: Minimum value of 0. Maximum value of 100.
     * @QualityFilter a string filter that specifies a quality bar for how much filtering is done to identify faces. Valid Values: NONE | AUTO | LOW | MEDIUM | HIGH
     */
