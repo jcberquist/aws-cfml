@@ -180,6 +180,126 @@ component {
     }
 
     /**
+    * Creates a user account for the specified Amazon Connect instance.
+    *
+    * @instanceId                The identifier of the Amazon Connect instance. You can find the instance ID in the Amazon Resource Name (ARN) of the instance.
+    * @routingProfileId          The identifier of the routing profile for the user.
+    * @securityProfileIds        The identifier of the security profile for the user.
+    * @username                  The user name for the account. For instances not using SAML for identity management, the user name can include up to 20 characters.
+    *                            If you are using SAML for identity management, the user name can include up to 64 characters from [a-zA-Z0-9_-.\@]+.
+    * @phoneType                 The phone type. Valid values are: `SOFT_PHONE` and `DESK_PHONE`
+    * @password                  (Optional) The password for the user account. A password is required if you are using Amazon Connect for identity management.
+    *                            Otherwise, it is an error to include a password.
+    * @afterContactWorkTimeLimit (Optional) The After Call Work (ACW) timeout setting, in seconds.
+    * @autoAccept                (Optional) The Auto accept setting.
+    * @deskPhoneNumber           (Optional) The phone number for the user's desk phone.
+    * @directoryUserId           (Optional) The identifier of the user account in the directory used for identity management. If Amazon Connect cannot access the directory, you can specify this identifier to authenticate users.
+    *                            If you include the identifier, we assume that Amazon Connect cannot access the directory. Otherwise, the identity information is used to authenticate users from your directory.
+    *                            This parameter is required if you are using an existing directory for identity management in Amazon Connect when Amazon Connect cannot access your directory to authenticate users.
+    *                            If you are using SAML for identity management and include this parameter, an error is returned.
+    * @hierarchyGroupId          (Optional) The identifier of the hierarchy group for the user.
+    * @firstName                 (Optional) The first name. This is required if you are using Amazon Connect or SAML for identity management.
+    * @lastName                  (Optional) The last name. This is required if you are using Amazon Connect or SAML for identity management.
+    * @mobileNumber              (Optional) The user's mobile number.
+    * @email                     (Optional) The email address. If you are using SAML for identity management and include this parameter, an error is returned.
+    * @secondaryEmail            (Optional) The user's secondary email address. If you provide a secondary email, the user receives email notifications - other than password reset notifications - to this email address instead of to their primary email address.
+    * @tags                      (Optional) The tags used to organize, track, or control access for this resource. For example, { "tags": {"key1":"value1", "key2":"value2"} }.
+    */
+    public any function createUser(
+        required string instanceId,
+        required string routingProfileId,
+        required array securityProfileIds,
+        required string username,
+        string phoneType = 'SOFT_PHONE',
+        string password,
+        numeric afterContactWorkTimeLimit,
+        boolean autoAccept,
+        string deskPhoneNumber,
+        string directoryUserId,
+        string hierarchyGroupId,
+        string firstName,
+        string lastName,
+        string mobileNumber,
+        string email,
+        string secondaryEmail,
+        struct tags = { }
+    ) {
+        var payload = {
+            'RoutingProfileId': arguments.routingProfileId,
+            'SecurityProfileIds': arguments.securityProfileIds,
+            'Username': arguments.username,
+            'PhoneConfig': { 'PhoneType': arguments.phoneType },
+            'Tags': arguments.tags
+        };
+
+        if ( !isNull( arguments.password ) ) {
+            payload[ 'Password' ] = arguments.password;
+        }
+
+        if ( !isNull( arguments.directoryUserId ) ) {
+            payload[ 'DirectoryUserId' ] = arguments.directoryUserId;
+        }
+
+        if ( !isNull( arguments.hierarchyGroupId ) ) {
+            payload[ 'HierarchyGroupId' ] = arguments.hierarchyGroupId;
+        }
+
+        if ( !isNull( arguments.afterContactWorkTimeLimit ) ) {
+            payload[ 'PhoneConfig' ][ 'AfterContactWorkTimeLimit' ] = arguments.afterContactWorkTimeLimit;
+        }
+
+        if ( !isNull( arguments.autoAccept ) ) {
+            payload[ 'PhoneConfig' ][ 'AutoAccept' ] = arguments.autoAccept;
+        }
+
+        if ( !isNull( arguments.deskPhoneNumber ) ) {
+            payload[ 'PhoneConfig' ][ 'DeskPhoneNumber' ] = arguments.deskPhoneNumber;
+        }
+
+        if ( !isNull( arguments.firstName ) ) {
+            if ( !structKeyExists( payload, 'IdentityInfo' ) ) {
+                payload[ 'IdentityInfo' ] = { };
+            }
+            payload[ 'IdentityInfo' ][ 'FirstName' ] = arguments.firstName;
+        }
+
+        if ( !isNull( arguments.lastName ) ) {
+            if ( !structKeyExists( payload, 'IdentityInfo' ) ) {
+                payload[ 'IdentityInfo' ] = { };
+            }
+            payload[ 'IdentityInfo' ][ 'LastName' ] = arguments.lastName;
+        }
+
+        if ( !isNull( arguments.mobileNumber ) ) {
+            if ( !structKeyExists( payload, 'IdentityInfo' ) ) {
+                payload[ 'IdentityInfo' ] = { };
+            }
+            payload[ 'IdentityInfo' ][ 'Mobile' ] = arguments.mobileNumber;
+        }
+
+        if ( !isNull( arguments.email ) ) {
+            if ( !structKeyExists( payload, 'IdentityInfo' ) ) {
+                payload[ 'IdentityInfo' ] = { };
+            }
+            payload[ 'IdentityInfo' ][ 'Email' ] = arguments.email;
+        }
+
+        if ( !isNull( arguments.secondaryEmail ) ) {
+            if ( !structKeyExists( payload, 'IdentityInfo' ) ) {
+                payload[ 'IdentityInfo' ] = { };
+            }
+            payload[ 'IdentityInfo' ][ 'SecondaryEmail' ] = arguments.secondaryEmail;
+        }
+
+        return apiCall(
+            requestSettings = api.resolveRequestSettings( argumentCollection = arguments ),
+            httpMethod = 'PUT',
+            path = '/users/#arguments.instanceId#',
+            payload = serializeJSON( payload )
+        );
+    }
+
+    /**
     * Changes the current status of a user or agent in Amazon Connect. If the agent is currently handling a contact, this sets the agent's next status.
     * https://docs.aws.amazon.com/connect/latest/APIReference/API_PutUserStatus.html
     *
