@@ -144,7 +144,7 @@ component {
     * @Bucket the name of the bucket
     */
     public any function getBucketWebsite(
-        required string Bucket,
+        required string Bucket
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'website': '' };
@@ -196,6 +196,7 @@ component {
     */
     public any function putBucketWebsite(
         required string Bucket,
+        required string WebsiteConfiguration
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'website': '' };
