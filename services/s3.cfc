@@ -139,6 +139,79 @@ component {
     }
 
     /**
+    * This operation returns the website configuration for a bucket.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html
+    * @Bucket the name of the bucket
+    */
+    public any function getBucketWebsite(
+        required string Bucket
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'website': '' };
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
+    * This operation sets the configuration of the website that is specified in the website subresource.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html
+    * @Bucket the name of the bucket
+    * @WebsiteConfiguration xml data containing WebsiteConfiguration parameters. Required: Yes
+    *   @ErrorDocument The name of the error document for the website.
+    *   @IndexDocument The name of the index document for the website.
+    *   @RedirectAllRequestsTo The redirect behavior for every request to this bucket's website endpoint. If you specify this property, you can't
+    * specify any other property.
+    *   @RoutingRules Rules that define when a redirect is applied and the redirect behavior. Type: Array of RoutingRule data types
+    *
+    *   Example WebsiteConfiguration data:
+    * 		<WebsiteConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    * 			<IndexDocument>
+    * 				<Suffix>index.html</Suffix>
+    * 			</IndexDocument>
+    * 			<ErrorDocument>
+    * 				<Key>index.html</Key>
+    * 			</ErrorDocument>
+    * 			<RoutingRules>
+    * 				<RoutingRule>
+    * 					<Condition>
+    * 						<KeyPrefixEquals>webcam</KeyPrefixEquals>
+    * 						<HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
+    * 					</Condition>
+    * 					<Redirect>
+    * 						<Protocol>https</Protocol>
+    * 						<HostName>testhost.com</HostName>
+    * 						<ReplaceKeyWith>podcasts/webcam.html</ReplaceKeyWith>
+    * 					</Redirect>
+    * 				</RoutingRule>
+    * 			</RoutingRules>
+    * 		</WebsiteConfiguration>
+    */
+    public any function putBucketWebsite(
+        required string Bucket,
+        required string WebsiteConfiguration
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'website': '' };
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/',
+            queryParams,
+            { },
+            arguments.WebsiteConfiguration
+        );
+        return apiResponse;
+    }
+
+    /**
     * Used to retrieve various bucket settings
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketOps.html
     * @Bucket the name of the bucket
