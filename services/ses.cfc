@@ -93,6 +93,9 @@ component {
         string payload = ''
     ) {
         var host = getHost( requestSettings.region );
+        if ( !structKeyExists( headers, 'Content-Type' ) ) {
+            headers[ 'Content-Type' ] = 'application/json';
+        }
         return api.call(
             variables.service,
             host,
