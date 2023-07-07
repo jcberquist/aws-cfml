@@ -16,6 +16,7 @@ It currently supports the following APIs:
  - rekognition
  - s3
  - secretsmanager
+ - ses
  - sns
  - ssm
  - sqs
