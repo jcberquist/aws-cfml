@@ -8,6 +8,7 @@ component {
     ) {
         variables.api = arguments.api;
         variables.apiVersion = arguments.settings.apiVersion;
+        variables.settings = arguments.settings;
         return this;
     }
 
@@ -50,7 +51,12 @@ component {
     public string function getHost(
         required string region
     ) {
-        return variables.service & '.' & region & '.amazonaws.com';
+        if ( structKeyExists( variables.settings, 'host' ) && len( variables.settings.host ) ) {
+            var host = variables.settings.host;
+        } else {
+            var host = variables.service & '.' & region & '.amazonaws.com';
+        }
+        return host;
     }
 
     private any function apiCall(
@@ -74,9 +80,15 @@ component {
             { },
             headers,
             payloadString,
-            requestSettings.awsCredentials
+            requestSettings.awsCredentials,
+            true
         );
-        apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
+        if (isJson(apiResponse.rawData)){
+            apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
+        }else{
+            apiResponse[ 'data' ] = apiResponse.rawData;
+        }
+        
 
         return apiResponse;
     }

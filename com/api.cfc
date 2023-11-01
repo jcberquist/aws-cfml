@@ -35,7 +35,8 @@ component accessors="true" {
     public struct function resolveRequestSettings(
         struct awsCredentials = { },
         string region = defaultRegion,
-        string bucket = ''
+        string bucket = '',
+        string host = ''
     ) {
         if ( !awsCredentials.isEmpty() ) {
             awsCredentials = credentials.defaultCredentials( argumentCollection = awsCredentials );
@@ -43,6 +44,9 @@ component accessors="true" {
         var settings = { awsCredentials: awsCredentials, region: region };
         if ( len( arguments.bucket ) ) {
             settings.bucket = arguments.bucket;
+        }
+        if( len( arguments.host )){
+            settings.host = arguments.host;
         }
         return settings;
     }
