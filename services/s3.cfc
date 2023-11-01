@@ -956,7 +956,7 @@ component {
             ret &= '<Part><ETag>#part.ETag#</ETag><PartNumber>#part.PartNumber#</PartNumber></Part>';
         }
 
-        ret &= '</CompleteMultipartUpload>'
+        ret &= '</CompleteMultipartUpload>';
         return xmlParse( ret );
     }
 
