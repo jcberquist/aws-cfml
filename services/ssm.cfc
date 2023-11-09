@@ -80,8 +80,7 @@ component {
             { },
             headers,
             payloadString,
-            requestSettings.awsCredentials,
-            true
+            requestSettings.awsCredentials
         );
         if (isJson(apiResponse.rawData)){
             apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
