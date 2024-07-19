@@ -3,14 +3,15 @@ component {
     public any function init(
         string awsKey = '',
         string awsSecretKey = '',
-        any api
+        any api,
+        string token = ''
     ) {
         variables.api = api;
         variables.iamRolePath = '169.254.169.254/latest/meta-data/iam/security-credentials/';
         variables.ecsEndpoint = '169.254.170.2';
         variables.iamRole = '';
         variables.credentialPath = '';
-        variables.credentials = resolveCredentials( awsKey, awsSecretKey );
+        variables.credentials = resolveCredentials( awsKey, awsSecretKey, token );
         return this;
     }
 
@@ -36,9 +37,22 @@ component {
 
     private function resolveCredentials(
         awsKey,
-        awsSecretKey
+        awsSecretKey,
+        string token = ''
     ) {
         var credentials = defaultCredentials( awsKey, awsSecretKey );
+
+        if(len(token)){
+             try {
+                variables.iamRole = requestIamRole();
+                if ( iamRole.len() ) {
+                    variables.credentialPath = iamRolePath & iamRole;
+                    refreshCredentials( credentials );
+                }
+            } catch ( any e ) {
+                // pass
+            }
+        }
 
         if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
             return credentials;
