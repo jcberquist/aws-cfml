@@ -67,6 +67,35 @@ component {
     }
 
     /**
+    * Updates an existing secret
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UpdateSecret.html
+    */
+    public any function updateSecret(
+        required string SecretId,
+        any SecretString,
+        any SecretBinary,
+        string Description = '',
+        string KmsKeyId,
+        string ClientRequestToken = createGUID()
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = {
+            'SecretId': arguments.SecretId,
+            'Description': arguments.Description,
+            'ClientRequestToken': arguments.ClientRequestToken
+        };
+        if( structKeyExists( arguments, "SecretString" ) ) {
+            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        }
+        else if( structKeyExists( arguments, "SecretBinary" ) ) {
+            payload[ "SecretBinary" ] = arguments.SecretBinary;
+        }
+        if( structKeyExists( arguments, "KmsKeyId" ) ) {
+            payload[ "KmsKeyId" ] = arguments.KmsKeyId;
+        }
+        return apiCall( requestSettings, 'CreateSecret', payload );
+    }
+    /**
     * Delete a secret
     * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html
     */
