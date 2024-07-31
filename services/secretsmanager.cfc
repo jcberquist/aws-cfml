@@ -25,6 +25,18 @@ component {
     }
 
     /**
+    * Retrieves the details of a secret. It does not include the encrypted secret value. Secrets Manager only returns fields that have a value in the response.
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DescribeSecret.html
+    */
+    public any function describeSecret(
+        required string SecretId
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = { 'SecretId': arguments.SecretId };
+        return apiCall( requestSettings, 'DescribeSecret', payload );
+    }
+
+    /**
     * Create a new secret
     * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html
     */
@@ -136,6 +148,19 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = { 'SecretId': arguments.SecretId };
         return apiCall( requestSettings, 'DeleteSecret', payload );
+    }
+
+    /**
+    * Remove replication from a secret
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_RemoveRegionsFromReplication.html
+    */
+    public any function removeRegionsFromReplication(
+        required string SecretId,
+        required array RemoveReplicaRegions
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = { 'SecretId': arguments.SecretId, 'RemoveReplicaRegions': arguments.RemoveReplicaRegions };
+        return apiCall( requestSettings, 'RemoveRegionsFromReplication', payload );
     }
 
     /**
