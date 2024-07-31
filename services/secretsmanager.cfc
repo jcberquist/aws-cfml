@@ -78,6 +78,34 @@ component {
         return apiCall( requestSettings, 'RestoreSecret', payload );
     }
 
+    /**
+    * Get random password
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetRandomPassword.html
+    */
+    public any function getRandomPassword(
+        required numeric PasswordLength,
+        string ExcludeCharacters = '',
+        boolean ExcludeLowercase = false,
+        boolean ExcludeNumbers = false,
+        boolean ExcludePunctuation = false,
+        boolean ExcludeUppercase = false,
+        boolean IncludeSpace = false,
+        boolean RequireEachIncludedType = true
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = {
+            'PasswordLength': arguments.PasswordLength,
+            'ExcludeCharacters': arguments.ExcludeCharacters,
+            'ExcludeLowercase': arguments.ExcludeLowercase,
+            'ExcludeNumbers': arguments.ExcludeNumbers,
+            'ExcludePunctuation': arguments.ExcludePunctuation,
+            'ExcludeUppercase': arguments.ExcludeUppercase,
+            'IncludeSpace': arguments.IncludeSpace,
+            'RequireEachIncludedType': arguments.RequireEachIncludedType
+        };
+        return apiCall( requestSettings, 'GetRandomPassword', payload );
+    }
+    
     public string function getHost(
         required string region
     ) {
