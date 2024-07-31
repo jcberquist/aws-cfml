@@ -54,6 +54,18 @@ component {
         return apiCall( requestSettings, 'CreateSecret', payload );
     }
 
+    /**
+    * Delete a secret
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html
+    */
+    public any function deleteSecret(
+        required string SecretId
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = { 'SecretId': arguments.SecretId };
+        return apiCall( requestSettings, 'DeleteSecret', payload );
+    }
+
     public string function getHost(
         required string region
     ) {
