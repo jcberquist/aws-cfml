@@ -72,6 +72,7 @@ component {
     */
     public any function updateSecret(
         required string SecretId,
+        required string Name,
         any SecretString,
         any SecretBinary,
         string Description = '',
@@ -81,6 +82,7 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = {
             'SecretId': arguments.SecretId,
+            'Name': arguments.Name,
             'Description': arguments.Description,
             'ClientRequestToken': arguments.ClientRequestToken
         };
@@ -93,7 +95,7 @@ component {
         if( structKeyExists( arguments, "KmsKeyId" ) ) {
             payload[ "KmsKeyId" ] = arguments.KmsKeyId;
         }
-        return apiCall( requestSettings, 'CreateSecret', payload );
+        return apiCall( requestSettings, 'UpdateSecret', payload );
     }
 
     /**
