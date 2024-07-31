@@ -24,6 +24,36 @@ component {
         return apiCall( requestSettings, 'GetSecretValue', payload );
     }
 
+    /**
+    * Create a new secret
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html
+    */
+    public any function createSecret(
+        required string Name,
+        any SecretString,
+        string Description = '',
+        string KmsKeyId,
+        array Tags,
+        ClientRequestToken = createGUID()
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = {
+            'Name': arguments.Name,
+            'Description': arguments.Description,
+            'ClientRequestToken': arguments.ClientRequestToken
+        };
+        if( structKeyExists( arguments, "SecretString" ) ) {
+            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        }
+        if( structKeyExists( arguments, "KmsKeyId" ) ) {
+            payload[ "KmsKeyId" ] = arguments.KmsKeyId;
+        }
+        if( structKeyExists( arguments, "Tags" ) && arrayLen( arguments.Tags ) ) {
+            payload[ "Tags" ] = arguments.Tags;
+        }
+        return apiCall( requestSettings, 'CreateSecret', payload );
+    }
+
     public string function getHost(
         required string region
     ) {
