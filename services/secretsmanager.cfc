@@ -95,6 +95,35 @@ component {
         }
         return apiCall( requestSettings, 'CreateSecret', payload );
     }
+
+    /**
+    * Updates an existing secret's value only
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_PutSecretValue.html
+    */
+    public any function PutSecretValue(
+        required string SecretId,
+        any SecretString,
+        any SecretBinary,
+        array VersionStages,
+        string ClientRequestToken = createGUID()
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = {
+            'SecretId': arguments.SecretId,
+            'ClientRequestToken': arguments.ClientRequestToken
+        };
+        if( structKeyExists( arguments, "SecretString" ) ) {
+            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        }
+        else if( structKeyExists( arguments, "SecretBinary" ) ) {
+            payload[ "SecretBinary" ] = arguments.SecretBinary;
+        }
+        if( structKeyExists( arguments, "VersionStages" ) && arrayLen( arguments.VersionStages ) ) {
+            payload[ "VersionStages" ] = arguments.VersionStages;
+        }
+        return apiCall( requestSettings, 'PutSecretValue', payload );
+    }
+
     /**
     * Delete a secret
     * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html
