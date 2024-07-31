@@ -31,10 +31,13 @@ component {
     public any function createSecret(
         required string Name,
         any SecretString,
+        any SecretBinary,
         string Description = '',
         string KmsKeyId,
         array Tags,
-        ClientRequestToken = createGUID()
+        string ClientRequestToken = createGUID(),
+        array AddReplicaRegions,
+        boolean ForceOverwriteReplicaSecret
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = {
@@ -45,11 +48,20 @@ component {
         if( structKeyExists( arguments, "SecretString" ) ) {
             payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
         }
+        else if( structKeyExists( arguments, "SecretBinary" ) ) {
+            payload[ "SecretBinary" ] = arguments.SecretBinary;
+        }
         if( structKeyExists( arguments, "KmsKeyId" ) ) {
             payload[ "KmsKeyId" ] = arguments.KmsKeyId;
         }
         if( structKeyExists( arguments, "Tags" ) && arrayLen( arguments.Tags ) ) {
             payload[ "Tags" ] = arguments.Tags;
+        }
+        if( structKeyExists( arguments, "AddReplicaRegions" ) && arrayLen( arguments.AddReplicaRegions ) ) {
+            payload[ "AddReplicaRegions" ] = arguments.AddReplicaRegions;
+        }
+        if( structKeyExists( arguments, "ForceOverwriteReplicaSecret" ) ) {
+            payload[ "ForceOverwriteReplicaSecret" ] = arguments.ForceOverwriteReplicaSecret;
         }
         return apiCall( requestSettings, 'CreateSecret', payload );
     }
