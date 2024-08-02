@@ -176,6 +176,34 @@ component {
     }
 
     /**
+    * Lists secrets
+    * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_ListSecrets.html
+    */
+    public any function listSecrets(
+        array Filters,
+        boolean IncludePlannedDeletion = false,
+        numeric MaxResults, // between 1-100
+        string NextToken,
+        string SortOrder,
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var payload = { "IncludePlannedDeletion": arguments.IncludePlannedDeletion };
+        if( structKeyExists( arguments, "Filters" ) && arrayLen( arguments.Filters ) ) {
+            payload[ "Filters" ] = arguments.Filters;
+        }
+        if( structKeyExists( arguments, "MaxResults" ) ) {
+            payload[ "MaxResults" ] = arguments.MaxResults;
+        }
+        if( structKeyExists( arguments, "NextToken" ) ) {
+            payload[ "NextToken" ] = arguments.NextToken;
+        }
+        if( structKeyExists( arguments, "SortOrder" ) ) {
+            payload[ "SortOrder" ] = arguments.SortOrder;
+        }
+        return apiCall( requestSettings, 'ListSecrets', payload );
+    }
+
+    /**
     * Get random password
     * https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetRandomPassword.html
     */
