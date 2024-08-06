@@ -47,7 +47,7 @@ component {
         string Description = '',
         string KmsKeyId,
         array Tags,
-        string ClientRequestToken = createGUID(),
+        string ClientRequestToken = createUUID(),
         array AddReplicaRegions,
         boolean ForceOverwriteReplicaSecret
     ) {
@@ -89,7 +89,7 @@ component {
         any SecretBinary,
         string Description = '',
         string KmsKeyId,
-        string ClientRequestToken = createGUID()
+        string ClientRequestToken = createUUID()
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = {
@@ -119,7 +119,7 @@ component {
         any SecretString,
         any SecretBinary,
         array VersionStages,
-        string ClientRequestToken = createGUID()
+        string ClientRequestToken = createUUID()
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var payload = {
