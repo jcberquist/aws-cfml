@@ -57,23 +57,24 @@ component {
             'Description': arguments.Description,
             'ClientRequestToken': arguments.ClientRequestToken
         };
-        if( structKeyExists( arguments, "SecretString" ) ) {
-            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        if ( structKeyExists( arguments, 'SecretString' ) ) {
+            payload[ 'SecretString' ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON(
+                arguments.SecretString
+            );
+        } else if ( structKeyExists( arguments, 'SecretBinary' ) ) {
+            payload[ 'SecretBinary' ] = arguments.SecretBinary;
         }
-        else if( structKeyExists( arguments, "SecretBinary" ) ) {
-            payload[ "SecretBinary" ] = arguments.SecretBinary;
+        if ( structKeyExists( arguments, 'KmsKeyId' ) ) {
+            payload[ 'KmsKeyId' ] = arguments.KmsKeyId;
         }
-        if( structKeyExists( arguments, "KmsKeyId" ) ) {
-            payload[ "KmsKeyId" ] = arguments.KmsKeyId;
+        if ( structKeyExists( arguments, 'Tags' ) && arrayLen( arguments.Tags ) ) {
+            payload[ 'Tags' ] = arguments.Tags;
         }
-        if( structKeyExists( arguments, "Tags" ) && arrayLen( arguments.Tags ) ) {
-            payload[ "Tags" ] = arguments.Tags;
+        if ( structKeyExists( arguments, 'AddReplicaRegions' ) && arrayLen( arguments.AddReplicaRegions ) ) {
+            payload[ 'AddReplicaRegions' ] = arguments.AddReplicaRegions;
         }
-        if( structKeyExists( arguments, "AddReplicaRegions" ) && arrayLen( arguments.AddReplicaRegions ) ) {
-            payload[ "AddReplicaRegions" ] = arguments.AddReplicaRegions;
-        }
-        if( structKeyExists( arguments, "ForceOverwriteReplicaSecret" ) ) {
-            payload[ "ForceOverwriteReplicaSecret" ] = arguments.ForceOverwriteReplicaSecret;
+        if ( structKeyExists( arguments, 'ForceOverwriteReplicaSecret' ) ) {
+            payload[ 'ForceOverwriteReplicaSecret' ] = arguments.ForceOverwriteReplicaSecret;
         }
         return apiCall( requestSettings, 'CreateSecret', payload );
     }
@@ -98,14 +99,15 @@ component {
             'Description': arguments.Description,
             'ClientRequestToken': arguments.ClientRequestToken
         };
-        if( structKeyExists( arguments, "SecretString" ) ) {
-            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        if ( structKeyExists( arguments, 'SecretString' ) ) {
+            payload[ 'SecretString' ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON(
+                arguments.SecretString
+            );
+        } else if ( structKeyExists( arguments, 'SecretBinary' ) ) {
+            payload[ 'SecretBinary' ] = arguments.SecretBinary;
         }
-        else if( structKeyExists( arguments, "SecretBinary" ) ) {
-            payload[ "SecretBinary" ] = arguments.SecretBinary;
-        }
-        if( structKeyExists( arguments, "KmsKeyId" ) ) {
-            payload[ "KmsKeyId" ] = arguments.KmsKeyId;
+        if ( structKeyExists( arguments, 'KmsKeyId' ) ) {
+            payload[ 'KmsKeyId' ] = arguments.KmsKeyId;
         }
         return apiCall( requestSettings, 'UpdateSecret', payload );
     }
@@ -122,18 +124,16 @@ component {
         string ClientRequestToken = createUUID()
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var payload = {
-            'SecretId': arguments.SecretId,
-            'ClientRequestToken': arguments.ClientRequestToken
-        };
-        if( structKeyExists( arguments, "SecretString" ) ) {
-            payload[ "SecretString" ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON( arguments.SecretString );
+        var payload = { 'SecretId': arguments.SecretId, 'ClientRequestToken': arguments.ClientRequestToken };
+        if ( structKeyExists( arguments, 'SecretString' ) ) {
+            payload[ 'SecretString' ] = isSimpleValue( arguments.SecretString ) ? arguments.SecretString : serializeJSON(
+                arguments.SecretString
+            );
+        } else if ( structKeyExists( arguments, 'SecretBinary' ) ) {
+            payload[ 'SecretBinary' ] = arguments.SecretBinary;
         }
-        else if( structKeyExists( arguments, "SecretBinary" ) ) {
-            payload[ "SecretBinary" ] = arguments.SecretBinary;
-        }
-        if( structKeyExists( arguments, "VersionStages" ) && arrayLen( arguments.VersionStages ) ) {
-            payload[ "VersionStages" ] = arguments.VersionStages;
+        if ( structKeyExists( arguments, 'VersionStages' ) && arrayLen( arguments.VersionStages ) ) {
+            payload[ 'VersionStages' ] = arguments.VersionStages;
         }
         return apiCall( requestSettings, 'PutSecretValue', payload );
     }
@@ -184,21 +184,21 @@ component {
         boolean IncludePlannedDeletion = false,
         numeric MaxResults, // between 1-100
         string NextToken,
-        string SortOrder,
+        string SortOrder
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var payload = { "IncludePlannedDeletion": arguments.IncludePlannedDeletion };
-        if( structKeyExists( arguments, "Filters" ) && arrayLen( arguments.Filters ) ) {
-            payload[ "Filters" ] = arguments.Filters;
+        var payload = { 'IncludePlannedDeletion': arguments.IncludePlannedDeletion };
+        if ( structKeyExists( arguments, 'Filters' ) && arrayLen( arguments.Filters ) ) {
+            payload[ 'Filters' ] = arguments.Filters;
         }
-        if( structKeyExists( arguments, "MaxResults" ) ) {
-            payload[ "MaxResults" ] = arguments.MaxResults;
+        if ( structKeyExists( arguments, 'MaxResults' ) ) {
+            payload[ 'MaxResults' ] = arguments.MaxResults;
         }
-        if( structKeyExists( arguments, "NextToken" ) ) {
-            payload[ "NextToken" ] = arguments.NextToken;
+        if ( structKeyExists( arguments, 'NextToken' ) ) {
+            payload[ 'NextToken' ] = arguments.NextToken;
         }
-        if( structKeyExists( arguments, "SortOrder" ) ) {
-            payload[ "SortOrder" ] = arguments.SortOrder;
+        if ( structKeyExists( arguments, 'SortOrder' ) ) {
+            payload[ 'SortOrder' ] = arguments.SortOrder;
         }
         return apiCall( requestSettings, 'ListSecrets', payload );
     }
@@ -230,7 +230,7 @@ component {
         };
         return apiCall( requestSettings, 'GetRandomPassword', payload );
     }
-    
+
     public string function getHost(
         required string region
     ) {
