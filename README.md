@@ -211,12 +211,16 @@ secretValue = response.data.SecretString;
 
 ### SSM
 
-Only the getParameter and getParameters operations have been implemented. Here's an example of using it:
+The following operations have been implemented: `getParameter()`,`getParameters()`,`getParametersByPath()`,`putParameter()`,`deleteParameter()` 
+
+Here's an example of using it:
 
 ```cfc
 response = aws.ssm.getParameter( 'YourParameterName', true );
 decryptedValue = response.data.Parameter.Value;
 ```
+
+The `putParameter()` method is a simple cut-down version of the full API call, it has overwrite set to true to allow the same function to be used for adding or updating parameters.
 
 ### Translate
 
