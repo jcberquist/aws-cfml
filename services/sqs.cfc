@@ -153,6 +153,16 @@ component {
         );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+            apiResponse[ 'messages' ] = [];
+            if(structKeyExists(apiResponse.data,'ReceiveMessageResult')){
+                if(isArray(apiResponse.data.ReceiveMessageResult)){
+                    for (var message in apiResponse.data.ReceiveMessageResult) {
+                        arrayAppend(apiResponse[ 'messages' ], message );
+                    }
+                }elseif(isStruct(apiResponse.data.ReceiveMessageResult)){
+                    arrayAppend(apiResponse[ 'messages' ], apiResponse.data.ReceiveMessageResult.message );
+                }   
+            }
         }
         return apiResponse;
     }
