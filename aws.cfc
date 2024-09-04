@@ -54,7 +54,8 @@ component {
         string defaultRegion = '',
         struct constructorArgs = { },
         struct httpProxy = { server: '', port: 80 },
-        string libraryMapping = ''
+        string libraryMapping = '',
+        string token = ''
     ) {
         if ( len( arguments.libraryMapping ) && mid( arguments.libraryMapping, len( arguments.libraryMapping ), 1 ) != '.' ) {
             arguments.libraryMapping &= '.';
@@ -65,7 +66,8 @@ component {
             awsSecretKey,
             defaultRegion,
             httpProxy,
-            libraryMapping
+            libraryMapping,
+            token
         );
 
         for ( var service in variables.services ) {
