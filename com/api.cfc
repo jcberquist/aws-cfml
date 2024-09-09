@@ -9,10 +9,11 @@ component accessors="true" {
     public any function init(
         required string awsKey,
         required string awsSecretKey,
-        required string defaultRegion
+        required string defaultRegion,
+        struct httpProxy = { server: '', port: 80 }
     ) {
         variables.utils = new utils();
-        variables.httpService = server.keyExists( 'lucee' ) ? new http.lucee( utils ) : new http.coldfusion( utils );
+        variables.httpService = server.keyExists( 'lucee' ) ? new httpLucee( utils, httpProxy ) : new httpColdFusion( utils, httpProxy );
         variables.credentials = new credentials( awsKey, awsSecretKey, this );
         variables.signer = new signature_v4( this );
         variables.defaultRegion = arguments.defaultRegion.len() ? arguments.defaultRegion : utils.getSystemSetting(
@@ -33,12 +34,17 @@ component accessors="true" {
 
     public struct function resolveRequestSettings(
         struct awsCredentials = { },
-        string region = defaultRegion
+        string region = defaultRegion,
+        string bucket = ''
     ) {
         if ( !awsCredentials.isEmpty() ) {
             awsCredentials = credentials.defaultCredentials( argumentCollection = awsCredentials );
         }
-        return { awsCredentials: awsCredentials, region: region };
+        var settings = { awsCredentials: awsCredentials, region: region };
+        if ( len( arguments.bucket ) ) {
+            settings.bucket = arguments.bucket;
+        }
+        return settings;
     }
 
     public any function call(
@@ -52,7 +58,8 @@ component accessors="true" {
         any body = '',
         struct awsCredentials = { },
         boolean encodeurl = true,
-        boolean useSSL = true
+        boolean useSSL = true,
+        numeric timeout = 0
     ) {
         if ( awsCredentials.isEmpty() ) {
             awsCredentials = credentials.getCredentials();
@@ -80,6 +87,7 @@ component accessors="true" {
         httpArgs[ 'queryParams' ] = queryParams;
         httpArgs[ 'useSSL' ] = useSSL;
         if ( !isNull( arguments.body ) ) httpArgs[ 'body' ] = body;
+        if ( timeout ) httpArgs[ 'timeout' ] = timeout;
         // writeDump( httpArgs );
 
         var requestStart = getTickCount();
@@ -91,6 +99,14 @@ component accessors="true" {
         apiResponse[ 'responseHeaders' ] = rawResponse.responseheader;
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
+
+        if (
+            find('application/x-amz-json', rawResponse.mimetype) &&
+            !isSimpleValue( apiResponse.rawData )
+        ) {
+            apiResponse.rawData = apiResponse.rawData.toString( 'utf-8' );
+        }
+
         apiResponse[ 'host' ] = arguments.host;
 
         if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {

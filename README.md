@@ -6,12 +6,19 @@
 
 It currently supports the following APIs:
  - cognitoIdentity
+ - connect
  - dynamodb
+ - ec2
+ - ec2 auto-scaling groups
  - elasticsearch
  - elastictranscoder
+ - polly
  - rekognition
  - s3
+ - secretsmanager
+ - ses
  - sns
+ - ssm
  - sqs
  - translate
 
@@ -40,6 +47,8 @@ aws = new path.to.awscfml.aws(
 );
 ```
 
+*Note: An optional `httpProxy` argument is available when initializing the core `aws` component (a struct with `server` and `port` keys).  When set this will proxy all AWS requests.*
+
 ### ColdBox Module
 
 To use the library as a ColdBox Module, add the init arguments to the `moduleSettings` struct in `config/Coldbox.cfc`:
@@ -49,7 +58,7 @@ moduleSettings = {
     awscfml: {
         awsKey: '',
         awsSecretKey: '',
-        defaultRegion: '',
+        defaultRegion: ''
     }
 }
 ```
@@ -147,6 +156,28 @@ If you do not want your data to be type encoded automatically you have two optio
 
  _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items.
 
+### Polly
+
+The following operations have been implemented: DescribeVoices, SynthesizeSpeech.
+
+You can configure the default language and default engine by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
+
+```cfc
+{
+    translate: {
+        defaultLanguageCode: 'es-ES',
+        defaultEngine: 'neural'
+    }
+}
+```
+
+Example of synthesizing text using "Kendra" voice for default language (en-US).
+
+```cfc
+response = aws.polly.synthesizeSpeech( 'Hello World', 'Kendra' );
+// The stream data is in: response.rawData
+```
+
 ### Rekognition
 
 The following basic image processing operations have been implemented: DetectText, DetectFaces, RecognizeCelebrities, DetectLabels, DetectModerationLabels.
@@ -168,6 +199,24 @@ moderationlabels = response.data.ModerationLabels;
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
+
+### Secrets Manager
+
+Only the GetSecretValue operation has been implemented. Here's an example of using it:
+
+```cfc
+response = aws.secretsmanager.getSecretValue( 'YourSecretId' );
+secretValue = response.data.SecretString;
+```
+
+### SSM
+
+Only the getParameter and getParameters operations have been implemented. Here's an example of using it:
+
+```cfc
+response = aws.ssm.getParameter( 'YourParameterName', true );
+decryptedValue = response.data.Parameter.Value;
+```
 
 ### Translate
 

@@ -61,9 +61,61 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+            if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
+                apiResponse.data.Contents = [ apiResponse.data.Contents ];
+            }
+        }
+        return apiResponse;
+    }
+
+    /**
+    * Returns some or all (up to 1000) of the objects in a bucket. You pass returned ContinuationToken to next request to get next set of records
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
+    * @Bucket the name of the bucket to list objects from
+    * @Delimiter A delimiter is a character you use to group keys. All keys that contain the same string between the prefix, if specified, and the first occurrence of the delimiter after the prefix are grouped under a single result element, CommonPrefixes. If you don't specify the prefix parameter, then the substring starts at the beginning of the key.
+    * @EncodingType Requests Amazon S3 to encode the response and specifies the encoding method to use. (Valid value: url)
+    * @Marker Specifies the key to start with when listing objects in a bucket. Amazon S3 returns object keys in alphabetical order, starting with key after the marker in order.
+    * @MaxKeys Sets the maximum number of keys returned in the response body. You can add this to your request if you want to retrieve fewer than the default 1000 keys.
+    * @Prefix Limits the response to keys that begin with the specified prefix. You can use prefixes to separate a bucket into different groupings of keys. (You can think of using prefix to make groups in the same way you'd use a folder in a file system.)
+    * @ContinuationToken If this is passed we will get next set of records
+    */
+
+    public any function listBucketV2(
+        required string Bucket,
+        string Delimiter = '',
+        string EncodingType = '',
+        string Marker = '',
+        numeric MaxKeys = 0,
+        string Prefix = '',
+        string ContinuationToken = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'list-type': 2 };
+        for (
+            var key in [
+                'Delimiter',
+                'EncodingType',
+                'Marker',
+                'Prefix',
+                'ContinuationToken'
+            ]
+        ) {
+            if ( len( arguments[ key ] ) ) queryParams[ utils.parseKey( key ) ] = arguments[ key ];
+        }
+        if ( arguments.MaxKeys ) queryParams[ utils.parseKey( 'MaxKeys' ) ] = arguments.MaxKeys;
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
             if ( apiResponse.data.keyExists( 'Contents' ) && !isArray( apiResponse.data.Contents ) ) {
@@ -82,7 +134,80 @@ component {
         required string Bucket
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var apiResponse = apiCall( requestSettings, 'HEAD', '/' & Bucket );
+        var apiResponse = apiCall( requestSettings, 'HEAD' );
+        return apiResponse;
+    }
+
+    /**
+    * This operation returns the website configuration for a bucket.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html
+    * @Bucket the name of the bucket
+    */
+    public any function getBucketWebsite(
+        required string Bucket
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'website': '' };
+        var apiResponse = apiCall(
+            requestSettings,
+            'GET',
+            '/',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
+    * This operation sets the configuration of the website that is specified in the website subresource.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html
+    * @Bucket the name of the bucket
+    * @WebsiteConfiguration xml data containing WebsiteConfiguration parameters. Required: Yes
+    *   @ErrorDocument The name of the error document for the website.
+    *   @IndexDocument The name of the index document for the website.
+    *   @RedirectAllRequestsTo The redirect behavior for every request to this bucket's website endpoint. If you specify this property, you can't
+    * specify any other property.
+    *   @RoutingRules Rules that define when a redirect is applied and the redirect behavior. Type: Array of RoutingRule data types
+    *
+    *   Example WebsiteConfiguration data:
+    * 		<WebsiteConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    * 			<IndexDocument>
+    * 				<Suffix>index.html</Suffix>
+    * 			</IndexDocument>
+    * 			<ErrorDocument>
+    * 				<Key>index.html</Key>
+    * 			</ErrorDocument>
+    * 			<RoutingRules>
+    * 				<RoutingRule>
+    * 					<Condition>
+    * 						<KeyPrefixEquals>webcam</KeyPrefixEquals>
+    * 						<HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
+    * 					</Condition>
+    * 					<Redirect>
+    * 						<Protocol>https</Protocol>
+    * 						<HostName>testhost.com</HostName>
+    * 						<ReplaceKeyWith>podcasts/webcam.html</ReplaceKeyWith>
+    * 					</Redirect>
+    * 				</RoutingRule>
+    * 			</RoutingRules>
+    * 		</WebsiteConfiguration>
+    */
+    public any function putBucketWebsite(
+        required string Bucket,
+        required string WebsiteConfiguration
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'website': '' };
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/',
+            queryParams,
+            { },
+            arguments.WebsiteConfiguration
+        );
         return apiResponse;
     }
 
@@ -131,12 +256,12 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
             if ( Setting != 'policy' ) {
-                apiResponse[ 'data' ] = utils.parseXmlResponse( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
+                apiResponse[ 'data' ] = utils.parseXmlElement( apiResponse.rawData, returnedXmlElement[ typeIndex ] );
             } else {
                 apiResponse[ 'data' ] = deserializeJSON( apiResponse.rawData );
             }
@@ -182,7 +307,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -229,13 +354,129 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & bucket,
+            '/',
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
             apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
         return apiResponse;
+    }
+
+
+    /**
+    * This action initiates a multipart upload and returns an upload ID. This upload ID is used to associate all of the parts in the specific multipart upload. You specify this upload ID in each of your subsequent upload part requests (see UploadPart). You also include this upload ID in the final request to either complete or abort the multipart upload request.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+    * @Bucket The name of the bucket to which to initiate the upload
+    * @Key Object key for which the multipart upload is to be initiated.
+    */
+    public any function createMultipartUpload(
+        required string Bucket,
+        required string Key
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'uploads': '' };
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams
+        );
+        if ( apiResponse.statusCode == 200 ) {
+            apiResponse[ 'data' ] = utils.parseXmlDocument( apiResponse.rawData );
+        }
+        return apiResponse;
+    }
+
+    /**
+    * Uploads a part in a multipart upload.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html
+    * @Bucket The name of the bucket to which the multipart upload was initiated.
+    * @Key Object key for which the multipart upload was initiated.
+    * @UploadId Upload ID identifying the multipart upload whose part is being uploaded.
+    * @PartNumber Part number of part being uploaded. This is a positive integer between 1 and 10,000.
+    * @body the binary content of the file part
+    */
+    public any function putPart(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required numeric PartNumber,
+        required any body
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'partNumber': arguments.PartNumber, 'uploadId': arguments.UploadId };
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/#arguments.Key#',
+            queryParams,
+            { },
+            arguments.body
+        );
+        return apiResponse;
+    }
+
+    /**
+    * Completes a multipart upload by assembling previously uploaded parts.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+    * @Bucket The name of the bucket to which the multipart upload was initiated.
+    * @Key Object key for which the multipart upload was initiated.
+    * @UploadId ID for the initiated multipart upload.
+    * @Parts Array of CompletedPart data types.
+    */
+    public any function completeMultipartUpload(
+        required string Bucket,
+        required string Key,
+        required string UploadId,
+        required array Parts
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var queryParams = { 'uploadId': arguments.UploadId };
+        var payload = getPartsPayload( Parts );
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'POST',
+            '/#arguments.Key#',
+            queryParams,
+            { },
+            toString( payload )
+        );
+
+        return apiResponse;
+    }
+
+    // ** modified version of generate presigned. Just for putting uploads
+
+    public string function generatePresignedURLForPart(
+        required string Bucket,
+        required string Key,
+        required numeric partNumber,
+        required string uploadId,
+        numeric Expires = 300,
+        string VersionId = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
+        var host = getHost( requestSettings );
+        var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
+        path &= '/' & Key;
+        var queryParams = { 'partNumber': arguments.partNumber, 'uploadId': arguments.uploadId };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+
+        return api.signedUrl(
+            variables.service,
+            host,
+            requestSettings.region,
+            'PUT',
+            path,
+            queryParams,
+            Expires,
+            requestSettings.awsCredentials,
+            false
+        );
     }
 
     /**
@@ -265,7 +506,7 @@ component {
         return apiCall(
             requestSettings,
             'PUT',
-            '/' & bucket,
+            '/',
             { },
             headers,
             payload
@@ -281,7 +522,7 @@ component {
         required string Bucket
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & Bucket );
+        return apiCall( requestSettings, 'DELETE', '/' );
     }
 
     /**
@@ -302,7 +543,7 @@ component {
         return apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
     }
@@ -325,7 +566,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -352,7 +593,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'HEAD',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         return apiResponse;
@@ -376,7 +617,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'GET',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             queryParams
         );
         if ( apiResponse.statusCode == 200 ) {
@@ -388,6 +629,8 @@ component {
     /**
     * returns a pre-signed URL that can be used to access an object
     * http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html (Overriding Response Header Values)
+    * queryParams = { "response-content-disposition": "attachment" } is useful for forcing a download
     * @Bucket The name of the bucket containing the object
     * @ObjectKey The object key
     * @Expires The length of time in seconds for which the url is valid
@@ -397,20 +640,23 @@ component {
         required string Bucket,
         required string ObjectKey,
         numeric Expires = 300,
-        string VersionId = ''
+        string VersionId = '',
+        struct queryParams = { }
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        var host = getHost( requestSettings.region );
-        var path = '/' & Bucket & '/' & ObjectKey;
-        var queryParams = { };
-        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        var host = getHost( requestSettings );
+        var path = arguments.Bucket.find( '.' ) ? '/' & arguments.Bucket : '';
+        path &= '/' & arguments.ObjectKey;
+
+        if ( len( arguments.VersionId ) ) arguments.queryParams[ 'versionId' ] = arguments.VersionId;
+
         return api.signedUrl(
             variables.service,
             host,
             requestSettings.region,
             'GET',
             path,
-            queryParams,
+            arguments.queryParams,
             Expires,
             requestSettings.awsCredentials,
             false
@@ -432,6 +678,9 @@ component {
     * @Metadata Used to store user-defined metadata. Struct keys are prefixed with 'x-amz-meta-' and sent as headers in the put request.
     * @StorageClass The storage class for the file. Valid values: STANDARD | STANDARD_IA | REDUCED_REDUNDANCY
     * @WebsiteRedirectLocation If the bucket is configured as a website, redirects requests for this object to another object in the same bucket or to an external URL.
+    *
+    * Example:  aws.s3.putObject( 'your-bucket-name', 'filename.ext', fileReadBinary( pathToFile ), '', '', '', fileGetMimeType( pathToFile ) )
+    * https://github.com/jcberquist/aws-cfml/issues/25
     */
     public any function putObject(
         required string Bucket,
@@ -445,7 +694,8 @@ component {
         string Expires = '',
         struct Metadata = { },
         string StorageClass = '',
-        string WebsiteRedirectLocation = ''
+        string WebsiteRedirectLocation = '',
+        numeric timeout = 0
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
@@ -475,10 +725,11 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
-            '/' & Bucket & '/' & ObjectKey,
+            '/' & ObjectKey,
             { },
             headers,
-            FileContent
+            FileContent,
+            timeout
         );
         return apiResponse;
     }
@@ -510,6 +761,7 @@ component {
         string WebsiteRedirectLocation = '',
         string VersionId = ''
     ) {
+        arguments.Bucket = arguments.DestinationBucket;
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var headers = { };
         headers[ 'X-Amz-Copy-Source' ] = '/' & SourceBucket & '/' & SourceObjectKey;
@@ -527,7 +779,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
-            '/' & destinationBucket & '/' & destinationObjectKey,
+            '/' & destinationObjectKey,
             { },
             headers
         );
@@ -540,20 +792,29 @@ component {
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETE.html
     * @Bucket the name of the bucket containing the object
     * @ObjectKey the object key
+    * @VersionId the specific version of an object to delete (if versioning is enabled)
     */
     public any function deleteObject(
         required string Bucket,
-        required string ObjectKey
+        required string ObjectKey,
+        string VersionId = ''
     ) {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
-        return apiCall( requestSettings, 'DELETE', '/' & bucket & '/' & objectKey );
+        var queryParams = { };
+        if ( len( arguments.VersionId ) ) queryParams[ 'versionId' ] = arguments.VersionId;
+        return apiCall(
+            requestSettings,
+            'DELETE',
+            '/' & objectKey,
+            queryParams
+        );
     }
 
     /**
     * Enables you to delete multiple objects from a bucket using a single HTTP request
     * http://docs.aws.amazon.com/AmazonS3/latest/API/multiobjectdeleteapi.html
     * @Bucket the name of the bucket containing the object
-    * @ObjectKeys array of object keys to delete
+    * @ObjectKeys array of object keys to delete, elements can be any mix of string object keys or structs with 'ObjectKey' and optionally 'VersionId' keys
     * @Quiet By default, the operation uses verbose mode in which the response includes the result of deletion of each key in your request. In quiet mode the response includes only keys where the delete operation encountered an error. For a successful deletion, the operation does not return any information about the delete in the response body.
     */
     public any function deleteMultipleObjects(
@@ -564,8 +825,26 @@ component {
         var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var xmlBody = '<?xml version="1.0" encoding="UTF-8"?>#chr( 10 )#<Delete>';
         xmlBody &= '<Quiet>' & ( Quiet ? 'true' : 'false' ) & '</Quiet>';
-        ObjectKeys.each( function( objectKey ) {
-            xmlBody &= '<Object><Key>#encodeForXML( objectKey )#</Key></Object>';
+        ObjectKeys.each( function( item ) {
+            // create an empty key/version struct
+            var objectKey = { 'ObjectKey': '', 'VersionId': '' };
+            // if the ObjectKey element is a struct, check for an object key and versionid keys/values
+            if ( isStruct( item ) ) {
+                objectKey[ 'ObjectKey' ] = item.keyExists( 'ObjectKey' ) ? item.ObjectKey : '';
+                objectKey[ 'VersionId' ] = item.keyExists( 'VersionId' ) ? item.VersionId : '';
+            }
+            // if the ObjectKey element is a simple value assume it's an object key
+            else if ( isSimpleValue( item ) ) {
+                objectKey[ 'ObjectKey' ] = item;
+            }
+            // create the xml node if there is a key
+            if ( len( objectKey[ 'ObjectKey' ] ) ) {
+                xmlBody &= '<Object><Key>#encodeForXML( objectKey[ 'ObjectKey' ] )#</Key>';
+                if ( len( objectKey.versionid ) ) {
+                    xmlBody &= '<VersionId>#encodeForXML( objectKey[ 'VersionId' ] )#</VersionId>';
+                }
+                xmlBody &= '</Object>';
+            }
         } );
         xmlBody &= '</Delete>';
 
@@ -577,7 +856,7 @@ component {
         var apiResponse = apiCall(
             requestSettings,
             'POST',
-            '/' & bucket,
+            '/',
             queryParams,
             headers,
             xmlBody
@@ -667,14 +946,36 @@ component {
 
     // private
 
-    private string function getHost(
-        required string region
+    private xml function getPartsPayload(
+        required Array Parts
     ) {
-        if ( structKeyExists( variables.settings, 'host' ) and len( variables.settings.host ) ) {
-            return variables.settings.host;
-        } else {
-            return variables.service & ( region == 'us-east-1' ? '' : '-' & region ) & '.amazonaws.com';
+        var ret = '<?xml version="1.0" encoding="UTF-8"?>';
+        ret &= '<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">';
+
+        for ( var part in arguments.Parts ) {
+            ret &= '<Part><ETag>#part.ETag#</ETag><PartNumber>#part.PartNumber#</PartNumber></Part>';
         }
+
+        ret &= '</CompleteMultipartUpload>';
+        return xmlParse( ret );
+    }
+
+    private string function getHost(
+        required struct requestSettings
+    ) {
+        if ( structKeyExists( variables.settings, 'host' ) && len( variables.settings.host ) ) {
+            var host = variables.settings.host;
+        } else {
+            var host = variables.service & ( requestSettings.region == 'us-east-1' ? '' : '-' & requestSettings.region ) & '.amazonaws.com';
+        }
+        if (
+            requestSettings.keyExists( 'bucket' ) &&
+            len( requestSettings.bucket ) &&
+            !requestSettings.bucket.find( '.' )
+        ) {
+            host = listPrepend( host, requestSettings.bucket, '.' );
+        }
+        return host;
     }
 
     private any function apiCall(
@@ -683,9 +984,18 @@ component {
         string path = '/',
         struct queryParams = { },
         struct headers = { },
-        any payload = ''
+        any payload = '',
+        numeric timeout = 0
     ) {
-        var host = getHost( requestSettings.region );
+        var host = getHost( requestSettings );
+
+        if (
+            requestSettings.keyExists( 'bucket' ) &&
+            len( requestSettings.bucket ) &&
+            requestSettings.bucket.find( '.' )
+        ) {
+            path = '/' & requestSettings.bucket & path;
+        }
 
         if ( !isSimpleValue( payload ) || len( payload ) ) {
             headers[ 'X-Amz-Content-Sha256' ] = hash( payload, 'SHA-256' ).lcase();
@@ -694,6 +1004,7 @@ component {
         }
 
         var useSSL = !structKeyExists( variables.settings, 'useSSL' ) || variables.settings.useSSL;
+
 
         return api.call(
             variables.service,
@@ -706,7 +1017,8 @@ component {
             payload,
             requestSettings.awsCredentials,
             false,
-            useSSL
+            useSSL,
+            timeout
         );
     }
 
