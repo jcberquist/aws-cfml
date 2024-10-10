@@ -576,6 +576,82 @@ component {
     }
 
     /**
+    * Adds or modifies the tags of an S3 object.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html
+    * @Bucket The name of the bucket containing the object.
+    * @ObjectKey The key of the object.
+    * @TaggingConfiguration XML data containing Tagging parameters. Required: Yes
+    *
+    * Example TaggingConfiguration:
+    *   <Tagging>
+    *     <TagSet>
+    *       <Tag>
+    *         <Key>Key1</Key>
+    *         <Value>Value1</Value>
+    *       </Tag>
+    *       <Tag>
+    *         <Key>Key2</Key>
+    *         <Value>Value2</Value>
+    *       </Tag>
+    *     </TagSet>
+    *   </Tagging>
+    */
+    public any function putObjectTagging(
+        required string Bucket,
+        required string ObjectKey,
+        required string TaggingConfiguration,
+        string VersionId = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings(argumentCollection = arguments);
+        var queryParams = { 'tagging': '' };
+
+        if (len(arguments.VersionId)) {
+            queryParams['versionId'] = arguments.VersionId;
+        }
+        
+        // Make the API call to set the object tags
+        var apiResponse = apiCall(
+            requestSettings,
+            'PUT',
+            '/' & arguments.ObjectKey,
+            queryParams,
+            {},
+            arguments.TaggingConfiguration
+        );
+
+        return apiResponse;
+    }
+
+    /**
+    * Deletes the tags from an S3 object.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html
+    * @Bucket The name of the bucket containing the object.
+    * @ObjectKey The key of the object.
+    * @VersionId The version of the object if versioning is enabled (optional).
+    */
+    public any function deleteObjectTagging(
+        required string Bucket,
+        required string ObjectKey,
+        string VersionId = ''
+    ) {
+        var requestSettings = api.resolveRequestSettings(argumentCollection = arguments);
+        var queryParams = { 'tagging': '' };
+        
+        if (len(arguments.VersionId)) {
+            queryParams['versionId'] = arguments.VersionId;
+        }
+
+        var apiResponse = apiCall(
+            requestSettings,
+            'DELETE',
+            '/' & arguments.ObjectKey,
+            queryParams
+        );
+
+        return apiResponse;
+    }
+
+    /**
     * Retrieves metadata from an object without returning the object itself.
     * http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectHEAD.html
     * @Bucket the name of the bucket containing the object
