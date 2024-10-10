@@ -602,20 +602,20 @@ component {
         required string TaggingConfiguration,
         string VersionId = ''
     ) {
-        var requestSettings = api.resolveRequestSettings(argumentCollection = arguments);
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'tagging': '' };
 
-        if (len(arguments.VersionId)) {
-            queryParams['versionId'] = arguments.VersionId;
+        if ( len( arguments.VersionId ) ) {
+            queryParams[ 'versionId' ] = arguments.VersionId;
         }
-        
+
         // Make the API call to set the object tags
         var apiResponse = apiCall(
             requestSettings,
             'PUT',
             '/' & arguments.ObjectKey,
             queryParams,
-            {},
+            { },
             arguments.TaggingConfiguration
         );
 
@@ -634,11 +634,11 @@ component {
         required string ObjectKey,
         string VersionId = ''
     ) {
-        var requestSettings = api.resolveRequestSettings(argumentCollection = arguments);
+        var requestSettings = api.resolveRequestSettings( argumentCollection = arguments );
         var queryParams = { 'tagging': '' };
-        
-        if (len(arguments.VersionId)) {
-            queryParams['versionId'] = arguments.VersionId;
+
+        if ( len( arguments.VersionId ) ) {
+            queryParams[ 'versionId' ] = arguments.VersionId;
         }
 
         var apiResponse = apiCall(
