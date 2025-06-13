@@ -94,6 +94,47 @@ component {
             return credentials;
         }
 
+        // SSO
+        try {
+            var configFile = utils.getSystemSetting( 'AWS_CONFIG_FILE', userHome & '/.aws/config' );
+            var sso_path = getDirectoryFromPath(configFile)&'sso/cache/';
+            var sso_account_id = getProfileString( configFile,'profile #profile#', 'sso_account_id' ).trim();
+            var sso_role_name  = getProfileString( configFile,'profile #profile#', 'sso_role_name' ).trim();
+
+            var files = directoryList( sso_path,false,'query','*.json','dateLastModified desc' )
+
+            var sso_cache = deserializeJSON(fileRead( sso_path&files.name[1] ))
+            var sso_access_token = sso_cache.accessToken
+            var sso_region = sso_cache.region
+
+            httpArgs = { };
+            httpArgs[ 'httpMethod' ] = 'get';
+            //httpArgs[ 'host' ] = 'sts.amazonaws.com';
+            httpArgs[ 'path' ] = 'portal.sso.#sso_region#.amazonaws.com/federation/credentials';
+            httpArgs[ 'queryParams'] = {
+                'account_id':sso_account_id,
+                'role_name' :sso_role_name
+            }
+            httpArgs[ 'useSSL' ] = true;
+            httpArgs[ 'timeout' ] = 1;
+            httpArgs[ 'headers' ] = {'x-amz-sso_bearer_token':sso_access_token};
+            var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
+
+            if ( req.status_code eq 200 and isJson( req.filecontent ) ) {
+                var r = deserializeJSON( req.filecontent );
+                credentials = { 
+                    awsKey       : r.roleCredentials.accessKeyId,
+                    awsSecretKey : r.roleCredentials.secretAccessKey,
+                    token        : r.roleCredentials.sessionToken
+                };
+                if ( len( credentials.awsKey ) && len( credentials.awsSecretKey ) ) {
+                    return credentials;
+                }
+            }
+        } catch ( any e ) {
+            // pass
+        }
+
         throw( type = 'aws.com.credentials', message = 'Unable to resolve AWS credentials.' );
     }
 
