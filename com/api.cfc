@@ -100,17 +100,34 @@ component accessors="true" {
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
 
+        // BoxLang cfhttp result struct uses case-sensitive key lookup
+        var mimeType = '';
+        if ( structKeyExists( rawResponse, 'mimetype' ) ) {
+            mimeType = rawResponse.mimetype;
+        } else if ( structKeyExists( rawResponse, 'MIMETYPE' ) ) {
+            mimeType = rawResponse.MIMETYPE;
+        } else if ( structKeyExists( rawResponse.responseheader, 'Content-Type' ) ) {
+            mimeType = rawResponse.responseheader[ 'Content-Type' ];
+        }
+
         if (
-            find('application/x-amz-json', rawResponse.mimetype) &&
+            find( 'application/x-amz-json', mimeType ) &&
             !isSimpleValue( apiResponse.rawData )
         ) {
-            apiResponse.rawData = apiResponse.rawData.toString( 'utf-8' );
+            // BoxLang byte array handling differs - use Java interop for cross-engine compatibility
+            if ( isInstanceOf( apiResponse.rawData, 'java.lang.Byte[]' ) || isInstanceOf( apiResponse.rawData, '[B' ) ) {
+                apiResponse.rawData = createObject( "java", "java.lang.String" ).init( apiResponse.rawData, "UTF-8" );
+            }
         }
 
         apiResponse[ 'host' ] = arguments.host;
 
-        if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
-            apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
+        if ( apiResponse.statusCode != 200 ) {
+            if ( isXML( apiResponse.rawData ) ) {
+                apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
+            } else if ( isJSON( apiResponse.rawData ) ) {
+                apiResponse[ 'error' ] = deserializeJSON( apiResponse.rawData );
+            }
         }
 
         return apiResponse;
