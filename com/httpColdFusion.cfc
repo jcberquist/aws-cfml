@@ -23,17 +23,13 @@ component {
         var request_headers = utils.parseHeaders( headers );
         var urlPath = 'http' & ( useSSL ? 's' : '' ) & '://' & fullPath;
 
-        // Only set proxy if proxyServer is specified (prevent empty proxy from routing through localhost)
-        var actualProxyServer = len( trim( httpProxy.server ) ) ? httpProxy.server : "";
-        var actualProxyPort = len( trim( httpProxy.server ) ) ? httpProxy.port : 0;
-
         cfhttp(
             url = urlPath,
             method = httpMethod,
             result = "result",
             timeout = timeout,
-            proxyserver = actualProxyServer,
-            proxyport = actualProxyPort
+            proxyServer=httpProxy.server,
+            proxyPort=httpProxy.port
         ) {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
