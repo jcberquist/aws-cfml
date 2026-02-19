@@ -28,8 +28,8 @@ component {
             method = httpMethod,
             result = "result",
             timeout = timeout,
-            proxyServer=httpProxy.server,
-            proxyPort=httpProxy.port
+            proxyserver = httpProxy.server,
+            proxyport = httpProxy.port
         ) {
             for ( var header in request_headers ) {
                 if ( header.name == 'host' ) continue;
