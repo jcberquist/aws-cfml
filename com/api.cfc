@@ -103,8 +103,7 @@ component accessors="true" {
         if ( find( 'application/x-amz-json', rawResponse.mimeType )
             && !isSimpleValue( apiResponse.rawData )
         ) {
-            // .toString() doesn't work (doesn't exist on rawData type) - use Java interop for cross-engine compatibility
-            apiResponse.rawData = createObject( 'java', 'java.lang.String' ).init( apiResponse.rawData, 'utf-8' );
+            apiResponse.rawData = toString( apiResponse.rawData, 'utf-8' );
         }
 
         apiResponse[ 'host' ] = arguments.host;
