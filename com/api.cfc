@@ -108,12 +108,8 @@ component accessors="true" {
 
         apiResponse[ 'host' ] = arguments.host;
 
-        if ( apiResponse.statusCode != 200 ) {
-            if ( isXML( apiResponse.rawData ) ) {
-                apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
-            } else if ( isJSON( apiResponse.rawData ) ) {
-                apiResponse[ 'error' ] = deserializeJSON( apiResponse.rawData );
-            }
+        if ( apiResponse.statusCode != 200 && isXML( apiResponse.rawData ) ) {
+            apiResponse[ 'error' ] = utils.parseXmlDocument( apiResponse.rawData );
         }
 
         return apiResponse;

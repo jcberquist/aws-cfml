@@ -250,9 +250,8 @@ component {
         httpArgs[ 'useSSL' ] = false;
         httpArgs[ 'timeout' ] = 1;
         var req = api.getHttpService().makeHttpRequest( argumentCollection = httpArgs );
-        var statusCode = listFirst( req.statuscode, ' ' );
-        if ( statusCode != 200 ) return '';
-        return trim( req.filecontent );
+        if ( listFirst( req.statuscode, ' ' ) == 408 ) return '';
+        return req.filecontent;
     }
 
 }
