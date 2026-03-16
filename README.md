@@ -198,6 +198,10 @@ moderationlabels = response.data.ModerationLabels;
 
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
+```cfc
+var signed_url = 'https://'&aws.s3.generatePresignedURL( 'my_bucket','my_file_and_path' )
+```
+
 TODO: provide an example for using the `getFormPostParams()` method.
 
 ### Secrets Manager
