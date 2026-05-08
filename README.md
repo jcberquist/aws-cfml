@@ -61,7 +61,7 @@ If you do not want your data to be type encoded automatically you have two optio
 
  The other option is to pass `dataTypeEncoding = false` to any method, and data will be not be encoded at all. (Thus you will need to encode items yourself.)
 
- _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items.
+ _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items
 
 ### S3
 
