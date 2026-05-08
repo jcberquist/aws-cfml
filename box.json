@@ -1,0 +1,43 @@
+{
+    "author":"John Berquist",
+    "bugs":"https://github.com/jcberquist/aws-cfml/issues",
+    "changelog":"",
+    "description":"",
+    "devDependencies":{
+        "testbox":"^2.8.0+191"
+    },
+    "engines":[
+        {
+            "type":"lucee",
+            "version":">=4.5.x"
+        },
+        {
+            "type":"adobe",
+            "version":">=11.0.0"
+        }
+    ],
+    "homepage":"https://github.com/jcberquist/aws-cfml",
+    "installPaths":{
+        "testbox":"testbox/"
+    },
+    "instructions":"",
+    "keywords":[
+        "aws",
+        "APIs"
+    ],
+    "license":[
+        {
+            "type":"MIT",
+            "URL":"http://opensource.org/licenses/MIT"
+        }
+    ],
+    "location":"jcberquist/aws-cfml#v1.36.1",
+    "name":"aws-cfml",
+    "packageDirectory":"awscfml",
+    "private":false,
+    "projectURL":"",
+    "shortDescription":"AWS CFML is a CFML library for interacting with AWS APIs",
+    "slug":"aws-cfml",
+    "type":"modules",
+    "version":"1.36.1"
+}
