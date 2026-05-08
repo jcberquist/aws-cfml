@@ -154,7 +154,7 @@ If you do not want your data to be type encoded automatically you have two optio
 
  The other option is to pass `dataTypeEncoding = false` to any method, and data will be not be encoded at all. (Thus you will need to encode items yourself.)
 
- _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items.
+ _Note:_ If you want to use non-native CFML types such as the various set types, you will need to use one of these latter two options when putting items
 
 ### Polly
 
@@ -199,43 +199,3 @@ moderationlabels = response.data.ModerationLabels;
 Most basic operations are supported for S3. However, there is currently no support for updating bucket settings. Support for encrypted buckets and objects is also missing.
 
 TODO: provide an example for using the `getFormPostParams()` method.
-
-### Secrets Manager
-
-Only the GetSecretValue operation has been implemented. Here's an example of using it:
-
-```cfc
-response = aws.secretsmanager.getSecretValue( 'YourSecretId' );
-secretValue = response.data.SecretString;
-```
-
-### SSM
-
-Only the getParameter and getParameters operations have been implemented. Here's an example of using it:
-
-```cfc
-response = aws.ssm.getParameter( 'YourParameterName', true );
-decryptedValue = response.data.Parameter.Value;
-```
-
-### Translate
-
-You can configure the default source and target languages by using a `constructorArgs` struct in your module settings (or by passing this struct in at init if you are using this as a standalone library):
-
-```cfc
-{
-    translate: {
-        defaultSourceLanguageCode: 'es',
-        defaultTargetLanguageCode: 'en'
-    }
-}
-```
-
-Also you can override in the translate call:
-
-```cfc
-response = aws.translate.translateText( Text = 'house', SourceLanguageCode = 'en', TargetLanguageCode = 'de' );
-// The translated text is in: response.data.TranslatedText;
-```
-
-You can see the supported language codes by the service in the api docs: <https://docs.aws.amazon.com/en_en/translate/latest/dg/API_TranslateText.html>
