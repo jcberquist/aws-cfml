@@ -5,6 +5,7 @@
 **It requires Lucee 4.5+ or ColdFusion 11+.**
 
 It currently supports the following APIs:
+ - cloudsearch (CloudSearch Domain)
  - cognitoIdentity
  - connect
  - dynamodb
@@ -37,10 +38,22 @@ Alternatively the git repository can be cloned into the desired directory.
 
 ### Standalone Usage
 
-Once the library has been installed, the core `aws` component can be instantiated directly:
+Once the library has been installed, add a mapping in your `Application.cfc` so the components can be resolved:
 
 ```cfc
-aws = new path.to.awscfml.aws(
+this.mappings["/awscfml"] = "/path/to/aws-cfml";
+```
+
+For example, when the library is deployed to `/opt/lucee/web/components/aws-cfml`:
+
+```cfc
+this.mappings["/awscfml"] = "/opt/lucee/web/components/aws-cfml";
+```
+
+The core `aws` component can then be instantiated directly:
+
+```cfc
+aws = new awscfml.aws(
     awsKey = 'YOUR_PUBLIC_KEY',
     awsSecretKey = 'YOUR_PRIVATE_KEY',
     defaultRegion = 'us-east-1'
@@ -118,6 +131,45 @@ You can also pass credentials as a named argument to any service method:
 aws = new aws();
 awsCredentials = {awsKey: 'ANOTHER_PUBLIC_KEY', awsSecretKey: 'ANOTHER_PRIVATE_KEY'};
 response = aws.s3.listBucket(awsCredentials = awsCredentials, region = 'us-west-1', bucket = 'mybucket');
+```
+
+### CloudSearch Domain
+
+Pass your domain-specific search and document endpoints via `constructorArgs` at init:
+
+```cfc
+aws = new awscfml.aws(
+    defaultRegion = 'us-east-1',
+    constructorArgs = {
+        cloudsearch: {
+            searchEndpoint: 'search-my-domain.us-east-1.cloudsearch.amazonaws.com',
+            docEndpoint:    'doc-my-domain.us-east-1.cloudsearch.amazonaws.com'
+        }
+    }
+);
+```
+
+Searching:
+
+```cfc
+response = aws.cloudsearch.search(
+    q           = "(term field=doc_type 'bill')",
+    queryParser = 'structured',
+    filterQuery = "(and session_id:45)",
+    sort        = '_score desc',
+    size        = 25,
+    highlight   = '{"body":{"format":"text","max_phrases":1,"pre_tag":"<mark>","post_tag":"</mark>"}}'
+);
+results = response.data.hits.hit;
+```
+
+Uploading documents (add or delete operations can be mixed in a single batch):
+
+```cfc
+aws.cloudsearch.uploadDocuments( documents = [
+    { type: 'add',    id: 'bill42', fields: { title: 'My Bill', body: 'full text...' } },
+    { type: 'delete', id: 'bill41' }
+] );
 ```
 
 ### DynamoDB
