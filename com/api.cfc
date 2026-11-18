@@ -100,11 +100,13 @@ component accessors="true" {
         apiResponse[ 'statusCode' ] = listFirst( rawResponse.statuscode, ' ' );
         apiResponse[ 'rawData' ] = rawResponse.filecontent;
 
-        if (
-            find( 'application/x-amz-json', rawResponse.mimeType ) &&
-            !isSimpleValue( apiResponse.rawData )
-        ) {
-            apiResponse.rawData = toString( apiResponse.rawData, 'utf-8' );
+        // Handle CF returning a Java ByteArrayOutputStream (common with AWS responses)
+        if ( getMetadata( apiResponse.rawData ).getName() == "java.io.ByteArrayOutputStream" ) {
+            apiResponse.rawData = apiResponse.rawData.toString( "utf-8" );
+        }
+        // Handle true binary data
+        else if ( isBinary( apiResponse.rawData ) ) {
+            apiResponse.rawData = toString( apiResponse.rawData, "utf-8" );
         }
 
         apiResponse[ 'host' ] = arguments.host;
