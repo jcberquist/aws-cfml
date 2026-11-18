@@ -211,11 +211,25 @@ secretValue = response.data.SecretString;
 
 ### SSM
 
-Only the getParameter and getParameters operations have been implemented. Here's an example of using it:
+The following operations have been implemented: GetParameter, GetParameters, GetParametersByPath, PutParameter, DeleteParameter, DeleteParameters.
+
+Here's an example of getting a parameter:
 
 ```cfc
 response = aws.ssm.getParameter( 'YourParameterName', true );
 decryptedValue = response.data.Parameter.Value;
+```
+
+GetParametersByPath returns at most 10 parameters per call. When more results are available, the response includes a `NextToken`, which you pass back in to get the next page:
+
+```cfc
+parameters = [];
+args = { Path: '/your/path', Recursive: true, WithDecryption: true };
+do {
+    response = aws.ssm.getParametersByPath( argumentCollection = args );
+    parameters.append( response.data.Parameters, true );
+    args.NextToken = response.data.NextToken ?: '';
+} while ( len( args.NextToken ) );
 ```
 
 ### Translate
